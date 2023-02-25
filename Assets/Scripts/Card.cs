@@ -7,7 +7,6 @@ public class Card : MonoBehaviour
     public enum CardState
     {
         Waiting,
-        Moving,
         Played,
     }
 
@@ -18,6 +17,9 @@ public class Card : MonoBehaviour
     public const float speed = 150.0f;
     private StateMachine stateMachine;
 
+    public delegate void OnPlayed(Card card);
+    public static OnPlayed onPlayed;
+
     public void Initialize(string s, string r, bool inHand) {
         this.suit = s;
         this.rank = r;
@@ -26,7 +28,6 @@ public class Card : MonoBehaviour
         this.stateMachine = new StateMachine();
 
         string path = "PlayingCards/Resource/Materials/BackColor_Black/Black_PlayingCards_" + this.suit + this.rank + "_00";
-        Debug.Log(path);
         GetComponent<MeshRenderer>().material = Resources.Load(path, typeof(Material)) as Material;
         transform.Rotate(-45.0f, 0.0f, 0.0f, Space.Self);
     }
@@ -34,7 +35,9 @@ public class Card : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (this.state == CardState.Waiting && Input.GetMouseButtonDown(0))
+        if (this.state == CardState.Waiting && 
+            this.stateMachine.IsCardPlayable() && 
+            Input.GetMouseButtonDown(0))
         {
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
             RaycastHit hit;
@@ -44,15 +47,11 @@ public class Card : MonoBehaviour
                 {
                     transform.rotation = Quaternion.Euler(new Vector3(0, 0, 0));
                     stateMachine.IncrementNumCardsPlayed();
-                    this.state = CardState.Moving;
+                    StartCoroutine(MoveToCenterRoutine());
+                    this.state = CardState.Played;
+                    this.stateMachine.SetCardPlayable(false);
                 }
             }
-        }
-
-        if (this.state == CardState.Moving)
-        {
-            StartCoroutine(MoveToCenterRoutine());
-            this.state = CardState.Played;
         }
     }
 
@@ -65,6 +64,7 @@ public class Card : MonoBehaviour
             transform.Rotate(rotate * speed * Time.deltaTime);
             yield return null;
         }
-        Debug.Log(transform.position);
+        yield return new WaitForSeconds(1f);
+        onPlayed(this);
     }
 }
