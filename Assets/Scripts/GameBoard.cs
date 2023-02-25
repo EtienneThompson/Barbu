@@ -10,14 +10,18 @@ public class GameBoard : MonoBehaviour
                                                  "08", "09", "10", "11", "12", "13" };
     private string[] cards = new string[52];
 
+    private Card[] hand = new Card[13];
+
     public static GameBoard instance;
 
     // Start is called before the first frame update
     void Start()
     {
+        Application.targetFrameRate = 60;
         Debug.Log("Hello world!");
         instance = this;
 
+        // Create the deck of 52 cards.
         for (int i = 0; i < kCardSuits.Length; i++)
         {
             for (int j = 0; j < kCardRanks.Length; j++)
@@ -28,23 +32,7 @@ public class GameBoard : MonoBehaviour
         }
 
         Shuffle(cards);
-
-        /*
-        for (int i = 0; i < cards.Length; i++)
-        {
-            Debug.Log(cards[i]);
-        }
-        */
-
-        GameObject panel = GameObject.Find("Panel");
-        for (int i = 0; i < 13; i++)
-        {
-            Card card = panel.AddComponent<Card>();
-            var suit = cards[i].Substring(0, cards[i].Length - 2);
-            var rank = cards[i].Substring(cards[i].Length - 2);
-            Vector3 position = new Vector3((i - 6) * 20, 1, 1);
-            card.Initialize(suit, rank, true, position);
-        }
+        DealHand(cards);
     }
 
     // Update is called once per frame
@@ -65,6 +53,21 @@ public class GameBoard : MonoBehaviour
                 array[n] = array[k];
                 array[k] = temp;
             }
+        }
+    }
+
+    private void DealHand<T>(T[] deck)
+    {
+        for (int i = 0; i < 13; i++)
+        {
+            Vector3 position = new Vector3((i - 6) * 10, (i / 10.0f) + 1, -100);
+            GameObject myCard = Instantiate(Resources.Load("BlankPlayingCard", typeof(GameObject)), position, Quaternion.identity) as GameObject;
+            Card card = myCard.GetComponent<Card>();
+            var suit = cards[i].Substring(0, cards[i].Length - 2);
+            var rank = cards[i].Substring(cards[i].Length - 2);
+            card.Initialize(suit, rank, true);
+
+            hand[i] = card;
         }
     }
 
