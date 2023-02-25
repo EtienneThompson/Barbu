@@ -4,13 +4,17 @@ using UnityEngine;
 
 public class GameBoard : MonoBehaviour
 {
+    private StateMachine stateMachine;
     private string[] kCardSuits = new string[] { "Club", "Diamond", "Spade", "Heart" };
     // Ranks must match the resources used, 01 is A and 11, 12, and 13 are J, Q, and K.
     private string[] kCardRanks = new string[] { "01", "02", "03", "04", "05", "06", "07",
                                                  "08", "09", "10", "11", "12", "13" };
     private string[] cards = new string[52];
-
     private Card[] hand = new Card[13];
+
+    private const int cardsPerPile = 2;
+    private Card[] currentPile = new Card[cardsPerPile];
+    private int numCardsInPile = 0;
 
     public static GameBoard instance;
 
@@ -18,8 +22,9 @@ public class GameBoard : MonoBehaviour
     void Start()
     {
         Application.targetFrameRate = 60;
-        Debug.Log("Hello world!");
         instance = this;
+
+        stateMachine = new StateMachine();
 
         // Create the deck of 52 cards.
         for (int i = 0; i < kCardSuits.Length; i++)
@@ -33,6 +38,11 @@ public class GameBoard : MonoBehaviour
 
         Shuffle(cards);
         DealHand(cards);
+
+        // Listen for events when cards are being played.
+        Card.onPlayed += this.OnCardPlayed;
+
+        this.stateMachine.SetCardPlayable(true);
     }
 
     // Update is called once per frame
@@ -74,5 +84,30 @@ public class GameBoard : MonoBehaviour
     private T GetRandomFromArray<T>(T[] array)
     {
         return array[(int)Mathf.Floor(Random.value * array.Length)];
+    }
+
+    private void OnCardPlayed(Card card)
+    {
+        this.stateMachine.SetCardPlayable(false);
+        
+        this.currentPile[this.numCardsInPile] = card;
+        this.numCardsInPile++;
+
+        if (this.numCardsInPile == cardsPerPile) {
+            this.ResolvePile();
+        }
+
+        this.stateMachine.SetCardPlayable(true);
+    }
+
+    private void ResolvePile()
+    {
+        for (int i = 0; i < this.numCardsInPile; i++) {
+            this.currentPile[i].gameObject.SetActive(false);
+            this.currentPile[i].GetComponent<Renderer>().enabled = false;
+            this.currentPile[i] = null;
+        }
+
+        this.numCardsInPile = 0;
     }
 }

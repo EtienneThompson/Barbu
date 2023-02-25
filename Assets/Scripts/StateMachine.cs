@@ -7,16 +7,29 @@ public class StateMachine
     private static readonly StateMachine instance = new StateMachine();
 
     private int numCardsPlayed = 0;
+    private bool canCardBePlayed = false;
 
     public StateMachine()
     {
     }
 
-    public void IncrementNumCardsPlayed() {
+    public int NumCardsPlayed()
+    {
+        return instance.numCardsPlayed;
+    }
+
+    public bool IsCardPlayable()
+    {
+        return instance.canCardBePlayed;
+    }
+
+    public void IncrementNumCardsPlayed()
+    {
         instance.numCardsPlayed += 1;
     }
 
-    public int NumCardsPlayed() {
-        return instance.numCardsPlayed;
+    public void SetCardPlayable(bool state)
+    {
+        instance.canCardBePlayed = state;
     }
 }
