@@ -11,7 +11,8 @@ public class Card : MonoBehaviour
     }
 
     public string suit;
-    public string rank;
+    public int rank;
+    public int playerId;
     public CardState state;
     public const float speed = 150.0f;
     private StateMachine stateMachine;
@@ -19,14 +20,22 @@ public class Card : MonoBehaviour
     public delegate void OnPlayed(Card card);
     public static OnPlayed onPlayed;
 
-    public void Initialize(string s, string r, float rotateX, float rotateY, float rotateZ)
+    public void Initialize(string s, string r, int playerId, float rotateX, float rotateY, float rotateZ)
     {
         this.suit = s;
-        this.rank = r;
+
+        this.rank = System.Int32.Parse(r);
+        if (this.rank == 1)
+        {
+            // Handle case where Ace is lowest in the resource pack, but highest rank.
+            this.rank = 14;
+        }
+
+        this.playerId = playerId;
         this.state = CardState.Waiting;
         this.stateMachine = new StateMachine();
 
-        string path = "PlayingCards/Resource/Materials/BackColor_Black/Black_PlayingCards_" + this.suit + this.rank + "_00";
+        string path = "PlayingCards/Resource/Materials/BackColor_Black/Black_PlayingCards_" + this.suit + r + "_00";
         GetComponent<MeshRenderer>().material = Resources.Load(path, typeof(Material)) as Material;
         transform.Rotate(rotateX, rotateY, rotateZ, Space.Self);
     }
@@ -67,7 +76,7 @@ public class Card : MonoBehaviour
             transform.Rotate(rotate * speed * Time.deltaTime);
             yield return null;
         }
-        yield return new WaitForSeconds(1f);
+        yield return new WaitForSeconds(0.5f);
         onPlayed(this);
     }
 }

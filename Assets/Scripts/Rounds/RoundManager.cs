@@ -8,6 +8,8 @@ public class RoundManager
     private RoundContext roundContext;
     private GameStateContext gameStateContext;
 
+    private Dictionary<int, GameState> playerMap;
+
     public RoundManager(Card[,] hands)
     {
         this.roundContext = new RoundContext();
@@ -20,6 +22,14 @@ public class RoundManager
         var computerState1 = new ComputerState(this.gameStateContext, computerState2, 2, GetRow(hands, 1));
         playerState.SetNextState(computerState1);
 
+        this.playerMap = new Dictionary<int, GameState>
+        {
+            {1, playerState},
+            {2, computerState1},
+            {3, computerState2},
+            {4, computerState3}
+        };
+
         // Set the initial state to the player.
         this.gameStateContext.SetState(playerState);
     }
@@ -29,9 +39,39 @@ public class RoundManager
         this.gameStateContext.Next();
     }
 
+    public void StartGameState()
+    {
+        this.gameStateContext.Start();
+    }
+
     public void NextRound()
     {
         this.roundContext.Next();
+    }
+
+    public void SetStartingSuit(string suit)
+    {
+        this.gameStateContext.SetStartingSuit(suit);
+    }
+
+    public string GetStartingSuit()
+    {
+        return this.gameStateContext.GetStartingSuit();
+    }
+
+    public void SetStartingPlayer(GameState player)
+    {
+        this.gameStateContext.SetState(player);
+    }
+
+    public GameState GetPlayerFromId(int id)
+    {
+        if (!this.playerMap.TryGetValue(id, out var player))
+        {
+            return null;
+        }
+
+        return player;
     }
 
     private T[] GetRow<T>(T[,] matrix, int rowNumber)
