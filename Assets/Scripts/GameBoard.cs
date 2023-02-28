@@ -10,11 +10,13 @@ public class GameBoard : MonoBehaviour
     private string[] kCardRanks = new string[] { "01", "02", "03", "04", "05", "06", "07",
                                                  "08", "09", "10", "11", "12", "13" };
     private string[] cards = new string[52];
-    private Card[] hand = new Card[13];
+    private Card[,] hands = new Card[4, 13];
 
-    private const int cardsPerPile = 2;
+    private const int cardsPerPile = 4;
     private Card[] currentPile = new Card[cardsPerPile];
     private int numCardsInPile = 0;
+
+    private RoundManager roundManager;
 
     public static GameBoard instance;
 
@@ -43,12 +45,8 @@ public class GameBoard : MonoBehaviour
         Card.onPlayed += this.OnCardPlayed;
 
         this.stateMachine.SetCardPlayable(true);
-    }
 
-    // Update is called once per frame
-    void Update()
-    {
-
+        this.roundManager = new RoundManager(hands);
     }
 
     private void Shuffle<T>(T[] array)
@@ -68,16 +66,47 @@ public class GameBoard : MonoBehaviour
 
     private void DealHand<T>(T[] deck)
     {
+
         for (int i = 0; i < 13; i++)
         {
-            Vector3 position = new Vector3((i - 6) * 10, (i / 10.0f) + 1, -100);
-            GameObject myCard = Instantiate(Resources.Load("BlankPlayingCard", typeof(GameObject)), position, Quaternion.identity) as GameObject;
-            Card card = myCard.GetComponent<Card>();
-            var suit = cards[i].Substring(0, cards[i].Length - 2);
-            var rank = cards[i].Substring(cards[i].Length - 2);
-            card.Initialize(suit, rank, true);
+            for (int j = 0; j < 4; j++)
+            {
+                Vector3 position;
+                float rotateX = 0.0f;
+                float rotateY = 0.0f;
+                float rotateZ = 0.0f;
+                if (j == 0)
+                {
+                    position = new Vector3((i - 6) * 10, (i / 10.0f) + 1, -100);
+                    rotateX = -45.0f;
+                }
+                else if (j == 1)
+                {
+                    position = new Vector3(-90, 10, (i - 8) * 10);
+                    rotateY = 90.0f;
+                    rotateX = -70.0f;
+                }
+                else if (j == 2)
+                {
+                    position = new Vector3((i - 6) * 10, 10, 40);
+                    rotateX = 90.0f;
+                }
+                else
+                {
+                    position = new Vector3(90, 10, (i - 8) * 10);
+                    rotateY = -90.0f;
+                    rotateX = -70.0f;
+                }
 
-            hand[i] = card;
+                GameObject myCard = Instantiate(Resources.Load("BlankPlayingCard", typeof(GameObject)), position, Quaternion.identity) as GameObject;
+                Card card = myCard.GetComponent<Card>();
+                var index = i * 4 + j;
+                var suit = cards[index].Substring(0, cards[index].Length - 2);
+                var rank = cards[index].Substring(cards[index].Length - 2);
+                card.Initialize(suit, rank, rotateX, rotateY, rotateZ);
+
+                hands[j, i] = card;
+            }
         }
     }
 
@@ -98,6 +127,7 @@ public class GameBoard : MonoBehaviour
         }
 
         this.stateMachine.SetCardPlayable(true);
+        this.roundManager.NextGameState();
     }
 
     private void ResolvePile()
@@ -109,5 +139,6 @@ public class GameBoard : MonoBehaviour
         }
 
         this.numCardsInPile = 0;
+        this.stateMachine.ResetNumCardsPlayed();
     }
 }

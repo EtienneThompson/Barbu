@@ -12,7 +12,6 @@ public class Card : MonoBehaviour
 
     public string suit;
     public string rank;
-    public bool inPlayerHand;
     public CardState state;
     public const float speed = 150.0f;
     private StateMachine stateMachine;
@@ -20,16 +19,16 @@ public class Card : MonoBehaviour
     public delegate void OnPlayed(Card card);
     public static OnPlayed onPlayed;
 
-    public void Initialize(string s, string r, bool inHand) {
+    public void Initialize(string s, string r, float rotateX, float rotateY, float rotateZ)
+    {
         this.suit = s;
         this.rank = r;
-        this.inPlayerHand = inHand;
         this.state = CardState.Waiting;
         this.stateMachine = new StateMachine();
 
         string path = "PlayingCards/Resource/Materials/BackColor_Black/Black_PlayingCards_" + this.suit + this.rank + "_00";
         GetComponent<MeshRenderer>().material = Resources.Load(path, typeof(Material)) as Material;
-        transform.Rotate(-45.0f, 0.0f, 0.0f, Space.Self);
+        transform.Rotate(rotateX, rotateY, rotateZ, Space.Self);
     }
 
     // Update is called once per frame
@@ -45,19 +44,23 @@ public class Card : MonoBehaviour
             {
                 if (hit.transform == transform)
                 {
-                    transform.rotation = Quaternion.Euler(new Vector3(0, 0, 0));
-                    stateMachine.IncrementNumCardsPlayed();
-                    StartCoroutine(MoveToCenterRoutine());
-                    this.state = CardState.Played;
-                    this.stateMachine.SetCardPlayable(false);
+                    this.PlayCard();
                 }
             }
         }
     }
 
+    public void PlayCard() {
+        transform.rotation = Quaternion.Euler(new Vector3(0, 0, 0));
+        stateMachine.IncrementNumCardsPlayed();
+        StartCoroutine(MoveToCenterRoutine());
+        this.state = CardState.Played;
+        this.stateMachine.SetCardPlayable(false);
+    }
+
     IEnumerator MoveToCenterRoutine()
     {
-        var center = new Vector3(0.0f, 1.0f + 0.1f * stateMachine.NumCardsPlayed(), 0.0f);
+        var center = new Vector3(0.0f, 1.0f + 0.1f * stateMachine.NumCardsPlayed(), -25.0f);
         var rotate = new Vector3(0.0f, Random.Range(-5.0f, 5.0f), 0.0f);
         while (transform.position != center) {
             transform.position = Vector3.MoveTowards(transform.position, center, speed * Time.deltaTime);
