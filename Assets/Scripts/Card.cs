@@ -44,14 +44,18 @@ public class Card : MonoBehaviour
             {
                 if (hit.transform == transform)
                 {
-                    transform.rotation = Quaternion.Euler(new Vector3(0, 0, 0));
-                    stateMachine.IncrementNumCardsPlayed();
-                    StartCoroutine(MoveToCenterRoutine());
-                    this.state = CardState.Played;
-                    this.stateMachine.SetCardPlayable(false);
+                    this.PlayCard();
                 }
             }
         }
+    }
+
+    public void PlayCard() {
+        transform.rotation = Quaternion.Euler(new Vector3(0, 0, 0));
+        stateMachine.IncrementNumCardsPlayed();
+        StartCoroutine(MoveToCenterRoutine());
+        this.state = CardState.Played;
+        this.stateMachine.SetCardPlayable(false);
     }
 
     IEnumerator MoveToCenterRoutine()

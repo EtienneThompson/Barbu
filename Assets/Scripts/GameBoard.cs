@@ -16,6 +16,8 @@ public class GameBoard : MonoBehaviour
     private Card[] currentPile = new Card[cardsPerPile];
     private int numCardsInPile = 0;
 
+    private RoundManager roundManager;
+
     public static GameBoard instance;
 
     // Start is called before the first frame update
@@ -43,12 +45,8 @@ public class GameBoard : MonoBehaviour
         Card.onPlayed += this.OnCardPlayed;
 
         this.stateMachine.SetCardPlayable(true);
-    }
 
-    // Update is called once per frame
-    void Update()
-    {
-
+        this.roundManager = new RoundManager(hands);
     }
 
     private void Shuffle<T>(T[] array)
@@ -73,7 +71,6 @@ public class GameBoard : MonoBehaviour
         {
             for (int j = 0; j < 4; j++)
             {
-                Debug.Log($"Rendering card {i} for player {j}");
                 Vector3 position;
                 float rotateX = 0.0f;
                 float rotateY = 0.0f;
@@ -130,6 +127,7 @@ public class GameBoard : MonoBehaviour
         }
 
         this.stateMachine.SetCardPlayable(true);
+        this.roundManager.NextGameState();
     }
 
     private void ResolvePile()
@@ -141,5 +139,6 @@ public class GameBoard : MonoBehaviour
         }
 
         this.numCardsInPile = 0;
+        this.stateMachine.ResetNumCardsPlayed();
     }
 }

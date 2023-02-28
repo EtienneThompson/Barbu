@@ -28,6 +28,11 @@ public class StateMachine
         instance.numCardsPlayed += 1;
     }
 
+    public void ResetNumCardsPlayed()
+    {
+        instance.numCardsPlayed = 0;
+    }
+
     public void SetCardPlayable(bool state)
     {
         instance.canCardBePlayed = state;
