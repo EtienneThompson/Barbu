@@ -103,7 +103,8 @@ public class GameBoard : MonoBehaviour
                 var index = i * 4 + j;
                 var suit = cards[index].Substring(0, cards[index].Length - 2);
                 var rank = cards[index].Substring(cards[index].Length - 2);
-                card.Initialize(suit, rank, rotateX, rotateY, rotateZ);
+                var playerId = j + 1;
+                card.Initialize(suit, rank, playerId, rotateX, rotateY, rotateZ);
 
                 hands[j, i] = card;
             }
@@ -118,6 +119,11 @@ public class GameBoard : MonoBehaviour
     private void OnCardPlayed(Card card)
     {
         this.stateMachine.SetCardPlayable(false);
+
+        if (this.numCardsInPile == 0)
+        {
+            this.roundManager.SetStartingSuit(card.suit);
+        }
         
         this.currentPile[this.numCardsInPile] = card;
         this.numCardsInPile++;
@@ -127,12 +133,41 @@ public class GameBoard : MonoBehaviour
         }
 
         this.stateMachine.SetCardPlayable(true);
-        this.roundManager.NextGameState();
+
+        if (this.numCardsInPile == 0)
+        {
+            // Start the new state so that if the player is a computer they will make a move.
+            this.roundManager.StartGameState();
+        }
+        else
+        {
+            // If we just resolved a pile and therefore have no cards, then we
+            // don't want to move past the starting player state.
+            this.roundManager.NextGameState();
+        }
     }
 
     private void ResolvePile()
     {
-        for (int i = 0; i < this.numCardsInPile; i++) {
+        var highestCardIndex = 0;
+        for (int i = 0; i < this.numCardsInPile; i++)
+        {
+            Debug.Log($"Checking card {this.currentPile[i].playerId} {this.currentPile[i].suit} {this.currentPile[i].rank}");
+            if (this.currentPile[i].suit == this.roundManager.GetStartingSuit() &&
+                this.currentPile[i].rank > this.currentPile[highestCardIndex].rank)
+            {
+                highestCardIndex = i;
+            }
+        }
+
+        Debug.Log($"Highest card played: {this.currentPile[highestCardIndex].playerId} {this.currentPile[highestCardIndex].suit} {this.currentPile[highestCardIndex].rank}");
+
+        // Determine which player's card was the highest one played.
+        var player = this.roundManager.GetPlayerFromId(this.currentPile[highestCardIndex].playerId);
+        this.roundManager.SetStartingPlayer(player);
+
+        for (int i = 0; i < this.numCardsInPile; i++)
+        {
             this.currentPile[i].gameObject.SetActive(false);
             this.currentPile[i].GetComponent<Renderer>().enabled = false;
             this.currentPile[i] = null;

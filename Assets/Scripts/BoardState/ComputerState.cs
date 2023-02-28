@@ -26,16 +26,26 @@ public class ComputerState : GameState
     {
         if (!stateMachine.IsCardPlayable())
         {
-            Debug.Log("Can't play a card.");
+            throw new Exception("Computer can't make a move right now.");
         }
 
         // Implement the logic for making a move here.
         foreach (var card in this.hand)
         {
+            if (card.state == Card.CardState.Waiting && card.suit == this.context.GetStartingSuit())
+            {
+                card.PlayCard();
+                return;
+            }
+        }
+
+        // If no cards in hand of the same suit, then pick a random one.
+        foreach (var card in this.hand)
+        {
             if (card.state == Card.CardState.Waiting)
             {
                 card.PlayCard();
-                break;
+                return;
             }
         }
     }
