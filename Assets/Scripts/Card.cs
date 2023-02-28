@@ -27,6 +27,7 @@ public class Card : MonoBehaviour
         this.rank = System.Int32.Parse(r);
         if (this.rank == 1)
         {
+            // Handle case where Ace is lowest in the resource pack, but highest rank.
             this.rank = 14;
         }
 

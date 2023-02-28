@@ -152,15 +152,12 @@ public class GameBoard : MonoBehaviour
         var highestCardIndex = 0;
         for (int i = 0; i < this.numCardsInPile; i++)
         {
-            Debug.Log($"Checking card {this.currentPile[i].playerId} {this.currentPile[i].suit} {this.currentPile[i].rank}");
             if (this.currentPile[i].suit == this.roundManager.GetStartingSuit() &&
                 this.currentPile[i].rank > this.currentPile[highestCardIndex].rank)
             {
                 highestCardIndex = i;
             }
         }
-
-        Debug.Log($"Highest card played: {this.currentPile[highestCardIndex].playerId} {this.currentPile[highestCardIndex].suit} {this.currentPile[highestCardIndex].rank}");
 
         // Determine which player's card was the highest one played.
         var player = this.roundManager.GetPlayerFromId(this.currentPile[highestCardIndex].playerId);
