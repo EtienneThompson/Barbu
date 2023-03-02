@@ -10,16 +10,16 @@ public class RoundManager
 
     private Dictionary<int, GameState> playerMap;
 
-    public RoundManager(Card[,] hands)
+    public RoundManager(Hand[] hands)
     {
         this.roundContext = new RoundContext();
         this.gameStateContext = new GameStateContext();
 
         // Initialize general gameplay loop.
         var playerState = new PlayerState(this.gameStateContext, 1);
-        var computerState3 = new ComputerState(this.gameStateContext, playerState, 4, GetRow(hands, 3));
-        var computerState2 = new ComputerState(this.gameStateContext, computerState3, 3, GetRow(hands, 2));
-        var computerState1 = new ComputerState(this.gameStateContext, computerState2, 2, GetRow(hands, 1));
+        var computerState3 = new ComputerState(this.gameStateContext, playerState, 4, hands[3]);
+        var computerState2 = new ComputerState(this.gameStateContext, computerState3, 3, hands[2]);
+        var computerState1 = new ComputerState(this.gameStateContext, computerState2, 2, hands[1]);
         playerState.SetNextState(computerState1);
 
         this.playerMap = new Dictionary<int, GameState>
@@ -72,13 +72,5 @@ public class RoundManager
         }
 
         return player;
-    }
-
-    private T[] GetRow<T>(T[,] matrix, int rowNumber)
-    {
-        return Enumerable
-            .Range(0, matrix.GetLength(1))
-            .Select(x => matrix[rowNumber, x])
-            .ToArray();
     }
 }

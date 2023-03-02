@@ -7,16 +7,16 @@ public class ComputerState : GameState
 {
     private GameStateContext context;
     private GameState nextState;
-    private Card[] hand;
+    private Hand hand;
     public int playerId;
     private StateMachine stateMachine;
 
-    public ComputerState(GameStateContext context, int id, Card[] hand)
+    public ComputerState(GameStateContext context, int id, Hand hand)
     {
         this.Initialize(context, hand, id);
     }
 
-    public ComputerState(GameStateContext context, GameState next, int id, Card[] hand)
+    public ComputerState(GameStateContext context, GameState next, int id, Hand hand)
     {
         this.Initialize(context, hand, id);
         this.nextState = next;
@@ -29,23 +29,28 @@ public class ComputerState : GameState
             throw new Exception("Computer can't make a move right now.");
         }
 
-        // Implement the logic for making a move here.
-        foreach (var card in this.hand)
+        var cardsInSuit = this.hand.CardsInSuit(this.context.GetStartingSuit());
+        if (cardsInSuit.Count > 0)
         {
-            if (card.state == Card.CardState.Waiting && card.suit == this.context.GetStartingSuit())
+            foreach (var card in this.hand.GetHand())
             {
-                card.PlayCard();
-                return;
+                if (card.state == Card.CardState.Waiting && card.suit == this.context.GetStartingSuit())
+                {
+                    card.PlayCard();
+                    return;
+                }
             }
         }
-
-        // If no cards in hand of the same suit, then pick a random one.
-        foreach (var card in this.hand)
+        else
         {
-            if (card.state == Card.CardState.Waiting)
+            // If no cards in hand of the same suit, then pick a random one.
+            foreach (var card in this.hand.GetHand())
             {
-                card.PlayCard();
-                return;
+                if (card.state == Card.CardState.Waiting)
+                {
+                    card.PlayCard();
+                    return;
+                }
             }
         }
     }
@@ -70,7 +75,7 @@ public class ComputerState : GameState
         return this.playerId;
     }
 
-    private void Initialize(GameStateContext context, Card[] hand, int id)
+    private void Initialize(GameStateContext context, Hand hand, int id)
     {
         this.context = context;
         this.hand = hand;

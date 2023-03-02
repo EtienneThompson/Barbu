@@ -10,7 +10,7 @@ public class GameBoard : MonoBehaviour
     private string[] kCardRanks = new string[] { "01", "02", "03", "04", "05", "06", "07",
                                                  "08", "09", "10", "11", "12", "13" };
     private string[] cards = new string[52];
-    private Card[,] hands = new Card[4, 13];
+    private Hand[] hands = new Hand[4];
 
     private const int cardsPerPile = 4;
     private Card[] currentPile = new Card[cardsPerPile];
@@ -66,6 +66,11 @@ public class GameBoard : MonoBehaviour
 
     private void DealHand<T>(T[] deck)
     {
+        for (int i = 0; i < 4; i++)
+        {
+            Hand hand = new Hand();
+            hands[i] = hand;
+        }
 
         for (int i = 0; i < 13; i++)
         {
@@ -106,7 +111,7 @@ public class GameBoard : MonoBehaviour
                 var playerId = j + 1;
                 card.Initialize(suit, rank, playerId, rotateX, rotateY, rotateZ);
 
-                hands[j, i] = card;
+                hands[j].AddCard(card);
             }
         }
     }
