@@ -12,10 +12,6 @@ public class GameBoard : MonoBehaviour
     private string[] cards = new string[52];
     private Hand[] hands = new Hand[4];
 
-    private const int cardsPerPile = 4;
-    private Card[] currentPile = new Card[cardsPerPile];
-    private int numCardsInPile = 0;
-
     private RoundManager roundManager;
 
     public static GameBoard instance;
@@ -38,15 +34,17 @@ public class GameBoard : MonoBehaviour
             }
         }
 
-        Shuffle(cards);
-        DealHand(cards);
-
-        // Listen for events when cards are being played.
-        Card.onPlayed += this.OnCardPlayed;
-
-        this.stateMachine.SetCardPlayable(true);
+        ResetRound();
 
         this.roundManager = new RoundManager(hands);
+
+        this.stateMachine.SetCardPlayable(true);
+    }
+
+    public void ResetRound()
+    {
+        this.Shuffle(cards);
+        this.DealHand(cards);
     }
 
     private void Shuffle<T>(T[] array)
@@ -114,68 +112,5 @@ public class GameBoard : MonoBehaviour
                 hands[j].AddCard(card);
             }
         }
-    }
-
-    private T GetRandomFromArray<T>(T[] array)
-    {
-        return array[(int)Mathf.Floor(Random.value * array.Length)];
-    }
-
-    private void OnCardPlayed(Card card)
-    {
-        this.stateMachine.SetCardPlayable(false);
-
-        if (this.numCardsInPile == 0)
-        {
-            this.roundManager.SetStartingSuit(card.suit);
-        }
-        
-        this.currentPile[this.numCardsInPile] = card;
-        this.numCardsInPile++;
-
-        if (this.numCardsInPile == cardsPerPile) {
-            this.ResolvePile();
-        }
-
-        this.stateMachine.SetCardPlayable(true);
-
-        if (this.numCardsInPile == 0)
-        {
-            // Start the new state so that if the player is a computer they will make a move.
-            this.roundManager.StartGameState();
-        }
-        else
-        {
-            // If we just resolved a pile and therefore have no cards, then we
-            // don't want to move past the starting player state.
-            this.roundManager.NextGameState();
-        }
-    }
-
-    private void ResolvePile()
-    {
-        var highestCardIndex = 0;
-        for (int i = 0; i < this.numCardsInPile; i++)
-        {
-            if (this.currentPile[i].suit == this.roundManager.GetStartingSuit() &&
-                this.currentPile[i].rank > this.currentPile[highestCardIndex].rank)
-            {
-                highestCardIndex = i;
-            }
-        }
-
-        // Determine which player's card was the highest one played.
-        var player = this.roundManager.GetPlayerFromId(this.currentPile[highestCardIndex].playerId);
-        this.roundManager.SetStartingPlayer(player);
-
-        for (int i = 0; i < this.numCardsInPile; i++)
-        {
-            this.currentPile[i].gameObject.SetActive(false);
-            this.currentPile[i].GetComponent<Renderer>().enabled = false;
-            this.currentPile[i] = null;
-        }
-
-        this.numCardsInPile = 0;
-        this.stateMachine.ResetNumCardsPlayed();
     }
 }

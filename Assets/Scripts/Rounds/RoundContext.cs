@@ -12,21 +12,11 @@ public class RoundContext
 
     public void Next()
     {
-        current.goNext(this);
+        current.GoNext();
     }
 
-    public void Previous()
-    {
-        current.goPrevious(this);
-    }
-
-    public void setState(Round current)
+    public void SetState(Round current)
     {
         this.current = current;
-    }
-
-    public Round getCurrentRound()
-    {
-        return this.current;
     }
 }

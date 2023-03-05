@@ -4,6 +4,8 @@ using UnityEngine;
 
 public interface Round
 {
-    void goNext(RoundContext input);
-    void goPrevious(RoundContext input);
+    Dictionary<string, int> PointMapping { get; }
+    int PointsPerPile { get; }
+
+    void GoNext();
 }
