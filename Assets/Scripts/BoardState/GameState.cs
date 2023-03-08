@@ -4,9 +4,8 @@ using UnityEngine;
 
 public interface GameState
 {
-    int PlayerId { get; }
+    string PlayerId { get; }
 
     void Start();
     void GoNext();
-    int GetId();
 }

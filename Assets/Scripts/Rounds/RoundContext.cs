@@ -19,4 +19,9 @@ public class RoundContext
     {
         this.current = current;
     }
+
+    public int CalculateCurrentPoints(List<Card[]> piles)
+    {
+        return this.current.CalculatePointsInPiles(piles);
+    }
 }

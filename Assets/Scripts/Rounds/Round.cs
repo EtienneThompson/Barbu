@@ -8,4 +8,5 @@ public interface Round
     int PointsPerPile { get; }
 
     void GoNext();
+    int CalculatePointsInPiles(List<Card[]> piles);
 }

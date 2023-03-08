@@ -7,14 +7,14 @@ public class HeartsRound : Round
 {
     public Dictionary<string, int> PointMapping => new Dictionary<string, int>
     {
-        {"Heart02", 5},
-        {"Heart03", 5},
-        {"Heart04", 5},
-        {"Heart05", 5},
-        {"Heart06", 5},
-        {"Heart07", 5},
-        {"Heart08", 5},
-        {"Heart09", 5},
+        {"Heart2", 5},
+        {"Heart3", 5},
+        {"Heart4", 5},
+        {"Heart5", 5},
+        {"Heart6", 5},
+        {"Heart7", 5},
+        {"Heart8", 5},
+        {"Heart9", 5},
         {"Heart10", 5},
         {"Heart11", 5},
         {"Heart12", 5},
@@ -49,5 +49,25 @@ public class HeartsRound : Round
     public void SetNextState(Round next)
     {
         this.nextState = next;
+    }
+
+    public int CalculatePointsInPiles(List<Card[]> piles)
+    {
+        int totalPoints = 0;
+        foreach (var pile in piles)
+        {
+            foreach (var card in pile)
+            {
+                Debug.Log(card.GetName());
+                if (this.PointMapping.TryGetValue(card.GetName(), out var points))
+                {
+                    totalPoints += points;
+                }
+            }
+
+            totalPoints += this.PointsPerPile;
+        }
+
+        return totalPoints;
     }
 }

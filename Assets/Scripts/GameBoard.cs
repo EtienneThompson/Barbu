@@ -106,7 +106,7 @@ public class GameBoard : MonoBehaviour
                 var index = i * 4 + j;
                 var suit = cards[index].Substring(0, cards[index].Length - 2);
                 var rank = cards[index].Substring(cards[index].Length - 2);
-                var playerId = j + 1;
+                var playerId = (j + 1).ToString();
                 card.Initialize(suit, rank, playerId, rotateX, rotateY, rotateZ);
 
                 hands[j].AddCard(card);

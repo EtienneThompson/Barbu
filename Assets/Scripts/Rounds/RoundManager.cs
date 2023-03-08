@@ -15,6 +15,8 @@ public class RoundManager
     private GameState[] players;
     private StateMachine stateMachine;
 
+    private Dictionary<string, List<Card[]>> playerWonPiles;
+
     public RoundManager(Hand[] hands)
     {
         this.roundContext = new RoundContext();
@@ -23,10 +25,10 @@ public class RoundManager
         this.stateMachine = new StateMachine();
 
         // Initialize general gameplay loop.
-        var playerState = new PlayerState(this.gameStateContext, 1);
-        var computerState3 = new ComputerState(this.gameStateContext, playerState, 4, hands[3]);
-        var computerState2 = new ComputerState(this.gameStateContext, computerState3, 3, hands[2]);
-        var computerState1 = new ComputerState(this.gameStateContext, computerState2, 2, hands[1]);
+        var playerState = new PlayerState(this.gameStateContext, "1");
+        var computerState3 = new ComputerState(this.gameStateContext, playerState, "4", hands[3]);
+        var computerState2 = new ComputerState(this.gameStateContext, computerState3, "3", hands[2]);
+        var computerState1 = new ComputerState(this.gameStateContext, computerState2, "2", hands[1]);
         playerState.SetNextState(computerState1);
 
         this.players[0] = playerState;
@@ -34,10 +36,19 @@ public class RoundManager
         this.players[2] = computerState2;
         this.players[3] = computerState3;
 
+        this.playerWonPiles = new Dictionary<string, List<Card[]>>()
+        {
+            { "1", new List<Card[]>() },
+            { "2", new List<Card[]>() },
+            { "3", new List<Card[]>() },
+            { "4", new List<Card[]>() },
+        };
+
         // Set the initial state to the player.
         this.gameStateContext.SetState(playerState);
 
         var heartsRound = new HeartsRound(this.roundContext);
+        this.roundContext.SetState(heartsRound);
 
         // Listen for events when cards are being played.
         Card.onPlayed += this.OnCardPlayed;
@@ -55,11 +66,11 @@ public class RoundManager
         this.gameStateContext.SetState(player);
     }
 
-    public GameState GetPlayerFromId(int id)
+    public GameState GetPlayerFromId(string id)
     {
         foreach (var state in this.players)
         {
-            if (id == state.PlayerId)
+            if (id.Equals(state.PlayerId))
             {
                 return state;
             }
@@ -75,6 +86,7 @@ public class RoundManager
         if (this.numCardsInPile == 0)
         {
             this.startingSuit = card.suit;
+            Debug.Log(this.startingSuit);
         }
         
         this.currentPile[this.numCardsInPile] = card;
@@ -112,10 +124,18 @@ public class RoundManager
         }
 
         // Determine which player's card was the highest one played.
-        var player = this.GetPlayerFromId(this.currentPile[highestCardIndex].playerId);
+        var playerId = this.currentPile[highestCardIndex].playerId;
+        var player = this.GetPlayerFromId(playerId);
         this.gameStateContext.SetState(player);
 
         var copiedPile = (Card[])this.currentPile.Clone();
+        this.playerWonPiles[playerId].Add(copiedPile);
+
+        int test = 1;
+        foreach (var key in this.playerWonPiles.Keys)
+        {
+            Debug.Log($"Player {test} won {this.playerWonPiles[key].Count} piles worth {this.roundContext.CalculateCurrentPoints(this.playerWonPiles[key])} points");
+        }
 
         // Hide the cards in the UI.
         for (int i = 0; i < this.numCardsInPile; i++)

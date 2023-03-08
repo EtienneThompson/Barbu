@@ -12,7 +12,7 @@ public class Card : MonoBehaviour
 
     public string suit;
     public int rank;
-    public int playerId;
+    public string playerId;
     public CardState state;
     public const float speed = 150.0f;
     private StateMachine stateMachine;
@@ -20,7 +20,7 @@ public class Card : MonoBehaviour
     public delegate void OnPlayed(Card card);
     public static OnPlayed onPlayed;
 
-    public void Initialize(string s, string r, int playerId, float rotateX, float rotateY, float rotateZ)
+    public void Initialize(string s, string r, string playerId, float rotateX, float rotateY, float rotateZ)
     {
         this.suit = s;
 
@@ -57,6 +57,11 @@ public class Card : MonoBehaviour
                 }
             }
         }
+    }
+
+    public string GetName()
+    {
+        return this.suit + this.rank.ToString();
     }
 
     public void PlayCard() {
