@@ -20,6 +20,8 @@ public class PlayerState : GameState
         this.nextState = next;
     }
 
+    public int PlayerId => this.playerId;
+
     public void Start()
     {
         // Don't do anything as the player state waits for the player to make

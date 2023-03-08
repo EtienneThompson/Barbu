@@ -22,6 +22,8 @@ public class ComputerState : GameState
         this.nextState = next;
     }
 
+    public int PlayerId => this.playerId;
+
     public void Start()
     {
         if (!stateMachine.IsCardPlayable())

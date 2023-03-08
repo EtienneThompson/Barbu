@@ -12,14 +12,14 @@ public class RoundManager
 
     private RoundContext roundContext;
     private GameStateContext gameStateContext;
-    private PlayerContext[] playerContexts;
+    private GameState[] players;
     private StateMachine stateMachine;
 
     public RoundManager(Hand[] hands)
     {
         this.roundContext = new RoundContext();
         this.gameStateContext = new GameStateContext();
-        this.playerContexts = new PlayerContext[4];
+        this.players = new GameState[4];
         this.stateMachine = new StateMachine();
 
         // Initialize general gameplay loop.
@@ -29,10 +29,10 @@ public class RoundManager
         var computerState1 = new ComputerState(this.gameStateContext, computerState2, 2, hands[1]);
         playerState.SetNextState(computerState1);
 
-        this.playerContexts[0] = new PlayerContext(1, playerState);
-        this.playerContexts[1] = new PlayerContext(2, computerState1);
-        this.playerContexts[2] = new PlayerContext(3, computerState2);
-        this.playerContexts[3] = new PlayerContext(4, computerState3);
+        this.players[0] = playerState;
+        this.players[1] = computerState1;
+        this.players[2] = computerState2;
+        this.players[3] = computerState3;
 
         // Set the initial state to the player.
         this.gameStateContext.SetState(playerState);
@@ -57,11 +57,11 @@ public class RoundManager
 
     public GameState GetPlayerFromId(int id)
     {
-        foreach (var state in this.playerContexts)
+        foreach (var state in this.players)
         {
-            if (id == state.GetId())
+            if (id == state.PlayerId)
             {
-                return state.GetGameState();
+                return state;
             }
         }
 
