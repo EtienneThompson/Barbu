@@ -16,6 +16,7 @@ public class RoundManager
     private StateMachine stateMachine;
 
     private Dictionary<string, List<Card[]>> playerWonPiles;
+    private Dictionary<string, int> playerPoints;
 
     public RoundManager(Hand[] hands)
     {
@@ -42,6 +43,14 @@ public class RoundManager
             { "2", new List<Card[]>() },
             { "3", new List<Card[]>() },
             { "4", new List<Card[]>() },
+        };
+
+        this.playerPoints = new Dictionary<string, int>()
+        {
+            { "1", 0 },
+            { "2", 0 },
+            { "3", 0 },
+            { "4", 0 },
         };
 
         // Set the initial state to the player.
@@ -86,7 +95,6 @@ public class RoundManager
         if (this.numCardsInPile == 0)
         {
             this.startingSuit = card.suit;
-            Debug.Log(this.startingSuit);
         }
         
         this.currentPile[this.numCardsInPile] = card;
@@ -130,11 +138,11 @@ public class RoundManager
 
         var copiedPile = (Card[])this.currentPile.Clone();
         this.playerWonPiles[playerId].Add(copiedPile);
+        this.playerPoints[playerId] += this.roundContext.CalculatePointsInPile(this.currentPile);
 
-        int test = 1;
-        foreach (var key in this.playerWonPiles.Keys)
+        if (this.roundContext.IsRoundOver(this.playerPoints))
         {
-            Debug.Log($"Player {test} won {this.playerWonPiles[key].Count} piles worth {this.roundContext.CalculateCurrentPoints(this.playerWonPiles[key])} points");
+            Debug.Log("ROUND OVER!!!");
         }
 
         // Hide the cards in the UI.

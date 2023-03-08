@@ -22,6 +22,7 @@ public class HeartsRound : Round
         {"Heart14", 5},
     };
     public int PointsPerPile => 0;
+    public int TotalPoints => 65;
     private RoundContext context;
     private Round nextState;
 
@@ -51,23 +52,44 @@ public class HeartsRound : Round
         this.nextState = next;
     }
 
-    public int CalculatePointsInPiles(List<Card[]> piles)
+    public int CalculatePointsInPile(Card[] pile)
+    {
+        int totalPoints = 0;
+        foreach (var card in pile)
+        {
+            if (this.PointMapping.TryGetValue(card.GetName(), out var points))
+            {
+                totalPoints += points;
+            }
+        }
+
+        return totalPoints;
+    }
+
+    public int CalculatePointsInAllPiles(List<Card[]> piles)
     {
         int totalPoints = 0;
         foreach (var pile in piles)
         {
-            foreach (var card in pile)
-            {
-                Debug.Log(card.GetName());
-                if (this.PointMapping.TryGetValue(card.GetName(), out var points))
-                {
-                    totalPoints += points;
-                }
-            }
-
-            totalPoints += this.PointsPerPile;
+            totalPoints += this.CalculatePointsInPile(pile) + this.PointsPerPile;
         }
 
         return totalPoints;
+    }
+
+    public bool IsRoundOver(Dictionary<string, int> points)
+    {
+        int totalPoints = 0;
+        foreach (var key in points.Keys)
+        {
+            totalPoints += points[key];
+        }
+
+        if (totalPoints == this.TotalPoints)
+        {
+            return true;
+        }
+
+        return false;
     }
 }

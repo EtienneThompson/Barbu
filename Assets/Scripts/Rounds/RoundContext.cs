@@ -20,8 +20,18 @@ public class RoundContext
         this.current = current;
     }
 
+    public int CalculatePointsInPile(Card[] pile)
+    {
+        return this.current.CalculatePointsInPile(pile);
+    }
+
     public int CalculateCurrentPoints(List<Card[]> piles)
     {
-        return this.current.CalculatePointsInPiles(piles);
+        return this.current.CalculatePointsInAllPiles(piles);
+    }
+
+    public bool IsRoundOver(Dictionary<string, int> points)
+    {
+        return this.current.IsRoundOver(points);
     }
 }
