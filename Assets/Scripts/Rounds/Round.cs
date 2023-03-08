@@ -4,6 +4,12 @@ using UnityEngine;
 
 public interface Round
 {
-    void goNext(RoundContext input);
-    void goPrevious(RoundContext input);
+    Dictionary<string, int> PointMapping { get; }
+    int PointsPerPile { get; }
+    int TotalPoints { get; }
+
+    void GoNext();
+    int CalculatePointsInPile(Card[] pile);
+    int CalculatePointsInAllPiles(List<Card[]> piles);
+    bool IsRoundOver(Dictionary<string, int> points);
 }

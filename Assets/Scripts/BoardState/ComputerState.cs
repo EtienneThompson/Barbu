@@ -8,19 +8,21 @@ public class ComputerState : GameState
     private GameStateContext context;
     private GameState nextState;
     private Hand hand;
-    public int playerId;
+    public string playerId;
     private StateMachine stateMachine;
 
-    public ComputerState(GameStateContext context, int id, Hand hand)
+    public ComputerState(GameStateContext context, string id, Hand hand)
     {
         this.Initialize(context, hand, id);
     }
 
-    public ComputerState(GameStateContext context, GameState next, int id, Hand hand)
+    public ComputerState(GameStateContext context, GameState next, string id, Hand hand)
     {
         this.Initialize(context, hand, id);
         this.nextState = next;
     }
+
+    public string PlayerId => this.playerId;
 
     public void Start()
     {
@@ -70,12 +72,7 @@ public class ComputerState : GameState
         this.nextState = next;
     }
 
-    public int GetId()
-    {
-        return this.playerId;
-    }
-
-    private void Initialize(GameStateContext context, Hand hand, int id)
+    private void Initialize(GameStateContext context, Hand hand, string id)
     {
         this.context = context;
         this.hand = hand;

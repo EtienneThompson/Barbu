@@ -12,21 +12,26 @@ public class RoundContext
 
     public void Next()
     {
-        current.goNext(this);
+        current.GoNext();
     }
 
-    public void Previous()
-    {
-        current.goPrevious(this);
-    }
-
-    public void setState(Round current)
+    public void SetState(Round current)
     {
         this.current = current;
     }
 
-    public Round getCurrentRound()
+    public int CalculatePointsInPile(Card[] pile)
     {
-        return this.current;
+        return this.current.CalculatePointsInPile(pile);
+    }
+
+    public int CalculateCurrentPoints(List<Card[]> piles)
+    {
+        return this.current.CalculatePointsInAllPiles(piles);
+    }
+
+    public bool IsRoundOver(Dictionary<string, int> points)
+    {
+        return this.current.IsRoundOver(points);
     }
 }

@@ -5,42 +5,63 @@ using UnityEngine;
 
 public class RoundManager
 {
+    private string startingSuit;
+    private const int cardsPerPile = 4;
+    private Card[] currentPile = new Card[cardsPerPile];
+    private int numCardsInPile = 0;
+
     private RoundContext roundContext;
     private GameStateContext gameStateContext;
+    private GameState[] players;
+    private StateMachine stateMachine;
 
-    private Dictionary<int, GameState> playerMap;
+    private Dictionary<string, List<Card[]>> playerWonPiles;
+    private Dictionary<string, int> playerPoints;
 
     public RoundManager(Hand[] hands)
     {
         this.roundContext = new RoundContext();
         this.gameStateContext = new GameStateContext();
+        this.players = new GameState[4];
+        this.stateMachine = new StateMachine();
 
         // Initialize general gameplay loop.
-        var playerState = new PlayerState(this.gameStateContext, 1);
-        var computerState3 = new ComputerState(this.gameStateContext, playerState, 4, hands[3]);
-        var computerState2 = new ComputerState(this.gameStateContext, computerState3, 3, hands[2]);
-        var computerState1 = new ComputerState(this.gameStateContext, computerState2, 2, hands[1]);
+        var playerState = new PlayerState(this.gameStateContext, "1");
+        var computerState3 = new ComputerState(this.gameStateContext, playerState, "4", hands[3]);
+        var computerState2 = new ComputerState(this.gameStateContext, computerState3, "3", hands[2]);
+        var computerState1 = new ComputerState(this.gameStateContext, computerState2, "2", hands[1]);
         playerState.SetNextState(computerState1);
 
-        this.playerMap = new Dictionary<int, GameState>
+        this.players[0] = playerState;
+        this.players[1] = computerState1;
+        this.players[2] = computerState2;
+        this.players[3] = computerState3;
+
+        this.playerWonPiles = new Dictionary<string, List<Card[]>>()
         {
-            {1, playerState},
-            {2, computerState1},
-            {3, computerState2},
-            {4, computerState3}
+            { "1", new List<Card[]>() },
+            { "2", new List<Card[]>() },
+            { "3", new List<Card[]>() },
+            { "4", new List<Card[]>() },
+        };
+
+        this.playerPoints = new Dictionary<string, int>()
+        {
+            { "1", 0 },
+            { "2", 0 },
+            { "3", 0 },
+            { "4", 0 },
         };
 
         // Set the initial state to the player.
         this.gameStateContext.SetState(playerState);
-    }
 
-    public void NextGameState()
-    {
-        this.gameStateContext.Next();
-    }
+        var heartsRound = new HeartsRound(this.roundContext);
+        this.roundContext.SetState(heartsRound);
 
-    public void StartGameState()
-    {
+        // Listen for events when cards are being played.
+        Card.onPlayed += this.OnCardPlayed;
+
         this.gameStateContext.Start();
     }
 
@@ -49,28 +70,90 @@ public class RoundManager
         this.roundContext.Next();
     }
 
-    public void SetStartingSuit(string suit)
-    {
-        this.gameStateContext.SetStartingSuit(suit);
-    }
-
-    public string GetStartingSuit()
-    {
-        return this.gameStateContext.GetStartingSuit();
-    }
-
     public void SetStartingPlayer(GameState player)
     {
         this.gameStateContext.SetState(player);
     }
 
-    public GameState GetPlayerFromId(int id)
+    public GameState GetPlayerFromId(string id)
     {
-        if (!this.playerMap.TryGetValue(id, out var player))
+        foreach (var state in this.players)
         {
-            return null;
+            if (id.Equals(state.PlayerId))
+            {
+                return state;
+            }
         }
 
-        return player;
+        return null;
+    }
+
+    private void OnCardPlayed(Card card)
+    {
+        this.stateMachine.SetCardPlayable(false);
+
+        if (this.numCardsInPile == 0)
+        {
+            this.startingSuit = card.suit;
+        }
+        
+        this.currentPile[this.numCardsInPile] = card;
+        this.numCardsInPile++;
+
+        if (this.numCardsInPile == cardsPerPile) {
+            this.ResolvePile();
+        }
+
+        this.stateMachine.SetCardPlayable(true);
+
+        if (this.numCardsInPile == 0)
+        {
+            // Start the new state so that if the player is a computer they will make a move.
+            this.gameStateContext.Start();
+        }
+        else
+        {
+            // If we just resolved a pile and therefore have no cards, then we
+            // don't want to move past the starting player state.
+            this.gameStateContext.Next();
+        }
+    }
+
+    private void ResolvePile()
+    {
+        var highestCardIndex = 0;
+        for (int i = 0; i < this.numCardsInPile; i++)
+        {
+            if (this.currentPile[i].suit == this.startingSuit &&
+                this.currentPile[i].rank > this.currentPile[highestCardIndex].rank)
+            {
+                highestCardIndex = i;
+            }
+        }
+
+        // Determine which player's card was the highest one played.
+        var playerId = this.currentPile[highestCardIndex].playerId;
+        var player = this.GetPlayerFromId(playerId);
+        this.gameStateContext.SetState(player);
+
+        var copiedPile = (Card[])this.currentPile.Clone();
+        this.playerWonPiles[playerId].Add(copiedPile);
+        this.playerPoints[playerId] += this.roundContext.CalculatePointsInPile(this.currentPile);
+
+        if (this.roundContext.IsRoundOver(this.playerPoints))
+        {
+            Debug.Log("ROUND OVER!!!");
+        }
+
+        // Hide the cards in the UI.
+        for (int i = 0; i < this.numCardsInPile; i++)
+        {
+            this.currentPile[i].gameObject.SetActive(false);
+            this.currentPile[i].GetComponent<Renderer>().enabled = false;
+            this.currentPile[i] = null;
+        }
+
+        this.numCardsInPile = 0;
+        this.stateMachine.ResetNumCardsPlayed();
     }
 }
