@@ -2,6 +2,7 @@ using System.Linq;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using TMPro;
 
 public class RoundManager
 {
@@ -95,6 +96,9 @@ public class RoundManager
         if (this.numCardsInPile == 0)
         {
             this.startingSuit = card.suit;
+            GameObject startingSuitLabelObject = GameObject.Find("StartingSuitLabel");
+            TextMeshProUGUI startingSuitLabel = startingSuitLabelObject.GetComponent<TextMeshProUGUI>();
+            startingSuitLabel.text = "Starting suit: " + this.startingSuit;
         }
         
         this.currentPile[this.numCardsInPile] = card;
@@ -140,6 +144,8 @@ public class RoundManager
         this.playerWonPiles[playerId].Add(copiedPile);
         this.playerPoints[playerId] += this.roundContext.CalculatePointsInPile(this.currentPile);
 
+        this.UpdateUiLabels();
+
         if (this.roundContext.IsRoundOver(this.playerPoints))
         {
             Debug.Log("ROUND OVER!!!");
@@ -155,5 +161,40 @@ public class RoundManager
 
         this.numCardsInPile = 0;
         this.stateMachine.ResetNumCardsPlayed();
+    }
+
+    private void UpdateUiLabels()
+    {
+        GameObject player1WonPilesObject = GameObject.Find("Player1WonPiles");
+        TextMeshProUGUI player1WonPiles = player1WonPilesObject.GetComponent<TextMeshProUGUI>();
+        player1WonPiles.text = "Player 1 Won Piles: " + this.playerWonPiles["1"].Count;
+
+        GameObject player1PointsObject = GameObject.Find("Player1Points");
+        TextMeshProUGUI player1Points = player1PointsObject.GetComponent<TextMeshProUGUI>();
+        player1Points.text = "Player 1 Points: " + this.playerPoints["1"];
+
+        GameObject player2WonPilesObject = GameObject.Find("Player2WonPiles");
+        TextMeshProUGUI player2WonPiles = player2WonPilesObject.GetComponent<TextMeshProUGUI>();
+        player2WonPiles.text = "Player 2 Won Piles: " + this.playerWonPiles["2"].Count;
+
+        GameObject player2PointsObject = GameObject.Find("Player2Points");
+        TextMeshProUGUI player2Points = player2PointsObject.GetComponent<TextMeshProUGUI>();
+        player2Points.text = "Player 2 Points: " + this.playerPoints["2"];
+
+        GameObject player3WonPilesObject = GameObject.Find("Player3WonPiles");
+        TextMeshProUGUI player3WonPiles = player3WonPilesObject.GetComponent<TextMeshProUGUI>();
+        player3WonPiles.text = "Player 3 Won Piles: " + this.playerWonPiles["3"].Count;
+
+        GameObject player3PointsObject = GameObject.Find("Player3Points");
+        TextMeshProUGUI player3Points = player3PointsObject.GetComponent<TextMeshProUGUI>();
+        player3Points.text = "Player 3 Points: " + this.playerPoints["3"];
+
+        GameObject player4WonPilesObject = GameObject.Find("Player4WonPiles");
+        TextMeshProUGUI player4WonPiles = player4WonPilesObject.GetComponent<TextMeshProUGUI>();
+        player4WonPiles.text = "Player 4 Won Piles: " + this.playerWonPiles["4"].Count;
+
+        GameObject player4PointsObject = GameObject.Find("Player4Points");
+        TextMeshProUGUI player4Points = player4PointsObject.GetComponent<TextMeshProUGUI>();
+        player4Points.text = "Player 4 Points: " + this.playerPoints["4"];
     }
 }
