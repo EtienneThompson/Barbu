@@ -5,7 +5,6 @@ using UnityEngine;
 public class GameStateContext
 {
     private GameState current;
-    private string startingSuit;
 
     public GameStateContext()
     {
@@ -30,15 +29,5 @@ public class GameStateContext
     public GameState GetCurrentState()
     {
         return this.current;
-    }
-
-        public void SetStartingSuit(string suit)
-    {
-        this.startingSuit = suit;
-    }
-
-    public string GetStartingSuit()
-    {
-        return this.startingSuit;
     }
 }

@@ -8,6 +8,9 @@ public class StateMachine
 
     private int numCardsPlayed = 0;
     private bool canCardBePlayed = false;
+    private string startingSuit = string.Empty;
+
+    private bool playerCardMustBeStartingSuit;
 
     public StateMachine()
     {
@@ -36,5 +39,25 @@ public class StateMachine
     public void SetCardPlayable(bool state)
     {
         instance.canCardBePlayed = state;
+    }
+
+    public string GetStartingSuit()
+    {
+        return instance.startingSuit;
+    }
+
+    public void SetStartingSuit(string suit)
+    {
+        instance.startingSuit = suit;
+    }
+
+    public void SetPlayerMustPlayStartingSuit(bool isStartingPlayer, Hand hand)
+    {
+        instance.playerCardMustBeStartingSuit = !isStartingPlayer && hand.CardsInSuit(instance.startingSuit).Count > 0;
+    }
+
+    public bool MustPlayCardInStartingSuit()
+    {
+        return instance.playerCardMustBeStartingSuit;
     }
 }

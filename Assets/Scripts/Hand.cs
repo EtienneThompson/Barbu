@@ -30,7 +30,8 @@ public class Hand
         var suitCards = new List<Card>();
         foreach (var card in this.cards)
         {
-            if (card.suit.Equals(suit, StringComparison.OrdinalIgnoreCase))
+            if (card.state != Card.CardState.Played && 
+                (string.IsNullOrEmpty(suit) || card.suit.Equals(suit, StringComparison.OrdinalIgnoreCase)))
             {
                 suitCards.Add(card);
             }
@@ -44,7 +45,7 @@ public class Hand
         var availableCards = new List<Card>();
         foreach (var card in this.cards)
         {
-            if (card.state == Card.CardState.Waiting)
+            if (card.state != Card.CardState.Played)
             {
                 availableCards.Add(card);
             }

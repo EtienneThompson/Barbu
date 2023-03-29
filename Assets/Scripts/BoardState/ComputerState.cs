@@ -31,12 +31,13 @@ public class ComputerState : GameState
             throw new Exception("Computer can't make a move right now.");
         }
 
-        var cardsInSuit = this.hand.CardsInSuit(this.context.GetStartingSuit());
+        this.stateMachine.SetCardPlayable(false);
+        var cardsInSuit = this.hand.CardsInSuit(this.stateMachine.GetStartingSuit());
         if (cardsInSuit.Count > 0)
         {
-            foreach (var card in this.hand.GetHand())
+            foreach (var card in cardsInSuit)
             {
-                if (card.state == Card.CardState.Waiting && card.suit == this.context.GetStartingSuit())
+                if (card.state == Card.CardState.Waiting)
                 {
                     card.PlayCard();
                     return;
@@ -70,6 +71,11 @@ public class ComputerState : GameState
     public void SetNextState(GameState next)
     {
         this.nextState = next;
+    }
+
+    public Hand GetHand()
+    {
+        return this.hand;
     }
 
     private void Initialize(GameStateContext context, Hand hand, string id)

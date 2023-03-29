@@ -2,21 +2,24 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using TMPro;
 
 public class PlayerState : GameState
 {
     public string playerId;
     private GameStateContext context;
     private GameState nextState;
+    private Hand hand;
+    private StateMachine stateMachine;
 
-    public PlayerState(GameStateContext context, string id)
+    public PlayerState(GameStateContext context, string id, Hand hand)
     {
-        this.Initialize(context, id);
+        this.Initialize(context, id, hand);
     }
 
-    public PlayerState(GameStateContext context, GameState next, string id)
+    public PlayerState(GameStateContext context, GameState next, string id, Hand hand)
     {
-        this.Initialize(context, id);
+        this.Initialize(context, id, hand);
         this.nextState = next;
     }
 
@@ -24,8 +27,14 @@ public class PlayerState : GameState
 
     public void Start()
     {
-        // Don't do anything as the player state waits for the player to make
-        // a move.
+        // Determine if the player must play a card in the starting suite based
+        // on if they are the first player in a round and the cards in their hand.
+        var startingPlayer = string.IsNullOrEmpty(this.stateMachine.GetStartingSuit());
+        this.stateMachine.SetPlayerMustPlayStartingSuit(startingPlayer, hand);
+
+        GameObject player1WonPilesObject = GameObject.Find("MustPlayStartingSuit");
+        TextMeshProUGUI player1WonPiles = player1WonPilesObject.GetComponent<TextMeshProUGUI>();
+        player1WonPiles.text = "Must Play Starting Suit: " + this.stateMachine.MustPlayCardInStartingSuit();
     }
 
     public void GoNext()
@@ -43,10 +52,17 @@ public class PlayerState : GameState
         this.nextState = next;
     }
 
-    private void Initialize(GameStateContext context, string id)
+    public Hand GetHand()
+    {
+        return this.hand;
+    }
+
+    private void Initialize(GameStateContext context, string id, Hand hand)
     {
         this.context = context;
         this.playerId = id;
+        this.hand = hand;
+        this.stateMachine = new StateMachine();
     }
 
     private void GoNext(Card card)

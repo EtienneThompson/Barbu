@@ -43,7 +43,8 @@ public class Card : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (this.state == CardState.Waiting && 
+        if (((this.stateMachine.MustPlayCardInStartingSuit() && this.suit.Equals(this.stateMachine.GetStartingSuit())) ||
+            !this.stateMachine.MustPlayCardInStartingSuit()) &&
             this.stateMachine.IsCardPlayable() && 
             Input.GetMouseButtonDown(0))
         {
