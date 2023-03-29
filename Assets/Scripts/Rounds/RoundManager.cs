@@ -25,9 +25,10 @@ public class RoundManager
         this.gameStateContext = new GameStateContext();
         this.players = new GameState[4];
         this.stateMachine = new StateMachine();
+        this.stateMachine.SetStartingSuit(string.Empty);
 
         // Initialize general gameplay loop.
-        var playerState = new PlayerState(this.gameStateContext, "1");
+        var playerState = new PlayerState(this.gameStateContext, "1", hands[0]);
         var computerState3 = new ComputerState(this.gameStateContext, playerState, "4", hands[3]);
         var computerState2 = new ComputerState(this.gameStateContext, computerState3, "3", hands[2]);
         var computerState1 = new ComputerState(this.gameStateContext, computerState2, "2", hands[1]);
@@ -95,10 +96,10 @@ public class RoundManager
 
         if (this.numCardsInPile == 0)
         {
-            this.startingSuit = card.suit;
+            this.stateMachine.SetStartingSuit(card.suit);
             GameObject startingSuitLabelObject = GameObject.Find("StartingSuitLabel");
             TextMeshProUGUI startingSuitLabel = startingSuitLabelObject.GetComponent<TextMeshProUGUI>();
-            startingSuitLabel.text = "Starting suit: " + this.startingSuit;
+            startingSuitLabel.text = "Starting Suit: " + card.suit;
         }
         
         this.currentPile[this.numCardsInPile] = card;
@@ -128,7 +129,7 @@ public class RoundManager
         var highestCardIndex = 0;
         for (int i = 0; i < this.numCardsInPile; i++)
         {
-            if (this.currentPile[i].suit == this.startingSuit &&
+            if (this.currentPile[i].suit == this.stateMachine.GetStartingSuit() &&
                 this.currentPile[i].rank > this.currentPile[highestCardIndex].rank)
             {
                 highestCardIndex = i;
@@ -161,6 +162,7 @@ public class RoundManager
 
         this.numCardsInPile = 0;
         this.stateMachine.ResetNumCardsPlayed();
+        this.stateMachine.SetStartingSuit(string.Empty);
     }
 
     private void UpdateUiLabels()
