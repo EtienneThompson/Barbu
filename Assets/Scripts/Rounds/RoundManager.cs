@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using System.Collections;
 using System.Collections.Generic;
@@ -10,22 +11,29 @@ public class RoundManager
     private const int cardsPerPile = 4;
     private Card[] currentPile = new Card[cardsPerPile];
     private int numCardsInPile = 0;
+    private string roundStartingPlayerId = "1";
+    private int currentRound = 0;
 
     private RoundContext roundContext;
     private GameStateContext gameStateContext;
     private GameState[] players;
     private StateMachine stateMachine;
+    private int maxRounds;
 
     private Dictionary<string, List<Card[]>> playerWonPiles;
-    private Dictionary<string, int> playerPoints;
+    private Dictionary<string, int[]> playerPoints;
 
-    public RoundManager(Hand[] hands)
+    public delegate void OnRoundOver();
+    public static OnRoundOver onRoundOver;
+
+    public RoundManager(int numRounds, Hand[] hands)
     {
         this.roundContext = new RoundContext();
         this.gameStateContext = new GameStateContext();
         this.players = new GameState[4];
         this.stateMachine = new StateMachine();
         this.stateMachine.SetStartingSuit(string.Empty);
+        this.maxRounds = numRounds;
 
         // Initialize general gameplay loop.
         var playerState = new PlayerState(this.gameStateContext, "1", hands[0]);
@@ -47,18 +55,19 @@ public class RoundManager
             { "4", new List<Card[]>() },
         };
 
-        this.playerPoints = new Dictionary<string, int>()
+        this.playerPoints = new Dictionary<string, int[]>()
         {
-            { "1", 0 },
-            { "2", 0 },
-            { "3", 0 },
-            { "4", 0 },
+            { "1", new int[numRounds] },
+            { "2", new int[numRounds] },
+            { "3", new int[numRounds] },
+            { "4", new int[numRounds] },
         };
 
         // Set the initial state to the player.
         this.gameStateContext.SetState(playerState);
 
-        var heartsRound = new HeartsRound(this.roundContext);
+        var queensRound = new QueensRound(this.roundContext);
+        var heartsRound = new HeartsRound(this.roundContext, queensRound);
         this.roundContext.SetState(heartsRound);
 
         // Listen for events when cards are being played.
@@ -67,9 +76,22 @@ public class RoundManager
         this.gameStateContext.Start();
     }
 
-    public void NextRound()
+    public void NextRound(Hand[] hands)
     {
+        this.players[0].SetHand(hands[0]);
+        this.players[1].SetHand(hands[1]);
+        this.players[2].SetHand(hands[2]);
+        this.players[3].SetHand(hands[3]);
+        this.currentRound++;
         this.roundContext.Next();
+        var currentStartingPlayer = Int32.Parse(this.roundStartingPlayerId);
+        Debug.Log("Last round starting player: " + this.roundStartingPlayerId);
+        var newStartingPlayer = currentStartingPlayer + 1;
+        this.roundStartingPlayerId = newStartingPlayer.ToString();
+        var player = this.GetPlayerFromId(this.roundStartingPlayerId);
+        Debug.Log("Next round starting player: " + player);
+        this.gameStateContext.SetState(player);
+        this.gameStateContext.Start();
     }
 
     public void SetStartingPlayer(GameState player)
@@ -106,7 +128,10 @@ public class RoundManager
         this.numCardsInPile++;
 
         if (this.numCardsInPile == cardsPerPile) {
-            this.ResolvePile();
+            if (this.ResolvePile())
+            {
+                return;
+            }
         }
 
         this.stateMachine.SetCardPlayable(true);
@@ -124,7 +149,7 @@ public class RoundManager
         }
     }
 
-    private void ResolvePile()
+    private bool ResolvePile()
     {
         var highestCardIndex = 0;
         for (int i = 0; i < this.numCardsInPile; i++)
@@ -143,14 +168,9 @@ public class RoundManager
 
         var copiedPile = (Card[])this.currentPile.Clone();
         this.playerWonPiles[playerId].Add(copiedPile);
-        this.playerPoints[playerId] += this.roundContext.CalculatePointsInPile(this.currentPile);
+        this.playerPoints[playerId][this.currentRound] += this.roundContext.CalculatePointsInPile(this.currentPile);
 
         this.UpdateUiLabels();
-
-        if (this.roundContext.IsRoundOver(this.playerPoints))
-        {
-            Debug.Log("ROUND OVER!!!");
-        }
 
         // Hide the cards in the UI.
         for (int i = 0; i < this.numCardsInPile; i++)
@@ -163,6 +183,23 @@ public class RoundManager
         this.numCardsInPile = 0;
         this.stateMachine.ResetNumCardsPlayed();
         this.stateMachine.SetStartingSuit(string.Empty);
+
+        if (this.roundContext.IsRoundOver(this.currentRound, this.playerPoints))
+        {
+            if (this.currentRound + 1 != this.maxRounds)
+            {
+                Debug.Log("ROUND OVER!!!");
+                onRoundOver();
+            }
+            else
+            {
+                Debug.Log("GAME OVER!!!");
+            }
+
+            return true;
+        }
+
+        return false;
     }
 
     private void UpdateUiLabels()
@@ -173,7 +210,7 @@ public class RoundManager
 
         GameObject player1PointsObject = GameObject.Find("Player1Points");
         TextMeshProUGUI player1Points = player1PointsObject.GetComponent<TextMeshProUGUI>();
-        player1Points.text = "Player 1 Points: " + this.playerPoints["1"];
+        player1Points.text = "Player 1 Points: " + this.playerPoints["1"][this.currentRound];
 
         GameObject player2WonPilesObject = GameObject.Find("Player2WonPiles");
         TextMeshProUGUI player2WonPiles = player2WonPilesObject.GetComponent<TextMeshProUGUI>();
@@ -181,7 +218,7 @@ public class RoundManager
 
         GameObject player2PointsObject = GameObject.Find("Player2Points");
         TextMeshProUGUI player2Points = player2PointsObject.GetComponent<TextMeshProUGUI>();
-        player2Points.text = "Player 2 Points: " + this.playerPoints["2"];
+        player2Points.text = "Player 2 Points: " + this.playerPoints["2"][this.currentRound];
 
         GameObject player3WonPilesObject = GameObject.Find("Player3WonPiles");
         TextMeshProUGUI player3WonPiles = player3WonPilesObject.GetComponent<TextMeshProUGUI>();
@@ -189,7 +226,7 @@ public class RoundManager
 
         GameObject player3PointsObject = GameObject.Find("Player3Points");
         TextMeshProUGUI player3Points = player3PointsObject.GetComponent<TextMeshProUGUI>();
-        player3Points.text = "Player 3 Points: " + this.playerPoints["3"];
+        player3Points.text = "Player 3 Points: " + this.playerPoints["3"][this.currentRound];
 
         GameObject player4WonPilesObject = GameObject.Find("Player4WonPiles");
         TextMeshProUGUI player4WonPiles = player4WonPilesObject.GetComponent<TextMeshProUGUI>();
@@ -197,6 +234,6 @@ public class RoundManager
 
         GameObject player4PointsObject = GameObject.Find("Player4Points");
         TextMeshProUGUI player4Points = player4PointsObject.GetComponent<TextMeshProUGUI>();
-        player4Points.text = "Player 4 Points: " + this.playerPoints["4"];
+        player4Points.text = "Player 4 Points: " + this.playerPoints["4"][this.currentRound];
     }
 }

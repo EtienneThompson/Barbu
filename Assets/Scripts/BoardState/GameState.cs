@@ -9,4 +9,5 @@ public interface GameState
     void Start();
     void GoNext();
     Hand GetHand();
+    void SetHand(Hand newHand);
 }

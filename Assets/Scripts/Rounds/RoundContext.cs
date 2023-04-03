@@ -30,8 +30,8 @@ public class RoundContext
         return this.current.CalculatePointsInAllPiles(piles);
     }
 
-    public bool IsRoundOver(Dictionary<string, int> points)
+    public bool IsRoundOver(int round, Dictionary<string, int[]> points)
     {
-        return this.current.IsRoundOver(points);
+        return this.current.IsRoundOver(round, points);
     }
 }
