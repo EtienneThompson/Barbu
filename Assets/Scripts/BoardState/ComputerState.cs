@@ -78,6 +78,11 @@ public class ComputerState : GameState
         return this.hand;
     }
 
+    public void SetHand(Hand newHand)
+    {
+        this.hand = newHand;
+    }
+
     private void Initialize(GameStateContext context, Hand hand, string id)
     {
         this.context = context;

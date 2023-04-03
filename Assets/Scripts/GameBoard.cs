@@ -34,17 +34,45 @@ public class GameBoard : MonoBehaviour
             }
         }
 
-        ResetRound();
-
+        this.DealHand();
         this.roundManager = new RoundManager(hands);
+        RoundManager.onRoundOver += this.ResetRound;
 
         this.stateMachine.SetCardPlayable(true);
     }
 
-    public void ResetRound()
+    public void DealHand()
     {
         this.Shuffle(cards);
         this.DealHand(cards);
+    }
+
+    public void ResetRound()
+    {
+        this.DestroyCards();
+        this.DealHand();
+        this.roundManager.NextRound(this.hands);
+        this.stateMachine.SetCardPlayable(true);
+    }
+
+    private void DestroyCards()
+    {
+        foreach (var hand in this.hands)
+        {
+            if (hand == null)
+            {
+                continue;
+            }
+
+            foreach (var card in hand.GetHand())
+            {
+                if (card != null)
+                {
+                    Debug.Log("destroying card");
+                    Destroy(card.gameObject);
+                }
+            }
+        }
     }
 
     private void Shuffle<T>(T[] array)

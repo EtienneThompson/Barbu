@@ -3,35 +3,26 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class HeartsRound : Round
+public class QueensRound : Round
 {
     public Dictionary<string, int> PointMapping => new Dictionary<string, int>
     {
-        {"Heart2", 5},
-        {"Heart3", 5},
-        {"Heart4", 5},
-        {"Heart5", 5},
-        {"Heart6", 5},
-        {"Heart7", 5},
-        {"Heart8", 5},
-        {"Heart9", 5},
-        {"Heart10", 5},
-        {"Heart11", 5},
-        {"Heart12", 5},
-        {"Heart13", 5},
-        {"Heart14", 5},
+        {"Heart12", 10},
+        {"Diamond12", 10},
+        {"Spade12", 10},
+        {"Club12", 10},
     };
     public int PointsPerPile => 0;
-    public int TotalPoints => 65;
+    public int TotalPoints => 40;
     private RoundContext context;
     private Round nextState;
 
-    public HeartsRound(RoundContext context)
+    public QueensRound(RoundContext context)
     {
         this.context = context;
     }
 
-    public HeartsRound(RoundContext context, Round next)
+    public QueensRound(RoundContext context, Round next)
     {
         this.context = context;
         this.nextState = next;
@@ -71,7 +62,7 @@ public class HeartsRound : Round
         int totalPoints = 0;
         foreach (var pile in piles)
         {
-            totalPoints += this.CalculatePointsInPile(pile) + this.PointsPerPile;
+            totalPoints += this.CalculatePointsInPile(pile);
         }
 
         return totalPoints;

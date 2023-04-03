@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using System.Collections;
 using System.Collections.Generic;
@@ -10,6 +11,7 @@ public class RoundManager
     private const int cardsPerPile = 4;
     private Card[] currentPile = new Card[cardsPerPile];
     private int numCardsInPile = 0;
+    private string roundStartingPlayerId = "1";
 
     private RoundContext roundContext;
     private GameStateContext gameStateContext;
@@ -18,6 +20,9 @@ public class RoundManager
 
     private Dictionary<string, List<Card[]>> playerWonPiles;
     private Dictionary<string, int> playerPoints;
+
+    public delegate void OnRoundOver();
+    public static OnRoundOver onRoundOver;
 
     public RoundManager(Hand[] hands)
     {
@@ -58,7 +63,8 @@ public class RoundManager
         // Set the initial state to the player.
         this.gameStateContext.SetState(playerState);
 
-        var heartsRound = new HeartsRound(this.roundContext);
+        var queensRound = new QueensRound(this.roundContext);
+        var heartsRound = new HeartsRound(this.roundContext, queensRound);
         this.roundContext.SetState(heartsRound);
 
         // Listen for events when cards are being played.
@@ -67,9 +73,19 @@ public class RoundManager
         this.gameStateContext.Start();
     }
 
-    public void NextRound()
+    public void NextRound(Hand[] hands)
     {
+        this.players[0].SetHand(hands[0]);
+        this.players[1].SetHand(hands[1]);
+        this.players[2].SetHand(hands[2]);
+        this.players[3].SetHand(hands[3]);
         this.roundContext.Next();
+        var currentStartingPlayer = Int32.Parse(this.roundStartingPlayerId);
+        var newStartingPlayer = currentStartingPlayer++;
+        this.roundStartingPlayerId = newStartingPlayer.ToString();
+        var player = this.GetPlayerFromId(this.roundStartingPlayerId);
+        this.gameStateContext.SetState(player);
+        this.gameStateContext.Start();
     }
 
     public void SetStartingPlayer(GameState player)
@@ -106,7 +122,10 @@ public class RoundManager
         this.numCardsInPile++;
 
         if (this.numCardsInPile == cardsPerPile) {
-            this.ResolvePile();
+            if (this.ResolvePile())
+            {
+                return;
+            }
         }
 
         this.stateMachine.SetCardPlayable(true);
@@ -124,7 +143,7 @@ public class RoundManager
         }
     }
 
-    private void ResolvePile()
+    private bool ResolvePile()
     {
         var highestCardIndex = 0;
         for (int i = 0; i < this.numCardsInPile; i++)
@@ -150,6 +169,8 @@ public class RoundManager
         if (this.roundContext.IsRoundOver(this.playerPoints))
         {
             Debug.Log("ROUND OVER!!!");
+            onRoundOver();
+            return true;
         }
 
         // Hide the cards in the UI.
@@ -163,6 +184,7 @@ public class RoundManager
         this.numCardsInPile = 0;
         this.stateMachine.ResetNumCardsPlayed();
         this.stateMachine.SetStartingSuit(string.Empty);
+        return false;
     }
 
     private void UpdateUiLabels()
