@@ -77,12 +77,12 @@ public class HeartsRound : Round
         return totalPoints;
     }
 
-    public bool IsRoundOver(Dictionary<string, int> playerPoints)
+    public bool IsRoundOver(int round, Dictionary<string, int[]> playerPoints)
     {
         int totalPoints = 0;
         foreach (var key in playerPoints.Keys)
         {
-            totalPoints += playerPoints[key];
+            totalPoints += playerPoints[key][round];
         }
 
         return totalPoints == this.TotalPoints;

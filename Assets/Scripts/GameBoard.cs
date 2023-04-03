@@ -35,7 +35,7 @@ public class GameBoard : MonoBehaviour
         }
 
         this.DealHand();
-        this.roundManager = new RoundManager(hands);
+        this.roundManager = new RoundManager(2, hands);
         RoundManager.onRoundOver += this.ResetRound;
 
         this.stateMachine.SetCardPlayable(true);
