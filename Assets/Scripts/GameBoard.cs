@@ -51,8 +51,9 @@ public class GameBoard : MonoBehaviour
     {
         this.DestroyCards();
         this.DealHand();
-        this.roundManager.NextRound(this.hands);
         this.stateMachine.SetCardPlayable(true);
+        this.stateMachine.SetStartingSuit("");
+        this.roundManager.NextRound(this.hands);
     }
 
     private void DestroyCards()

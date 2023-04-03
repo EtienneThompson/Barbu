@@ -81,9 +81,11 @@ public class RoundManager
         this.players[3].SetHand(hands[3]);
         this.roundContext.Next();
         var currentStartingPlayer = Int32.Parse(this.roundStartingPlayerId);
-        var newStartingPlayer = currentStartingPlayer++;
+        Debug.Log("Last round starting player: " + this.roundStartingPlayerId);
+        var newStartingPlayer = currentStartingPlayer + 1;
         this.roundStartingPlayerId = newStartingPlayer.ToString();
         var player = this.GetPlayerFromId(this.roundStartingPlayerId);
+        Debug.Log("Next round starting player: " + player);
         this.gameStateContext.SetState(player);
         this.gameStateContext.Start();
     }
@@ -166,13 +168,6 @@ public class RoundManager
 
         this.UpdateUiLabels();
 
-        if (this.roundContext.IsRoundOver(this.playerPoints))
-        {
-            Debug.Log("ROUND OVER!!!");
-            onRoundOver();
-            return true;
-        }
-
         // Hide the cards in the UI.
         for (int i = 0; i < this.numCardsInPile; i++)
         {
@@ -184,6 +179,14 @@ public class RoundManager
         this.numCardsInPile = 0;
         this.stateMachine.ResetNumCardsPlayed();
         this.stateMachine.SetStartingSuit(string.Empty);
+
+        if (this.roundContext.IsRoundOver(this.playerPoints))
+        {
+            Debug.Log("ROUND OVER!!!");
+            onRoundOver();
+            return true;
+        }
+
         return false;
     }
 
