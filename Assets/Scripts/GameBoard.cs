@@ -34,6 +34,9 @@ public class GameBoard : MonoBehaviour
             }
         }
 
+        GameObject scoreMenu = GameObject.Find("ScoreMenu");
+        scoreMenu.SetActive(false);
+
         this.DealHand();
         this.roundManager = new RoundManager(2, hands);
         RoundManager.onRoundOver += this.ResetRound;

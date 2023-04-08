@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ui:UXML
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:ui="UnityEngine.UIElements"
+    xmlns:editor="UnityEditor.UIElements"
+    xsi:noNamespaceSchemaLocation="../../../UIElementsSchema/UIElements.xsd"
+>
+    <Style src="ScoreBoard.uss" />
+    <ui:VisualElement name="vertical-center">
+        <ui:VisualElement name="blue">
+            <ui:TextElement name="roundHeader" class="header" text="Round" />
+            <ui:TextElement name="playerHeader" class="header" text="Player" />
+            <ui:TextElement name="computer1Header" class="header" text="Com. 1" />
+            <ui:TextElement name="computer2Header" class="header" text="Com. 2" />
+            <ui:TextElement name="computer3Header" class="header" text="Com. 3" />
+        </ui:VisualElement>
+        <ui:VisualElement name="blue">
+            <ui:TextElement name="round1" class="header" text="1" />
+            <ui:TextElement name="playerRound1" class="points" text="0" />
+            <ui:TextElement name="computer1Round1" class="points" text="0" />
+            <ui:TextElement name="computer2Round1" class="points" text="0" />
+            <ui:TextElement name="computer3Round1" class="points" text="0" />
+        </ui:VisualElement>
+        <ui:VisualElement name="blue">
+            <ui:TextElement name="round1" class="header" text="2" />
+            <ui:TextElement name="playerRound2" class="points" text="0" />
+            <ui:TextElement name="computer1Round2" class="points" text="0" />
+            <ui:TextElement name="computer2Round2" class="points" text="0" />
+            <ui:TextElement name="computer3Round2" class="points" text="0" />
+        </ui:VisualElement>
+        <ui:VisualElement name="blue">
+            <ui:TextElement name="round1" class="header" text="3" />
+            <ui:TextElement name="playerRound3" class="points" text="0" />
+            <ui:TextElement name="computer1Round3" class="points" text="0" />
+            <ui:TextElement name="computer2Round3" class="points" text="0" />
+            <ui:TextElement name="computer3Round3" class="points" text="0" />
+        </ui:VisualElement>
+        <ui:VisualElement name="blue">
+            <ui:TextElement name="round1" class="header" text="4" />
+            <ui:TextElement name="playerRound4" class="points" text="0" />
+            <ui:TextElement name="computer1Round4" class="points" text="0" />
+            <ui:TextElement name="computer2Round4" class="points" text="0" />
+            <ui:TextElement name="computer3Round4" class="points" text="0" />
+        </ui:VisualElement>
+        <ui:VisualElement name="blue">
+            <ui:TextElement name="round1" class="header" text="Total" />
+            <ui:TextElement name="playerTotal" class="points" text="0" />
+            <ui:TextElement name="computer1Total" class="points" text="0" />
+            <ui:TextElement name="computer2Total" class="points" text="0" />
+            <ui:TextElement name="computer3Total" class="points" text="0" />
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>
