@@ -1,22 +1,24 @@
 #vertical-center {
     flex-grow: 1;
     justify-content: center;
-    background-color: green;
 }
 
 #blue {
-    background-color: blue;
+    background-color: lightblue;
     flex-direction: row;
     justify-content: center;
+    height: 100%;
 }
 
 .header {
     -unity-font-style: bold;
     -unity-text-align: middle-center;
     width: 25%;
+    height: 100%;
 }
 
 .points {
     -unity-text-align: middle-center;
     width: 25%;
+    height: 100%;
 }

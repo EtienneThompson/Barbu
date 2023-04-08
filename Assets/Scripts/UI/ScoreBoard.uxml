@@ -25,5 +25,17 @@
             <ui:TextElement name="computer2Round2" class="points" text="0" />
             <ui:TextElement name="computer3Round2" class="points" text="0" />
         </ui:VisualElement>
+        <ui:VisualElement name="blue">
+            <ui:TextElement name="playerRound3" class="points" text="0" />
+            <ui:TextElement name="computer1Round3" class="points" text="0" />
+            <ui:TextElement name="computer2Round3" class="points" text="0" />
+            <ui:TextElement name="computer3Round3" class="points" text="0" />
+        </ui:VisualElement>
+        <ui:VisualElement name="blue">
+            <ui:TextElement name="playerRound4" class="points" text="0" />
+            <ui:TextElement name="computer1Round4" class="points" text="0" />
+            <ui:TextElement name="computer2Round4" class="points" text="0" />
+            <ui:TextElement name="computer3Round4" class="points" text="0" />
+        </ui:VisualElement>
     </ui:VisualElement>
 </ui:UXML>
