@@ -1,0 +1,22 @@
+#vertical-center {
+    flex-grow: 1;
+    justify-content: center;
+    background-color: green;
+}
+
+#blue {
+    background-color: blue;
+    flex-direction: row;
+    justify-content: center;
+}
+
+.header {
+    -unity-font-style: bold;
+    -unity-text-align: middle-center;
+    width: 25%;
+}
+
+.points {
+    -unity-text-align: middle-center;
+    width: 25%;
+}

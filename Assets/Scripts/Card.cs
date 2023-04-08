@@ -76,7 +76,7 @@ public class Card : MonoBehaviour
 
     IEnumerator MoveToCenterRoutine()
     {
-        var center = new Vector3(0.0f, 1.0f + 0.1f * stateMachine.NumCardsPlayed(), -25.0f);
+        var center = new Vector3(0.0f, -19.0f + 0.1f * stateMachine.NumCardsPlayed(), -25.0f);
         var rotate = new Vector3(0.0f, Random.Range(-5.0f, 5.0f), 0.0f);
         while (transform.position != center)
         {
