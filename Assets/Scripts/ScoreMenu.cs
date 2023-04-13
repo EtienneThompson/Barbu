@@ -81,28 +81,29 @@ public class ScoreMenu : MonoBehaviour
     {
         gameObject.SetActive(true);
         this.currentRound = round;
-        Debug.Log("Updating scores for round " + round);
-        Debug.Log("Player points: " + playerPoints["1"][round]);
-        Debug.Log("Computer 1 points: " + playerPoints["2"][round]);
-        Debug.Log("Computer 2 points: " + playerPoints["3"][round]);
-        Debug.Log("Computer 3 points: " + playerPoints["4"][round]);
-        var labels = this.roundLabelMap[round];
-        Debug.Log("Updating round points");
-        Debug.Log(labels[0]);
-        labels[0].text = playerPoints["1"][round].ToString();
-        labels[1].text = playerPoints["2"][round].ToString();
-        labels[2].text = playerPoints["3"][round].ToString();
-        labels[3].text = playerPoints["4"][round].ToString();
+        var total0Text = 0;
+        var total1Text = 0;
+        var total2Text = 0;
+        var total3Text = 0;
+        for (int i = 0; i < round + 1; i++)
+        {
+            var labels = this.roundLabelMap[i];
+            labels[0].text = playerPoints["1"][i].ToString();
+            labels[1].text = playerPoints["2"][i].ToString();
+            labels[2].text = playerPoints["3"][i].ToString();
+            labels[3].text = playerPoints["4"][i].ToString();
+
+            total0Text += playerPoints["1"][i];
+            total1Text += playerPoints["2"][i];
+            total2Text += playerPoints["3"][i];
+            total3Text += playerPoints["4"][i];
+        }
 
         Debug.Log("Updating total points");
         var totals = this.roundLabelMap[4];
-        var total0Text = string.IsNullOrEmpty(totals[0].text) ? "0" : totals[0].text;
-        var total1Text = string.IsNullOrEmpty(totals[1].text) ? "0" : totals[1].text;
-        var total2Text = string.IsNullOrEmpty(totals[2].text) ? "0" : totals[2].text;
-        var total3Text = string.IsNullOrEmpty(totals[3].text) ? "0" : totals[3].text;
-        totals[0].text = (Int32.Parse(total0Text) + playerPoints["1"][round]).ToString();
-        totals[1].text = (Int32.Parse(total1Text) + playerPoints["2"][round]).ToString();
-        totals[2].text = (Int32.Parse(total2Text) + playerPoints["3"][round]).ToString();
-        totals[3].text = (Int32.Parse(total3Text) + playerPoints["4"][round]).ToString();
+        totals[0].text = total0Text.ToString();
+        totals[1].text = total1Text.ToString();
+        totals[2].text = total2Text.ToString();
+        totals[3].text = total3Text.ToString();
     }
 }
