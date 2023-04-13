@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 public class GameBoard : MonoBehaviour
 {
@@ -11,7 +12,6 @@ public class GameBoard : MonoBehaviour
                                                  "08", "09", "10", "11", "12", "13" };
     private string[] cards = new string[52];
     private Hand[] hands = new Hand[4];
-
     private RoundManager roundManager;
 
     public static GameBoard instance;
@@ -34,12 +34,14 @@ public class GameBoard : MonoBehaviour
             }
         }
 
-        GameObject scoreMenu = GameObject.Find("ScoreMenu");
-        scoreMenu.SetActive(false);
+        GameObject scoreBoard = GameObject.Find("ScoreMenuCanvas");
+        scoreBoard.SetActive(false);
+
+        ScoreMenu scoreMenu = scoreBoard.GetComponent<ScoreMenu>();
 
         this.DealHand();
-        this.roundManager = new RoundManager(2, hands);
-        RoundManager.onRoundOver += this.ResetRound;
+        this.roundManager = new RoundManager(Constants.MaxRounds, scoreMenu, hands);
+        ScoreMenu.onRoundOver += this.ResetRound;
 
         this.stateMachine.SetCardPlayable(true);
     }

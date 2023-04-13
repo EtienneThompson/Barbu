@@ -18,21 +18,20 @@ public class RoundManager
     private GameStateContext gameStateContext;
     private GameState[] players;
     private StateMachine stateMachine;
+    private ScoreMenu scoreMenu;
     private int maxRounds;
 
     private Dictionary<string, List<Card[]>> playerWonPiles;
     private Dictionary<string, int[]> playerPoints;
 
-    public delegate void OnRoundOver();
-    public static OnRoundOver onRoundOver;
-
-    public RoundManager(int numRounds, Hand[] hands)
+    public RoundManager(int numRounds, ScoreMenu scoreMenu, Hand[] hands)
     {
         this.roundContext = new RoundContext();
         this.gameStateContext = new GameStateContext();
         this.players = new GameState[4];
         this.stateMachine = new StateMachine();
         this.stateMachine.SetStartingSuit(string.Empty);
+        this.scoreMenu = scoreMenu;
         this.maxRounds = numRounds;
 
         // Initialize general gameplay loop.
@@ -186,16 +185,7 @@ public class RoundManager
 
         if (this.roundContext.IsRoundOver(this.currentRound, this.playerPoints))
         {
-            if (this.currentRound + 1 != this.maxRounds)
-            {
-                Debug.Log("ROUND OVER!!!");
-                onRoundOver();
-            }
-            else
-            {
-                Debug.Log("GAME OVER!!!");
-            }
-
+            this.scoreMenu.UpdateScores(this.currentRound, this.playerPoints);
             return true;
         }
 
