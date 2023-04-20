@@ -21,6 +21,11 @@ public class GameStateContext
         current.Start();
     }
 
+    public void CleanUp()
+    {
+        current.CleanUp();
+    }
+
     public void SetState(GameState newState)
     {
         this.current = newState;

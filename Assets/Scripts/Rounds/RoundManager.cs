@@ -126,6 +126,8 @@ public class RoundManager
         this.currentPile[this.numCardsInPile] = card;
         this.numCardsInPile++;
 
+        this.gameStateContext.CleanUp();
+
         if (this.numCardsInPile == cardsPerPile) {
             if (this.ResolvePile())
             {

@@ -58,6 +58,11 @@ public class ComputerState : GameState
         }
     }
 
+    public void CleanUp()
+    {
+        // Nothing to clean up after a computer plays.
+    }
+
     public void GoNext()
     {
         if (this.nextState == null)

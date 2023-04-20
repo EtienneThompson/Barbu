@@ -32,9 +32,30 @@ public class PlayerState : GameState
         var startingPlayer = string.IsNullOrEmpty(this.stateMachine.GetStartingSuit());
         this.stateMachine.SetPlayerMustPlayStartingSuit(startingPlayer, hand);
 
+        // Highlight all cards that are of the starting suit.
+        var cardsInSuit = this.hand.CardsInSuit(this.stateMachine.GetStartingSuit());
+        if (cardsInSuit.Count == 0)
+        {
+            cardsInSuit = this.hand.GetAvailableCards();
+        }
+        foreach (var card in cardsInSuit)
+        {
+            card.Highlight();
+        }
+
         GameObject player1WonPilesObject = GameObject.Find("MustPlayStartingSuit");
         TextMeshProUGUI player1WonPiles = player1WonPilesObject.GetComponent<TextMeshProUGUI>();
         player1WonPiles.text = "Must Play Starting Suit: " + this.stateMachine.MustPlayCardInStartingSuit();
+    }
+
+    public void CleanUp()
+    {
+        // When the player has finished and we should move on to the next state,
+        // remove all highlights.
+        foreach (var card in this.hand.GetHand())
+        {
+            card.RemoveHighlight();
+        }
     }
 
     public void GoNext()
@@ -68,10 +89,5 @@ public class PlayerState : GameState
         this.playerId = id;
         this.hand = hand;
         this.stateMachine = new StateMachine();
-    }
-
-    private void GoNext(Card card)
-    {
-        this.GoNext();
     }
 }
