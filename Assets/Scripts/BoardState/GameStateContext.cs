@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class GameStateContext
 {
-    private GameState current;
+    private IGameState current;
 
     public GameStateContext()
     {
@@ -26,12 +26,12 @@ public class GameStateContext
         current.CleanUp();
     }
 
-    public void SetState(GameState newState)
+    public void SetState(IGameState newState)
     {
         this.current = newState;
     }
 
-    public GameState GetCurrentState()
+    public IGameState GetCurrentState()
     {
         return this.current;
     }

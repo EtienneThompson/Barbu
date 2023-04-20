@@ -5,7 +5,7 @@ using UnityEngine;
 
 public class HeartsRound : Round
 {
-    public Dictionary<string, int> PointMapping => new Dictionary<string, int>
+    protected override Dictionary<string, int> PointMapping => new Dictionary<string, int>
     {
         {"Heart2", 5},
         {"Heart3", 5},
@@ -21,70 +21,16 @@ public class HeartsRound : Round
         {"Heart13", 5},
         {"Heart14", 5},
     };
-    public int PointsPerPile => 0;
-    public int TotalPoints => 65;
-    private RoundContext context;
-    private Round nextState;
+    protected override int PointsPerPile => 0;
+    protected override int TotalPoints => 65;
 
     public HeartsRound(RoundContext context)
+    : base(context)
     {
-        this.context = context;
     }
 
     public HeartsRound(RoundContext context, Round next)
+    : base(context, next)
     {
-        this.context = context;
-        this.nextState = next;
-    }
-
-    public void GoNext()
-    {
-        if (this.nextState == null)
-        {
-            throw new Exception("No next state set.");
-        }
-
-        this.context.SetState(this.nextState);
-    }
-
-    public void SetNextState(Round next)
-    {
-        this.nextState = next;
-    }
-
-    public int CalculatePointsInPile(Card[] pile)
-    {
-        int totalPoints = 0;
-        foreach (var card in pile)
-        {
-            if (this.PointMapping.TryGetValue(card.GetName(), out var points))
-            {
-                totalPoints += points;
-            }
-        }
-
-        return totalPoints;
-    }
-
-    public int CalculatePointsInAllPiles(List<Card[]> piles)
-    {
-        int totalPoints = 0;
-        foreach (var pile in piles)
-        {
-            totalPoints += this.CalculatePointsInPile(pile) + this.PointsPerPile;
-        }
-
-        return totalPoints;
-    }
-
-    public bool IsRoundOver(int round, Dictionary<string, int[]> playerPoints)
-    {
-        int totalPoints = 0;
-        foreach (var key in playerPoints.Keys)
-        {
-            totalPoints += playerPoints[key][round];
-        }
-
-        return totalPoints == this.TotalPoints;
     }
 }

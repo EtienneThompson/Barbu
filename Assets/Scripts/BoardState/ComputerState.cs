@@ -5,26 +5,17 @@ using UnityEngine;
 
 public class ComputerState : GameState
 {
-    private GameStateContext context;
-    private GameState nextState;
-    private Hand hand;
-    public string playerId;
-    private StateMachine stateMachine;
-
     public ComputerState(GameStateContext context, string id, Hand hand)
+    : base(context, hand, id)
     {
-        this.Initialize(context, hand, id);
     }
 
     public ComputerState(GameStateContext context, GameState next, string id, Hand hand)
+    : base(context, next, hand, id)
     {
-        this.Initialize(context, hand, id);
-        this.nextState = next;
     }
 
-    public string PlayerId => this.playerId;
-
-    public void Start()
+    public override void Start()
     {
         if (!stateMachine.IsCardPlayable())
         {
@@ -56,43 +47,5 @@ public class ComputerState : GameState
                 }
             }
         }
-    }
-
-    public void CleanUp()
-    {
-        // Nothing to clean up after a computer plays.
-    }
-
-    public void GoNext()
-    {
-        if (this.nextState == null)
-        {
-            throw new Exception("No next state set.");
-        }
-
-        this.context.SetState(this.nextState);
-    }
-
-    public void SetNextState(GameState next)
-    {
-        this.nextState = next;
-    }
-
-    public Hand GetHand()
-    {
-        return this.hand;
-    }
-
-    public void SetHand(Hand newHand)
-    {
-        this.hand = newHand;
-    }
-
-    private void Initialize(GameStateContext context, Hand hand, string id)
-    {
-        this.context = context;
-        this.hand = hand;
-        this.playerId = id;
-        this.stateMachine = new StateMachine();
     }
 }
