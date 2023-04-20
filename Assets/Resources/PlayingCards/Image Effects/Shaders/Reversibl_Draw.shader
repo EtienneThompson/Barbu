@@ -8,6 +8,8 @@ _MainTex ("Albedo (RGB)", 2D) = "white" {}
 _MainTex2("Texture2", 2D) = "white"{}
 _Glossiness ("Smoothness", Range(0,1)) = 0.5
 _Metallic ("Metallic", Range(0,1)) = 0.0
+_Emission ("Emission", float) = 0
+[HDR] _EmissionColor ("Color", Color) = (0, 0, 0)
 }
 SubShader
 {
@@ -32,6 +34,7 @@ float2 uv_MainTex;
 half _Glossiness;
 half _Metallic;
 fixed4 _Color;
+fixed4 _EmissionColor;
 
 void surf (Input IN, inout SurfaceOutputStandard o)
 {
@@ -40,6 +43,7 @@ o.Albedo = c.rgb;
 o.Metallic = _Metallic;
 o.Smoothness = _Glossiness;
 o.Alpha = c.a;
+o.Emission = c.rgb * tex2D(_MainTex, IN.uv_MainTex).a * _EmissionColor;
 }
 
 ENDCG
@@ -67,6 +71,7 @@ v.normal.xyz = v.normal * -1;
 half _Glossiness;
 half _Metallic;
 fixed4 _Color;
+fixed4 _EmissionColor;
 
 
 void surf (Input IN, inout SurfaceOutputStandard o)
@@ -76,6 +81,7 @@ o.Albedo = c.rgb;
 o.Metallic = _Metallic;
 o.Smoothness = _Glossiness;
 o.Alpha = c.a;
+o.Emission = c.rgb * tex2D(_MainTex, IN.uv_MainTex).a * _EmissionColor;
 }
 
 ENDCG
