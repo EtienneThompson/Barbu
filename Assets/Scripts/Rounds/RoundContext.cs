@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class RoundContext
 {
-    private Round current;
+    private IRound current;
 
     public RoundContext()
     {
@@ -15,7 +15,7 @@ public class RoundContext
         current.GoNext();
     }
 
-    public void SetState(Round current)
+    public void SetState(IRound current)
     {
         this.current = current;
     }
