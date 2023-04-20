@@ -16,12 +16,15 @@ public class Card : MonoBehaviour
     public CardState state;
     public const float speed = 150.0f;
     private StateMachine stateMachine;
+    private Renderer meshRenderer;
+    private Color initialColor;
 
     public delegate void OnPlayed(Card card);
     public static OnPlayed onPlayed;
 
     public void Initialize(string s, string r, string playerId, float rotateX, float rotateY, float rotateZ)
     {
+        this.meshRenderer = GetComponent<MeshRenderer>();
         this.suit = s;
 
         this.rank = System.Int32.Parse(r);
@@ -36,8 +39,9 @@ public class Card : MonoBehaviour
         this.stateMachine = new StateMachine();
 
         string path = "PlayingCards/Resource/Materials/BackColor_Black/Black_PlayingCards_" + this.suit + r + "_00";
-        GetComponent<MeshRenderer>().material = Resources.Load(path, typeof(Material)) as Material;
+        this.meshRenderer.material = Resources.Load(path, typeof(Material)) as Material;
         transform.Rotate(rotateX, rotateY, rotateZ, Space.Self);
+        this.initialColor = this.meshRenderer.material.GetColor("_EmissionColor");
     }
 
     // Update is called once per frame
@@ -72,6 +76,16 @@ public class Card : MonoBehaviour
         StartCoroutine(MoveToCenterRoutine());
         this.state = CardState.Played;
         this.stateMachine.SetCardPlayable(false);
+    }
+
+    public void Highlight()
+    {
+        this.meshRenderer.material.SetColor("_EmissionColor", Color.yellow);
+    }
+
+    public void RemoveHighlight()
+    {
+        this.meshRenderer.material.SetColor("_EmissionColor", initialColor);
     }
 
     IEnumerator MoveToCenterRoutine()
