@@ -10,7 +10,6 @@ public class MenuButtonsController : MonoBehaviour
 
     public void OnEnable()
     {
-        Debug.Log("MenuButtonsController OnEnable");
         GameObject menuButtons = GameObject.Find("MenuButtons");
         var document = menuButtons.GetComponent<UIDocument>();
         var root = document.rootVisualElement;
@@ -18,15 +17,12 @@ public class MenuButtonsController : MonoBehaviour
         this.settingsBtn = root.Q<Button>("settings");
         this.gamesBtn = root.Q<Button>("games");
 
-        Debug.Log(this.settingsBtn);
-        Debug.Log(this.gamesBtn);
         this.settingsBtn.RegisterCallback<ClickEvent>((e) => HandleSettingsButtonClick(e));
         this.gamesBtn.RegisterCallback<ClickEvent>(HandleGamesButtonClick);
     }
 
     public void OnDisable()
     {
-        Debug.Log("MenuButtonsController OnDisable");
         this.settingsBtn.UnregisterCallback<ClickEvent>(HandleSettingsButtonClick);
         this.gamesBtn.UnregisterCallback<ClickEvent>(HandleGamesButtonClick);
     }

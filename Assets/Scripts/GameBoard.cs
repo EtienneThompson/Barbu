@@ -34,8 +34,11 @@ public class GameBoard : MonoBehaviour
             }
         }
 
+        // Hide any UI objects.
         GameObject scoreBoard = GameObject.Find("ScoreMenuCanvas");
         scoreBoard.SetActive(false);
+        GameObject gamesMenu = GameObject.Find("GamesMenu");
+        gamesMenu.SetActive(false);
 
         ScoreMenu scoreMenu = scoreBoard.GetComponent<ScoreMenu>();
 
