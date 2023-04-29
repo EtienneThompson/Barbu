@@ -5,6 +5,8 @@ using UnityEngine.UIElements;
 
 public class GamesMenuController : MonoBehaviour
 {
+    private GameObject gamesMenu;
+    private GameObject menuButtons;
     private Button traditionalBtn;
     private Button singleBtn;
     private Button chaosBtn;
@@ -12,9 +14,9 @@ public class GamesMenuController : MonoBehaviour
 
     public void OnEnable()
     {
-        Debug.Log("GamesMenuController onEnable");
-        GameObject gamesMenu = GameObject.Find("GamesMenu");
-        var document = gamesMenu.GetComponent<UIDocument>();
+        this.menuButtons = GameObject.Find("MenuButtons");
+        this.gamesMenu = GameObject.Find("GamesMenu");
+        var document = this.gamesMenu.GetComponent<UIDocument>();
         var root = document.rootVisualElement;
 
         this.traditionalBtn = root.Q<Button>("traditional");
@@ -54,5 +56,7 @@ public class GamesMenuController : MonoBehaviour
     private void HandleCloseButtonClick(ClickEvent evt)
     {
         Debug.Log("Close button clicked");
+        this.menuButtons.SetActive(true);
+        this.gamesMenu.SetActive(false);
     }
 }

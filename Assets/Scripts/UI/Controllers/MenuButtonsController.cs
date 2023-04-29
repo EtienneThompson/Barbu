@@ -5,13 +5,16 @@ using UnityEngine.UIElements;
 
 public class MenuButtonsController : MonoBehaviour
 {
+    private GameObject menuButtons;
+    private GameObject gamesMenu;
     private Button settingsBtn;
     private Button gamesBtn;
 
     public void OnEnable()
     {
-        GameObject menuButtons = GameObject.Find("MenuButtons");
-        var document = menuButtons.GetComponent<UIDocument>();
+        this.gamesMenu = GameObject.Find("GamesMenu");
+        this.menuButtons = GameObject.Find("MenuButtons");
+        var document = this.menuButtons.GetComponent<UIDocument>();
         var root = document.rootVisualElement;
 
         this.settingsBtn = root.Q<Button>("settings");
@@ -35,5 +38,7 @@ public class MenuButtonsController : MonoBehaviour
     private void HandleGamesButtonClick(ClickEvent evt)
     {
         Debug.Log("Handling games button click");
+        this.gamesMenu.SetActive(true);
+        this.menuButtons.SetActive(false);
     }
 }
