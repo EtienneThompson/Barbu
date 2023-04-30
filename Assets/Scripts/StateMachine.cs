@@ -9,6 +9,7 @@ public class StateMachine
     private int numCardsPlayed = 0;
     private bool canCardBePlayed = false;
     private string startingSuit = string.Empty;
+    private bool menuOpen = false;
 
     private bool playerCardMustBeStartingSuit;
 
@@ -59,5 +60,15 @@ public class StateMachine
     public bool MustPlayCardInStartingSuit()
     {
         return instance.playerCardMustBeStartingSuit;
+    }
+
+    public bool IsMenuOpen()
+    {
+        return instance.menuOpen;
+    }
+
+    public void SetMenuOpen(bool state)
+    {
+        instance.menuOpen = state;
     }
 }

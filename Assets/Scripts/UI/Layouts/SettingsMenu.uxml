@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ui:UXML
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:ui="UnityEngine.UIElements"
+    xmlns:editor="UnityEditor.UIElements"
+    xsi:noNamespaceSchemaLocation="../../../../UIElementsSchema/UIElements.xsd"
+>
+    <Style src="SettingsMenu.uss" />
+    <ui:VisualElement name="container">
+        <ui:VisualElement name="column">
+            <ui:Label text="Settings" />
+            <ui:Button class="settings-button" name="close" text="Close" />
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

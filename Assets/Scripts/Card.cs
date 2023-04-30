@@ -49,7 +49,8 @@ public class Card : MonoBehaviour
     {
         if (((this.stateMachine.MustPlayCardInStartingSuit() && this.suit.Equals(this.stateMachine.GetStartingSuit())) ||
             !this.stateMachine.MustPlayCardInStartingSuit()) &&
-            this.stateMachine.IsCardPlayable() && 
+            this.stateMachine.IsCardPlayable() &&
+            !this.stateMachine.IsMenuOpen() &&
             Input.GetMouseButtonDown(0))
         {
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
