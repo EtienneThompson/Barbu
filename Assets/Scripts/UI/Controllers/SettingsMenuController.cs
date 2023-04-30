@@ -5,6 +5,7 @@ using UnityEngine.UIElements;
 
 public class SettingsMenuController : MonoBehaviour
 {
+    private StateMachine stateMachine;
     private GameObject settingsMenu;
     private GameObject menuButtons;
     private Button closeBtn;
@@ -12,8 +13,10 @@ public class SettingsMenuController : MonoBehaviour
     public void OnEnable()
     {
         Debug.Log("SettingsMenuController OnEnable");
-        this.menuButtons = GameObject.Find("MenuButtons");
-        this.settingsMenu = GameObject.Find("SettingsMenu");
+        this.stateMachine = new StateMachine();
+        this.stateMachine.SetMenuOpen(true);
+        this.menuButtons = GameObject.Find(Constants.GameObjects.MenuButtons);
+        this.settingsMenu = GameObject.Find(Constants.GameObjects.SettingsMenu);
         var document = this.settingsMenu.GetComponent<UIDocument>();
         var root = document.rootVisualElement;
 
@@ -25,6 +28,7 @@ public class SettingsMenuController : MonoBehaviour
     public void OnDisable()
     {
         Debug.Log("SettingsMenuController OnDisable");
+        this.stateMachine.SetMenuOpen(false);
         this.closeBtn.UnregisterCallback<ClickEvent>(HandleCloseButtonClick);
     }
 

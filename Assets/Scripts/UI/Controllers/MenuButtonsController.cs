@@ -14,9 +14,9 @@ public class MenuButtonsController : MonoBehaviour
     public void OnEnable()
     {
         Debug.Log("MenuButtonsController OnEnable");
-        this.gamesMenu = GameObject.Find("GamesMenu");
-        this.settingsMenu = GameObject.Find("SettingsMenu");
-        this.menuButtons = GameObject.Find("MenuButtons");
+        this.gamesMenu = GameObject.Find(Constants.GameObjects.GamesMenu);
+        this.settingsMenu = GameObject.Find(Constants.GameObjects.SettingsMenu);
+        this.menuButtons = GameObject.Find(Constants.GameObjects.MenuButtons);
         Debug.Log(this.gamesMenu);
         Debug.Log(this.settingsMenu);
         var document = this.menuButtons.GetComponent<UIDocument>();

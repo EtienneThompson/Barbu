@@ -5,6 +5,7 @@ using UnityEngine.UIElements;
 
 public class GamesMenuController : MonoBehaviour
 {
+    private StateMachine stateMachine;
     private GameObject gamesMenu;
     private GameObject menuButtons;
     private Button traditionalBtn;
@@ -14,8 +15,10 @@ public class GamesMenuController : MonoBehaviour
 
     public void OnEnable()
     {
-        this.menuButtons = GameObject.Find("MenuButtons");
-        this.gamesMenu = GameObject.Find("GamesMenu");
+        this.stateMachine = new StateMachine();
+        this.stateMachine.SetMenuOpen(true);
+        this.menuButtons = GameObject.Find(Constants.GameObjects.MenuButtons);
+        this.gamesMenu = GameObject.Find(Constants.GameObjects.GamesMenu);
         var document = this.gamesMenu.GetComponent<UIDocument>();
         var root = document.rootVisualElement;
 
@@ -32,6 +35,7 @@ public class GamesMenuController : MonoBehaviour
 
     public void OnDisable()
     {
+        this.stateMachine.SetMenuOpen(false);
         this.traditionalBtn.UnregisterCallback<ClickEvent>(HandleTraditionalButtonClick);
         this.singleBtn.UnregisterCallback<ClickEvent>(HandleSingleButtonClick);
         this.chaosBtn.UnregisterCallback<ClickEvent>(HandleChaosButtonClick);
