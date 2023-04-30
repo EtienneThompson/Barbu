@@ -7,13 +7,18 @@ public class MenuButtonsController : MonoBehaviour
 {
     private GameObject menuButtons;
     private GameObject gamesMenu;
+    private GameObject settingsMenu;
     private Button settingsBtn;
     private Button gamesBtn;
 
     public void OnEnable()
     {
+        Debug.Log("MenuButtonsController OnEnable");
         this.gamesMenu = GameObject.Find("GamesMenu");
+        this.settingsMenu = GameObject.Find("SettingsMenu");
         this.menuButtons = GameObject.Find("MenuButtons");
+        Debug.Log(this.gamesMenu);
+        Debug.Log(this.settingsMenu);
         var document = this.menuButtons.GetComponent<UIDocument>();
         var root = document.rootVisualElement;
 
@@ -33,12 +38,12 @@ public class MenuButtonsController : MonoBehaviour
     private void HandleSettingsButtonClick(ClickEvent evt) 
     {
         Debug.Log("Settings button clicked");
+        this.settingsMenu.SetActive(true);
     }
 
     private void HandleGamesButtonClick(ClickEvent evt)
     {
         Debug.Log("Handling games button click");
         this.gamesMenu.SetActive(true);
-        this.menuButtons.SetActive(false);
     }
 }

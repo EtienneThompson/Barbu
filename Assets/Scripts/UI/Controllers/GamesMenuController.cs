@@ -56,7 +56,6 @@ public class GamesMenuController : MonoBehaviour
     private void HandleCloseButtonClick(ClickEvent evt)
     {
         Debug.Log("Close button clicked");
-        this.menuButtons.SetActive(true);
         this.gamesMenu.SetActive(false);
     }
 }

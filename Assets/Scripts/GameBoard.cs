@@ -39,6 +39,8 @@ public class GameBoard : MonoBehaviour
         scoreBoard.SetActive(false);
         GameObject gamesMenu = GameObject.Find("GamesMenu");
         gamesMenu.SetActive(false);
+        GameObject settingsMenu = GameObject.Find("SettingsMenu");
+        settingsMenu.SetActive(false);
 
         ScoreMenu scoreMenu = scoreBoard.GetComponent<ScoreMenu>();
 
