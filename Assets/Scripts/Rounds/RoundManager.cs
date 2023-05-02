@@ -65,7 +65,11 @@ public class RoundManager
         // Set the initial state to the player.
         this.gameStateContext.SetState(playerState);
 
-        var queensRound = new QueensRound(this.roundContext);
+        var everythingRound = new EverythingRound(this.roundContext);
+        var nothingRound = new NothingRound(this.roundContext, everythingRound);
+        var pilesRound = new PilesRound(this.roundContext, nothingRound);
+        var kingOfHeartsRound = new KingOfHeartsRound(this.roundContext, pilesRound);
+        var queensRound = new QueensRound(this.roundContext, kingOfHeartsRound);
         var heartsRound = new HeartsRound(this.roundContext, queensRound);
         this.roundContext.SetState(heartsRound);
 
@@ -85,7 +89,8 @@ public class RoundManager
         this.roundContext.Next();
         var currentStartingPlayer = Int32.Parse(this.roundStartingPlayerId);
         Debug.Log("Last round starting player: " + this.roundStartingPlayerId);
-        var newStartingPlayer = currentStartingPlayer + 1;
+        var newStartingPlayer = (currentStartingPlayer % 4) + 1;
+        Debug.Log("New starting player id: " + newStartingPlayer);
         this.roundStartingPlayerId = newStartingPlayer.ToString();
         var player = this.GetPlayerFromId(this.roundStartingPlayerId);
         Debug.Log("Next round starting player: " + player);

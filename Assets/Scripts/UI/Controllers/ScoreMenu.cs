@@ -50,12 +50,26 @@ public class ScoreMenu : MonoBehaviour
         var round4Labels = new Label[] { playerRound4, computer1Round4, computer2Round4, computer3Round4 };
         this.roundLabelMap.Add(3, round4Labels);
 
+        var playerRound5 = root.Q<Label>("playerRound5");
+        var computer1Round5 = root.Q<Label>("computer1Round5");
+        var computer2Round5 = root.Q<Label>("computer2Round5");
+        var computer3Round5 = root.Q<Label>("computer3Round5");
+        var round5Labels = new Label[] { playerRound5, computer1Round5, computer2Round5, computer3Round5 };
+        this.roundLabelMap.Add(4, round5Labels);
+
+        var playerRound6 = root.Q<Label>("playerRound6");
+        var computer1Round6 = root.Q<Label>("computer1Round6");
+        var computer2Round6 = root.Q<Label>("computer2Round6");
+        var computer3Round6 = root.Q<Label>("computer3Round6");
+        var round6Labels = new Label[] { playerRound6, computer1Round6, computer2Round6, computer3Round6 };
+        this.roundLabelMap.Add(5, round6Labels);
+
         var playerTotal = root.Q<Label>("playerTotal");
         var computer1Total = root.Q<Label>("computer1Total");
         var computer2Total = root.Q<Label>("computer2Total");
         var computer3Total = root.Q<Label>("computer3Total");
         var totalLabels = new Label[] { playerTotal, computer1Total, computer2Total, computer3Total };
-        this.roundLabelMap.Add(4, totalLabels);
+        this.roundLabelMap.Add(6, totalLabels);
     }
 
     void Update()
@@ -100,7 +114,7 @@ public class ScoreMenu : MonoBehaviour
         }
 
         Debug.Log("Updating total points");
-        var totals = this.roundLabelMap[4];
+        var totals = this.roundLabelMap[6];
         totals[0].text = total0Text.ToString();
         totals[1].text = total1Text.ToString();
         totals[2].text = total2Text.ToString();

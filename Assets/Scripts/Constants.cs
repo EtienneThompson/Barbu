@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class Constants
 {
-    public static int MaxRounds = 2;
+    public static int MaxRounds = 6;
 
     public static class GameObjects
     {
