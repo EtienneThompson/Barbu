@@ -47,14 +47,14 @@ public class Round : IRound
             }
         }
 
-        return points;
+        return points + this.PointsPerPile;
     }
     public int CalculatePointsInAllPiles(List<Card[]> piles)
     {
         int points = 0;
         foreach (var pile in piles)
         {
-            points += this.CalculatePointsInPile(pile) + this.PointsPerPile;
+            points += this.CalculatePointsInPile(pile);
         }
 
         return points;

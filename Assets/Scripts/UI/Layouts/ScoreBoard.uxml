@@ -22,25 +22,39 @@
             <ui:Label name="computer3Round1" class="points" />
         </ui:VisualElement>
         <ui:VisualElement name="blue">
-            <ui:Label name="round1" class="header" text="2" />
+            <ui:Label name="round2" class="header" text="2" />
             <ui:Label name="playerRound2" class="points" />
             <ui:Label name="computer1Round2" class="points" />
             <ui:Label name="computer2Round2" class="points" />
             <ui:Label name="computer3Round2" class="points" />
         </ui:VisualElement>
         <ui:VisualElement name="blue">
-            <ui:Label name="round1" class="header" text="3" />
+            <ui:Label name="round3" class="header" text="3" />
             <ui:Label name="playerRound3" class="points" />
             <ui:Label name="computer1Round3" class="points" />
             <ui:Label name="computer2Round3" class="points" />
             <ui:Label name="computer3Round3" class="points" />
         </ui:VisualElement>
         <ui:VisualElement name="blue">
-            <ui:Label name="round1" class="header" text="4" />
+            <ui:Label name="round4" class="header" text="4" />
             <ui:Label name="playerRound4" class="points" />
             <ui:Label name="computer1Round4" class="points" />
             <ui:Label name="computer2Round4" class="points" />
             <ui:Label name="computer3Round4" class="points" />
+        </ui:VisualElement>
+        <ui:VisualElement name="blue">
+            <ui:Label name="round5" class="header" text="5" />
+            <ui:Label name="playerRound5" class="points" />
+            <ui:Label name="computer1Round5" class="points" />
+            <ui:Label name="computer2Round5" class="points" />
+            <ui:Label name="computer3Round5" class="points" />
+        </ui:VisualElement>
+        <ui:VisualElement name="blue">
+            <ui:Label name="round6" class="header" text="6" />
+            <ui:Label name="playerRound6" class="points" />
+            <ui:Label name="computer1Round6" class="points" />
+            <ui:Label name="computer2Round6" class="points" />
+            <ui:Label name="computer3Round6" class="points" />
         </ui:VisualElement>
         <ui:VisualElement name="blue">
             <ui:Label name="round1" class="header" text="Total" />
