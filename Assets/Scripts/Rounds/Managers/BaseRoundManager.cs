@@ -5,26 +5,22 @@ using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
 
-public class RoundManager
+public class BaseRoundManager : IRoundManager
 {
-    private string startingSuit;
-    private const int cardsPerPile = 4;
-    private Card[] currentPile = new Card[cardsPerPile];
-    private int numCardsInPile = 0;
-    private string roundStartingPlayerId = "1";
-    private int currentRound = 0;
+    protected Card[] currentPile = new Card[Constants.CardsPerPile];
+    protected int numCardsInPile = 0;
+    protected string roundStartingPlayerId = "1";
+    protected int currentRound = 0;
 
-    private RoundContext roundContext;
-    private GameStateContext gameStateContext;
-    private GameState[] players;
-    private StateMachine stateMachine;
-    private ScoreMenu scoreMenu;
-    private int maxRounds;
+    protected RoundContext roundContext;
+    protected GameStateContext gameStateContext;
+    protected GameState[] players;
+    protected StateMachine stateMachine;
+    protected ScoreMenu scoreMenu;
+    protected Dictionary<string, List<Card[]>> playerWonPiles;
+    protected Dictionary<string, int[]>playerPoints;
 
-    private Dictionary<string, List<Card[]>> playerWonPiles;
-    private Dictionary<string, int[]> playerPoints;
-
-    public RoundManager(int numRounds, ScoreMenu scoreMenu, Hand[] hands)
+    public BaseRoundManager(ScoreMenu scoreMenu, Hand[] hands)
     {
         this.roundContext = new RoundContext();
         this.gameStateContext = new GameStateContext();
@@ -32,51 +28,6 @@ public class RoundManager
         this.stateMachine = new StateMachine();
         this.stateMachine.SetStartingSuit(string.Empty);
         this.scoreMenu = scoreMenu;
-        this.maxRounds = numRounds;
-
-        // Initialize general gameplay loop.
-        var playerState = new PlayerState(this.gameStateContext, "1", hands[0]);
-        var computerState3 = new ComputerState(this.gameStateContext, playerState, "4", hands[3]);
-        var computerState2 = new ComputerState(this.gameStateContext, computerState3, "3", hands[2]);
-        var computerState1 = new ComputerState(this.gameStateContext, computerState2, "2", hands[1]);
-        playerState.SetNextState(computerState1);
-
-        this.players[0] = playerState;
-        this.players[1] = computerState1;
-        this.players[2] = computerState2;
-        this.players[3] = computerState3;
-
-        this.playerWonPiles = new Dictionary<string, List<Card[]>>()
-        {
-            { "1", new List<Card[]>() },
-            { "2", new List<Card[]>() },
-            { "3", new List<Card[]>() },
-            { "4", new List<Card[]>() },
-        };
-
-        this.playerPoints = new Dictionary<string, int[]>()
-        {
-            { "1", new int[numRounds] },
-            { "2", new int[numRounds] },
-            { "3", new int[numRounds] },
-            { "4", new int[numRounds] },
-        };
-
-        // Set the initial state to the player.
-        this.gameStateContext.SetState(playerState);
-
-        var everythingRound = new EverythingRound(this.roundContext);
-        var nothingRound = new NothingRound(this.roundContext, everythingRound);
-        var pilesRound = new PilesRound(this.roundContext, nothingRound);
-        var kingOfHeartsRound = new KingOfHeartsRound(this.roundContext, pilesRound);
-        var queensRound = new QueensRound(this.roundContext, kingOfHeartsRound);
-        var heartsRound = new HeartsRound(this.roundContext, queensRound);
-        this.roundContext.SetState(heartsRound);
-
-        // Listen for events when cards are being played.
-        Card.onPlayed += this.OnCardPlayed;
-
-        this.gameStateContext.Start();
     }
 
     public void NextRound(Hand[] hands)
@@ -116,7 +67,7 @@ public class RoundManager
         return null;
     }
 
-    private void OnCardPlayed(Card card)
+    protected void OnCardPlayed(Card card)
     {
         this.stateMachine.SetCardPlayable(false);
 
@@ -133,7 +84,7 @@ public class RoundManager
 
         this.gameStateContext.CleanUp();
 
-        if (this.numCardsInPile == cardsPerPile) {
+        if (this.numCardsInPile == Constants.CardsPerPile) {
             if (this.ResolvePile())
             {
                 return;

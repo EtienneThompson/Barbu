@@ -12,7 +12,7 @@ public class GameBoard : MonoBehaviour
                                                  "08", "09", "10", "11", "12", "13" };
     private string[] cards = new string[52];
     private Hand[] hands = new Hand[4];
-    private RoundManager roundManager;
+    private IRoundManager roundManager;
 
     public static GameBoard instance;
 
@@ -45,7 +45,7 @@ public class GameBoard : MonoBehaviour
         ScoreMenu scoreMenu = scoreBoard.GetComponent<ScoreMenu>();
 
         this.DealHand();
-        this.roundManager = new RoundManager(Constants.MaxRounds, scoreMenu, hands);
+        this.roundManager = new TraditionalRoundManager(Constants.MaxRounds, scoreMenu, hands);
         ScoreMenu.onRoundOver += this.ResetRound;
 
         this.stateMachine.SetCardPlayable(true);
