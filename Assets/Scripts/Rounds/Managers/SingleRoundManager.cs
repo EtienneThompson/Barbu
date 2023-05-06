@@ -2,17 +2,13 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class SingleRoundManager : MonoBehaviour
+public class SingleRoundManager : BaseRoundManager
 {
-    // Start is called before the first frame update
-    void Start()
+    public SingleRoundManager(ScoreMenu scoreMenu, Hand[] hands)
+    : base(Constants.SingleRoundManager.MaxRounds, scoreMenu, hands)
     {
-        
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
+        var heartsRound = new HeartsRound(this.roundContext);
+        this.roundContext.SetState(heartsRound);
+        this.gameStateContext.Start();
     }
 }

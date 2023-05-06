@@ -45,7 +45,7 @@ public class GameBoard : MonoBehaviour
         ScoreMenu scoreMenu = scoreBoard.GetComponent<ScoreMenu>();
 
         this.DealHand();
-        this.roundManager = new TraditionalRoundManager(Constants.MaxRounds, scoreMenu, hands);
+        this.roundManager = new TraditionalRoundManager(scoreMenu, hands);
         ScoreMenu.onRoundOver += this.ResetRound;
 
         this.stateMachine.SetCardPlayable(true);
