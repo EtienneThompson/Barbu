@@ -7,8 +7,8 @@ using TMPro;
 
 public class TraditionalRoundManager : BaseRoundManager
 {
-    public TraditionalRoundManager(ScoreMenu scoreMenu, Hand[] hands)
-    : base(Constants.TraditionalRoundManager.MaxRounds, scoreMenu, hands)
+    public TraditionalRoundManager(GameBoard gameBoard, ScoreMenu scoreMenu, Hand[] hands)
+    : base(Constants.TraditionalRoundManager.MaxRounds, gameBoard, scoreMenu, hands)
     {
         var everythingRound = new EverythingRound(this.roundContext);
         var nothingRound = new NothingRound(this.roundContext, everythingRound);

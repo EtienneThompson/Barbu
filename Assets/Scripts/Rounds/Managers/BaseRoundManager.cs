@@ -18,10 +18,11 @@ public class BaseRoundManager : IRoundManager
     protected GameState[] players;
     protected StateMachine stateMachine;
     protected ScoreMenu scoreMenu;
+    protected GameBoard gameBoard;
     protected Dictionary<string, List<Card[]>> playerWonPiles;
     protected Dictionary<string, int[]>playerPoints;
 
-    public BaseRoundManager(int totalRounds, ScoreMenu scoreMenu, Hand[] hands)
+    public BaseRoundManager(int totalRounds, GameBoard gameBoard, ScoreMenu scoreMenu, Hand[] hands)
     {
         this.roundContext = new RoundContext();
         this.gameStateContext = new GameStateContext();
@@ -29,6 +30,7 @@ public class BaseRoundManager : IRoundManager
         this.stateMachine = new StateMachine();
         this.stateMachine.SetStartingSuit(string.Empty);
         this.scoreMenu = scoreMenu;
+        this.gameBoard = gameBoard;
         this.totalRounds = totalRounds;
 
                 // Initialize general gameplay loop.
@@ -64,6 +66,21 @@ public class BaseRoundManager : IRoundManager
 
         // Listen for events when cards are being played.
         Card.onPlayed += this.OnCardPlayed;
+        ScoreMenu.onRoundOver += this.CleanupRound;
+    }
+
+    public void CleanupRound()
+    {
+        this.gameBoard.CleanupRound();
+        if (this.currentRound + 1 == this.totalRounds)
+        {
+            Debug.Log("GAME OVER!!!");
+        }
+        else
+        {
+            Debug.Log("ROUND OVER!!!");
+            this.gameBoard.SetupRound();
+        }
     }
 
     public void NextRound(Hand[] hands)

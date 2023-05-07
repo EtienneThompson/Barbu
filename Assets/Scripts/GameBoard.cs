@@ -45,8 +45,7 @@ public class GameBoard : MonoBehaviour
         ScoreMenu scoreMenu = scoreBoard.GetComponent<ScoreMenu>();
 
         this.DealHand();
-        this.roundManager = new SingleRoundManager(scoreMenu, hands);
-        ScoreMenu.onRoundOver += this.ResetRound;
+        this.roundManager = new TraditionalRoundManager(this, scoreMenu, hands);
 
         this.stateMachine.SetCardPlayable(true);
     }
@@ -57,9 +56,13 @@ public class GameBoard : MonoBehaviour
         this.DealHand(cards);
     }
 
-    public void ResetRound()
+    public void CleanupRound()
     {
         this.DestroyCards();
+    }
+
+    public void SetupRound()
+    {
         this.DealHand();
         this.stateMachine.SetCardPlayable(true);
         this.stateMachine.SetStartingSuit("");

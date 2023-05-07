@@ -3,8 +3,8 @@ using System.Collections.Generic;
 
 public class ChaosRoundManager : BaseRoundManager
 {
-    public ChaosRoundManager(ScoreMenu scoreMenu, Hand[] hands)
-    : base(Constants.ChaosRoundManager.MaxRounds, scoreMenu, hands)
+    public ChaosRoundManager(GameBoard gameBoard, ScoreMenu scoreMenu, Hand[] hands)
+    : base(Constants.ChaosRoundManager.MaxRounds, gameBoard, scoreMenu, hands)
     {
         var nothingRound = new NothingRound(this.roundContext);
         this.roundContext.SetState(nothingRound);

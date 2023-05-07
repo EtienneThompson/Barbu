@@ -78,16 +78,7 @@ public class ScoreMenu : MonoBehaviour
         if (gameObject.activeSelf && Input.GetMouseButtonDown(0))
         {
             gameObject.SetActive(false);
-
-            if (this.currentRound + 1 != Constants.MaxRounds)
-            {
-                Debug.Log("Going to next round!");
-                onRoundOver();
-            }
-            else
-            {
-                Debug.Log("GAME OVER!!!");
-            }
+            onRoundOver();
         }
     }
 
