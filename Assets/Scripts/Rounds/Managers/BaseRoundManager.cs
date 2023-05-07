@@ -33,7 +33,7 @@ public class BaseRoundManager : IRoundManager
         this.gameBoard = gameBoard;
         this.totalRounds = totalRounds;
 
-                // Initialize general gameplay loop.
+        // Initialize general gameplay loop.
         var playerState = new PlayerState(this.gameStateContext, "1", hands[0]);
         var computerState3 = new ComputerState(this.gameStateContext, playerState, "4", hands[3]);
         var computerState2 = new ComputerState(this.gameStateContext, computerState3, "3", hands[2]);
