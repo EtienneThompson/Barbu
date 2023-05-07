@@ -20,7 +20,7 @@ public class Constants
 
     public static class ChaosRoundManager
     {
-        public static int MaxRound = 1;
+        public static int MaxRounds = 1;
     }
 
     public static class GameObjects
