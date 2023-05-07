@@ -9,7 +9,7 @@ public class BaseRoundManager : IRoundManager
 {
     protected Card[] currentPile = new Card[Constants.CardsPerPile];
     protected int numCardsInPile = 0;
-    protected string roundStartingPlayerId = "1";
+    protected string roundStartingPlayerId = Constants.PlayerIds.Player1;
     protected int currentRound = 0;
     protected int totalRounds;
 
@@ -34,10 +34,10 @@ public class BaseRoundManager : IRoundManager
         this.totalRounds = totalRounds;
 
         // Initialize general gameplay loop.
-        var playerState = new PlayerState(this.gameStateContext, "1", hands[0]);
-        var computerState3 = new ComputerState(this.gameStateContext, playerState, "4", hands[3]);
-        var computerState2 = new ComputerState(this.gameStateContext, computerState3, "3", hands[2]);
-        var computerState1 = new ComputerState(this.gameStateContext, computerState2, "2", hands[1]);
+        var playerState = new PlayerState(this.gameStateContext, Constants.PlayerIds.Player1, hands[0]);
+        var computerState3 = new ComputerState(this.gameStateContext, playerState, Constants.PlayerIds.Player4, hands[3]);
+        var computerState2 = new ComputerState(this.gameStateContext, computerState3, Constants.PlayerIds.Player3, hands[2]);
+        var computerState1 = new ComputerState(this.gameStateContext, computerState2, Constants.PlayerIds.Player2, hands[1]);
         playerState.SetNextState(computerState1);
 
         this.players[0] = playerState;
@@ -47,18 +47,18 @@ public class BaseRoundManager : IRoundManager
 
         this.playerWonPiles = new Dictionary<string, List<Card[]>>()
         {
-            { "1", new List<Card[]>() },
-            { "2", new List<Card[]>() },
-            { "3", new List<Card[]>() },
-            { "4", new List<Card[]>() },
+            { Constants.PlayerIds.Player1, new List<Card[]>() },
+            { Constants.PlayerIds.Player2, new List<Card[]>() },
+            { Constants.PlayerIds.Player3, new List<Card[]>() },
+            { Constants.PlayerIds.Player4, new List<Card[]>() },
         };
 
         this.playerPoints = new Dictionary<string, int[]>()
         {
-            { "1", new int[this.totalRounds] },
-            { "2", new int[this.totalRounds] },
-            { "3", new int[this.totalRounds] },
-            { "4", new int[this.totalRounds] },
+            { Constants.PlayerIds.Player1, new int[this.totalRounds] },
+            { Constants.PlayerIds.Player2, new int[this.totalRounds] },
+            { Constants.PlayerIds.Player3, new int[this.totalRounds] },
+            { Constants.PlayerIds.Player4, new int[this.totalRounds] },
         };
 
         // Set the initial state to the player.
@@ -118,6 +118,13 @@ public class BaseRoundManager : IRoundManager
         }
 
         return null;
+    }
+
+    public void Destroy()
+    {
+        // Deregister event listeners when this round is no longer applicable.
+        Card.onPlayed -= this.OnCardPlayed;
+        ScoreMenu.onRoundOver -= this.CleanupRound;
     }
 
     protected void OnCardPlayed(Card card)
@@ -207,34 +214,34 @@ public class BaseRoundManager : IRoundManager
     {
         GameObject player1WonPilesObject = GameObject.Find("Player1WonPiles");
         TextMeshProUGUI player1WonPiles = player1WonPilesObject.GetComponent<TextMeshProUGUI>();
-        player1WonPiles.text = "Player 1 Won Piles: " + this.playerWonPiles["1"].Count;
+        player1WonPiles.text = "Player 1 Won Piles: " + this.playerWonPiles[Constants.PlayerIds.Player1].Count;
 
         GameObject player1PointsObject = GameObject.Find("Player1Points");
         TextMeshProUGUI player1Points = player1PointsObject.GetComponent<TextMeshProUGUI>();
-        player1Points.text = "Player 1 Points: " + this.playerPoints["1"][this.currentRound];
+        player1Points.text = "Player 1 Points: " + this.playerPoints[Constants.PlayerIds.Player1][this.currentRound];
 
         GameObject player2WonPilesObject = GameObject.Find("Player2WonPiles");
         TextMeshProUGUI player2WonPiles = player2WonPilesObject.GetComponent<TextMeshProUGUI>();
-        player2WonPiles.text = "Player 2 Won Piles: " + this.playerWonPiles["2"].Count;
+        player2WonPiles.text = "Player 2 Won Piles: " + this.playerWonPiles[Constants.PlayerIds.Player2].Count;
 
         GameObject player2PointsObject = GameObject.Find("Player2Points");
         TextMeshProUGUI player2Points = player2PointsObject.GetComponent<TextMeshProUGUI>();
-        player2Points.text = "Player 2 Points: " + this.playerPoints["2"][this.currentRound];
+        player2Points.text = "Player 2 Points: " + this.playerPoints[Constants.PlayerIds.Player2][this.currentRound];
 
         GameObject player3WonPilesObject = GameObject.Find("Player3WonPiles");
         TextMeshProUGUI player3WonPiles = player3WonPilesObject.GetComponent<TextMeshProUGUI>();
-        player3WonPiles.text = "Player 3 Won Piles: " + this.playerWonPiles["3"].Count;
+        player3WonPiles.text = "Player 3 Won Piles: " + this.playerWonPiles[Constants.PlayerIds.Player3].Count;
 
         GameObject player3PointsObject = GameObject.Find("Player3Points");
         TextMeshProUGUI player3Points = player3PointsObject.GetComponent<TextMeshProUGUI>();
-        player3Points.text = "Player 3 Points: " + this.playerPoints["3"][this.currentRound];
+        player3Points.text = "Player 3 Points: " + this.playerPoints[Constants.PlayerIds.Player3][this.currentRound];
 
         GameObject player4WonPilesObject = GameObject.Find("Player4WonPiles");
         TextMeshProUGUI player4WonPiles = player4WonPilesObject.GetComponent<TextMeshProUGUI>();
-        player4WonPiles.text = "Player 4 Won Piles: " + this.playerWonPiles["4"].Count;
+        player4WonPiles.text = "Player 4 Won Piles: " + this.playerWonPiles[Constants.PlayerIds.Player4].Count;
 
         GameObject player4PointsObject = GameObject.Find("Player4Points");
         TextMeshProUGUI player4Points = player4PointsObject.GetComponent<TextMeshProUGUI>();
-        player4Points.text = "Player 4 Points: " + this.playerPoints["4"][this.currentRound];
+        player4Points.text = "Player 4 Points: " + this.playerPoints[Constants.PlayerIds.Player4][this.currentRound];
     }
 }

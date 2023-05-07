@@ -6,5 +6,5 @@ public interface IRoundManager
     void NextRound(Hand[] hands);
     void SetStartingPlayer(GameState player);
     GameState GetPlayerFromId(string id);
-    
+    void Destroy();
 }

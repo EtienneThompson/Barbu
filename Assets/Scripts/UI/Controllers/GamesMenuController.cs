@@ -6,6 +6,7 @@ using UnityEngine.UIElements;
 public class GamesMenuController : MonoBehaviour
 {
     private StateMachine stateMachine;
+    private GameBoard gameBoard;
     private GameObject gamesMenu;
     private GameObject menuButtons;
     private Button traditionalBtn;
@@ -17,6 +18,7 @@ public class GamesMenuController : MonoBehaviour
     {
         this.stateMachine = new StateMachine();
         this.stateMachine.SetMenuOpen(true);
+        this.gameBoard = GameObject.Find(Constants.GameObjects.GameBoard).GetComponent<GameBoard>();
         this.menuButtons = GameObject.Find(Constants.GameObjects.MenuButtons);
         this.gamesMenu = GameObject.Find(Constants.GameObjects.GamesMenu);
         var document = this.gamesMenu.GetComponent<UIDocument>();
@@ -44,22 +46,24 @@ public class GamesMenuController : MonoBehaviour
 
     private void HandleTraditionalButtonClick(ClickEvent evt)
     {
-        Debug.Log("Traditional button clicked");
+        this.gameBoard.CreateNewGame(Constants.TraditionalRoundManager.GameName);
+        this.gamesMenu.SetActive(false);
     }
 
     private void HandleSingleButtonClick(ClickEvent evt)
     {
-        Debug.Log("Single button clicked");
+        this.gameBoard.CreateNewGame(Constants.SingleRoundManager.GameName);
+        this.gamesMenu.SetActive(false);
     }
 
     private void HandleChaosButtonClick(ClickEvent evt)
     {
-        Debug.Log("Chaos button clicked");
+        this.gameBoard.CreateNewGame(Constants.ChaosRoundManager.GameName);
+        this.gamesMenu.SetActive(false);
     }
 
     private void HandleCloseButtonClick(ClickEvent evt)
     {
-        Debug.Log("Close button clicked");
         this.gamesMenu.SetActive(false);
     }
 }
