@@ -86,6 +86,8 @@ public class Card : MonoBehaviour
 
     public void RemoveHighlight()
     {
+        Debug.Log("RemoveHighlight");
+        Debug.Log(this.GetName());
         this.meshRenderer.material.SetColor("_EmissionColor", initialColor);
     }
 

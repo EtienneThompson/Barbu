@@ -120,6 +120,13 @@ public class BaseRoundManager : IRoundManager
         return null;
     }
 
+    public void Destroy()
+    {
+        // Deregister event listeners when this round is no longer applicable.
+        Card.onPlayed -= this.OnCardPlayed;
+        ScoreMenu.onRoundOver -= this.CleanupRound;
+    }
+
     protected void OnCardPlayed(Card card)
     {
         this.stateMachine.SetCardPlayable(false);

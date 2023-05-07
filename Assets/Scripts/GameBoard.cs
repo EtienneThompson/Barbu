@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -13,6 +14,7 @@ public class GameBoard : MonoBehaviour
     private string[] cards = new string[52];
     private Hand[] hands = new Hand[4];
     private IRoundManager roundManager;
+    private ScoreMenu scoreMenu;
 
     public static GameBoard instance;
 
@@ -42,18 +44,36 @@ public class GameBoard : MonoBehaviour
         GameObject settingsMenu = GameObject.Find("SettingsMenu");
         settingsMenu.SetActive(false);
 
-        ScoreMenu scoreMenu = scoreBoard.GetComponent<ScoreMenu>();
+        this.scoreMenu = scoreBoard.GetComponent<ScoreMenu>();
 
         this.DealHand();
-        this.roundManager = new TraditionalRoundManager(this, scoreMenu, hands);
+        this.roundManager = new TraditionalRoundManager(this, this.scoreMenu, this.hands);
 
         this.stateMachine.SetCardPlayable(true);
     }
 
-    public void DealHand()
+    public void CreateNewGame(string gameName)
     {
-        this.Shuffle(cards);
-        this.DealHand(cards);
+        Debug.Log("Building new game");
+        this.stateMachine.SetCardPlayable(false);
+        this.roundManager.Destroy();
+        this.CleanupRound();
+        this.DealHand();
+        switch (gameName)
+        {
+            case Constants.TraditionalRoundManager.GameName:
+                this.roundManager = new TraditionalRoundManager(this, this.scoreMenu, this.hands);
+                break;
+            case Constants.SingleRoundManager.GameName:
+                this.roundManager = new SingleRoundManager(this, this.scoreMenu, this.hands);
+                break;
+            case Constants.ChaosRoundManager.GameName:
+                this.roundManager = new ChaosRoundManager(this, this.scoreMenu, this.hands);
+                break;
+            default:
+                throw new Exception("Incorrect game name provided");
+        }
+        this.stateMachine.SetCardPlayable(true);
     }
 
     public void CleanupRound()
@@ -69,6 +89,12 @@ public class GameBoard : MonoBehaviour
         this.roundManager.NextRound(this.hands);
     }
 
+    private void DealHand()
+    {
+        this.Shuffle(cards);
+        this.DealHand(cards);
+    }
+
     private void DestroyCards()
     {
         foreach (var hand in this.hands)
@@ -82,7 +108,6 @@ public class GameBoard : MonoBehaviour
             {
                 if (card != null)
                 {
-                    Debug.Log("destroying card");
                     Destroy(card.gameObject);
                 }
             }
@@ -96,7 +121,7 @@ public class GameBoard : MonoBehaviour
             int n = array.Length;
             while (n > 1)
             {
-                int k = (int)Mathf.Floor(Random.value * (n--));
+                int k = (int)Mathf.Floor(UnityEngine.Random.value * (n--));
                 T temp = array[n];
                 array[n] = array[k];
                 array[k] = temp;
