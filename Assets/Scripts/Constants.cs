@@ -6,6 +6,23 @@ public class Constants
 {
     public static int MaxRounds = 6;
 
+    public static int CardsPerPile = 4;
+
+    public static class TraditionalRoundManager
+    {
+        public static int MaxRounds = 6;
+    }
+
+    public static class SingleRoundManager
+    {
+        public static int MaxRounds = 1;
+    }
+
+    public static class ChaosRoundManager
+    {
+        public static int MaxRounds = 1;
+    }
+
     public static class GameObjects
     {
         public static string MenuButtons = "MenuButtons";
