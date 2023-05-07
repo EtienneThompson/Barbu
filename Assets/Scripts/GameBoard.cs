@@ -37,11 +37,11 @@ public class GameBoard : MonoBehaviour
         }
 
         // Hide any UI objects.
-        GameObject scoreBoard = GameObject.Find("ScoreMenuCanvas");
+        GameObject scoreBoard = GameObject.Find(Constants.GameObjects.ScoreMenuCanvas);
         scoreBoard.SetActive(false);
-        GameObject gamesMenu = GameObject.Find("GamesMenu");
+        GameObject gamesMenu = GameObject.Find(Constants.GameObjects.GamesMenu);
         gamesMenu.SetActive(false);
-        GameObject settingsMenu = GameObject.Find("SettingsMenu");
+        GameObject settingsMenu = GameObject.Find(Constants.GameObjects.SettingsMenu);
         settingsMenu.SetActive(false);
 
         this.scoreMenu = scoreBoard.GetComponent<ScoreMenu>();
@@ -54,7 +54,6 @@ public class GameBoard : MonoBehaviour
 
     public void CreateNewGame(string gameName)
     {
-        Debug.Log("Building new game");
         this.stateMachine.SetCardPlayable(false);
         this.roundManager.Destroy();
         this.CleanupRound();

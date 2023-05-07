@@ -14,15 +14,13 @@ public class ScoreMenu : MonoBehaviour
 
     public void OnEnable()
     {
-        Debug.Log("onEnable");
-        GameObject scoreBoard = GameObject.Find("ScoreMenuCanvas");
+        GameObject scoreBoard = GameObject.Find(Constants.GameObjects.ScoreMenuCanvas);
         var document = scoreBoard.GetComponent<UIDocument>();
         var root = document.rootVisualElement;
         
         this.roundLabelMap = new Dictionary<int, Label[]>();
 
         var playerRound1 = root.Q<Label>("playerRound1");
-        Debug.Log(playerRound1);
         var computer1Round1 = root.Q<Label>("computer1Round1");
         var computer2Round1 = root.Q<Label>("computer2Round1");
         var computer3Round1 = root.Q<Label>("computer3Round1");
@@ -93,18 +91,17 @@ public class ScoreMenu : MonoBehaviour
         for (int i = 0; i < round + 1; i++)
         {
             var labels = this.roundLabelMap[i];
-            labels[0].text = playerPoints["1"][i].ToString();
-            labels[1].text = playerPoints["2"][i].ToString();
-            labels[2].text = playerPoints["3"][i].ToString();
-            labels[3].text = playerPoints["4"][i].ToString();
+            labels[0].text = playerPoints[Constants.PlayerIds.Player1][i].ToString();
+            labels[1].text = playerPoints[Constants.PlayerIds.Player2][i].ToString();
+            labels[2].text = playerPoints[Constants.PlayerIds.Player3][i].ToString();
+            labels[3].text = playerPoints[Constants.PlayerIds.Player4][i].ToString();
 
-            total0Text += playerPoints["1"][i];
-            total1Text += playerPoints["2"][i];
-            total2Text += playerPoints["3"][i];
-            total3Text += playerPoints["4"][i];
+            total0Text += playerPoints[Constants.PlayerIds.Player1][i];
+            total1Text += playerPoints[Constants.PlayerIds.Player2][i];
+            total2Text += playerPoints[Constants.PlayerIds.Player3][i];
+            total3Text += playerPoints[Constants.PlayerIds.Player4][i];
         }
 
-        Debug.Log("Updating total points");
         var totals = this.roundLabelMap[6];
         totals[0].text = total0Text.ToString();
         totals[1].text = total1Text.ToString();
