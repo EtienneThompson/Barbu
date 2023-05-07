@@ -48,18 +48,21 @@ public class GamesMenuController : MonoBehaviour
     {
         Debug.Log("Traditional button clicked");
         this.gameBoard.CreateNewGame(Constants.TraditionalRoundManager.GameName);
+        this.gamesMenu.SetActive(false);
     }
 
     private void HandleSingleButtonClick(ClickEvent evt)
     {
         Debug.Log("Single button clicked");
         this.gameBoard.CreateNewGame(Constants.SingleRoundManager.GameName);
+        this.gamesMenu.SetActive(false);
     }
 
     private void HandleChaosButtonClick(ClickEvent evt)
     {
         Debug.Log("Chaos button clicked");
         this.gameBoard.CreateNewGame(Constants.ChaosRoundManager.GameName);
+        this.gamesMenu.SetActive(false);
     }
 
     private void HandleCloseButtonClick(ClickEvent evt)
