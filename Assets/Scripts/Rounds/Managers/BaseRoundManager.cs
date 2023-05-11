@@ -67,10 +67,37 @@ public class BaseRoundManager : IRoundManager
         // Listen for events when cards are being played.
         Card.onPlayed += this.OnCardPlayed;
         ScoreMenu.onRoundOver += this.CleanupRound;
+        RoundOverlayController.finishedAnimation += this.StartRound;
     }
 
+    /// <summary>
+    /// Handles any pre-processing needed before each round.
+    /// </summary>
+    public void PreRound()
+    {
+        Debug.Log("PreRound");
+        GameObject roundOverlay = GameObject.Find(Constants.GameObjects.RoundOverlay);
+        var controller = roundOverlay.GetComponent<RoundOverlayController>();
+        controller.DisplayRound(this.roundContext.CurrentName());
+    }
+
+    /// <summary>
+    /// Handles starting the round
+    /// </summary>
+    public void StartRound()
+    {
+        Debug.Log("StartRound");
+        this.stateMachine.SetCardPlayable(true);
+        this.gameStateContext.Start();
+    }
+
+    /// <summary>
+    /// Handles cleaning up after a round finishes.
+    /// </summary>
     public void CleanupRound()
     {
+        Debug.Log("CleanupRound");
+        this.stateMachine.SetCardPlayable(false);
         this.gameBoard.CleanupRound();
         if (this.currentRound + 1 == this.totalRounds)
         {
@@ -83,8 +110,12 @@ public class BaseRoundManager : IRoundManager
         }
     }
 
+    /// <summary>
+    /// Moves to the next round.
+    /// </summary>
     public void NextRound(Hand[] hands)
     {
+        Debug.Log("NextRound");
         this.players[0].SetHand(hands[0]);
         this.players[1].SetHand(hands[1]);
         this.players[2].SetHand(hands[2]);
@@ -99,25 +130,7 @@ public class BaseRoundManager : IRoundManager
         var player = this.GetPlayerFromId(this.roundStartingPlayerId);
         Debug.Log("Next round starting player: " + player);
         this.gameStateContext.SetState(player);
-        this.gameStateContext.Start();
-    }
-
-    public void SetStartingPlayer(GameState player)
-    {
-        this.gameStateContext.SetState(player);
-    }
-
-    public GameState GetPlayerFromId(string id)
-    {
-        foreach (var state in this.players)
-        {
-            if (id.Equals(state.PlayerId))
-            {
-                return state;
-            }
-        }
-
-        return null;
+        this.PreRound();
     }
 
     public void Destroy()
@@ -208,6 +221,19 @@ public class BaseRoundManager : IRoundManager
         }
 
         return false;
+    }
+
+    private GameState GetPlayerFromId(string id)
+    {
+        foreach (var state in this.players)
+        {
+            if (id.Equals(state.PlayerId))
+            {
+                return state;
+            }
+        }
+
+        return null;
     }
 
     private void UpdateUiLabels()

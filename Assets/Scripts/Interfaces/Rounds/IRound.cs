@@ -3,6 +3,7 @@ using System.Collections.Generic;
 
 public interface IRound
 {
+    string Name { get; }
     void GoNext();
     void SetNextState(Round next);
     int CalculatePointsInPile(Card[] pile);

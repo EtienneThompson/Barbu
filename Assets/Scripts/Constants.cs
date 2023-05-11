@@ -33,6 +33,7 @@ public class Constants
         public const string MenuButtons = "MenuButtons";
         public const string GamesMenu = "GamesMenu";
         public const string SettingsMenu = "SettingsMenu";
+        public const string RoundOverlay = "RoundOverlay";
     }
 
     public static class PlayerIds

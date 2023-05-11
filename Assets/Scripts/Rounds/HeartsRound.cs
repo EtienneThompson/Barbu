@@ -23,6 +23,7 @@ public class HeartsRound : Round
     };
     protected override int PointsPerPile => 0;
     protected override int TotalPoints => 65;
+    public override string Name => nameof(HeartsRound);
 
     public HeartsRound(RoundContext context)
     : base(context)

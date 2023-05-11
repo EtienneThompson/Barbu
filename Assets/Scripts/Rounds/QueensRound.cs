@@ -14,6 +14,7 @@ public class QueensRound : Round
     };
     protected override int PointsPerPile => 0;
     protected override int TotalPoints => 40;
+    public override string Name => nameof(QueensRound);
 
     public QueensRound(RoundContext context)
     : base(context)

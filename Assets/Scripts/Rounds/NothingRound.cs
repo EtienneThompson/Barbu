@@ -25,6 +25,7 @@ public class NothingRound : Round
     };
     protected override int PointsPerPile => 5;
     protected override int TotalPoints => 210;
+    public override string Name => nameof(NothingRound);
 
     public NothingRound(RoundContext context)
     : base(context)
