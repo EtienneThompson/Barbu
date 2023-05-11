@@ -10,6 +10,7 @@ public class KingOfHeartsRound : Round
     };
     protected override int PointsPerPile => 0;
     protected override int TotalPoints => 40;
+    public override string Name => nameof(KingOfHeartsRound);
 
     public KingOfHeartsRound(RoundContext context)
     : base(context)

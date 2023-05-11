@@ -3,8 +3,9 @@ using System.Collections.Generic;
 
 public interface IRoundManager
 {
+    void PreRound();
+    void StartRound();
+    void CleanupRound();
     void NextRound(Hand[] hands);
-    void SetStartingPlayer(GameState player);
-    GameState GetPlayerFromId(string id);
     void Destroy();
 }

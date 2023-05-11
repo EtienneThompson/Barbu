@@ -48,8 +48,7 @@ public class GameBoard : MonoBehaviour
 
         this.DealHand();
         this.roundManager = new TraditionalRoundManager(this, this.scoreMenu, this.hands);
-
-        this.stateMachine.SetCardPlayable(true);
+        this.roundManager.PreRound();
     }
 
     public void CreateNewGame(string gameName)

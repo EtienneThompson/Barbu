@@ -15,6 +15,11 @@ public class RoundContext
         current.GoNext();
     }
 
+    public string CurrentName()
+    {
+        return current.Name;
+    }
+
     public void SetState(IRound current)
     {
         this.current = current;
