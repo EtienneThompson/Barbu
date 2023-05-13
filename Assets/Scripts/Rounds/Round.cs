@@ -4,9 +4,9 @@ using System.Collections.Generic;
 
 public class Round : IRound
 {
-    protected virtual Dictionary<string, int> PointMapping => new Dictionary<string, int>();
-    protected virtual int PointsPerPile => 0;
-    protected virtual int TotalPoints => 0;
+    public virtual Dictionary<string, int> PointMapping => new Dictionary<string, int>();
+    public virtual int PointsPerPile => 0;
+    public virtual int TotalPoints => 0;
     public virtual string Name => throw new NotImplementedException("Name needs to be overridden");
     protected RoundContext context;
     protected Round nextState;

@@ -4,9 +4,9 @@ using UnityEngine;
 
 public class PilesRound : Round
 {
-    protected override Dictionary<string, int> PointMapping => new Dictionary<string, int>();
-    protected override int PointsPerPile => 5;
-    protected override int TotalPoints => 65;
+    public override Dictionary<string, int> PointMapping => new Dictionary<string, int>();
+    public override int PointsPerPile => 5;
+    public override int TotalPoints => 65;
     public override string Name => nameof(PilesRound);
 
     public PilesRound(RoundContext context)
