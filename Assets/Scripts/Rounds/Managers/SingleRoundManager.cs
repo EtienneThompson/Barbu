@@ -7,7 +7,7 @@ public class SingleRoundManager : BaseRoundManager
     public SingleRoundManager(GameBoard gameBoard, ScoreMenu scoreMenu, Hand[] hands)
     : base(Constants.SingleRoundManager.MaxRounds, gameBoard, scoreMenu, hands)
     {
-        var heartsRound = new PilesRound(this.roundContext);
+        var heartsRound = new HeartsRound(this.roundContext);
         this.roundContext.SetState(heartsRound);
         this.gameStateContext.Start();
     }
