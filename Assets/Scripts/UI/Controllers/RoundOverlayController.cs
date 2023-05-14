@@ -28,6 +28,7 @@ public class RoundOverlayController : MonoBehaviour
 
     IEnumerator DisplayRoutine(string roundName)
     {
+        Debug.Log(roundName);
         this.roundLabel.text = roundName;
         yield return new WaitForSeconds(1.5f);
         this.roundLabel.text = string.Empty;

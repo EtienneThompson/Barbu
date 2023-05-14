@@ -9,6 +9,7 @@ public class BaseRoundManager : IRoundManager
 {
     protected Card[] currentPile = new Card[Constants.CardsPerPile];
     protected int numCardsInPile = 0;
+    protected int pilesPlayed = 0;
     protected string roundStartingPlayerId = Constants.PlayerIds.Player1;
     protected int currentRound = 0;
     protected int totalRounds;
@@ -181,6 +182,7 @@ public class BaseRoundManager : IRoundManager
 
     private bool ResolvePile()
     {
+        this.pilesPlayed++;
         var highestCardIndex = 0;
         for (int i = 0; i < this.numCardsInPile; i++)
         {
@@ -214,8 +216,9 @@ public class BaseRoundManager : IRoundManager
         this.stateMachine.ResetNumCardsPlayed();
         this.stateMachine.SetStartingSuit(string.Empty);
 
-        if (this.roundContext.IsRoundOver(this.currentRound, this.playerPoints))
+        if (this.roundContext.IsRoundOver(this.currentRound, this.playerPoints, this.pilesPlayed))
         {
+            this.pilesPlayed = 0;
             this.scoreMenu.UpdateScores(this.currentRound, this.playerPoints);
             return true;
         }

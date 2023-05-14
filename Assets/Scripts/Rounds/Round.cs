@@ -4,9 +4,9 @@ using System.Collections.Generic;
 
 public class Round : IRound
 {
-    protected virtual Dictionary<string, int> PointMapping => new Dictionary<string, int>();
-    protected virtual int PointsPerPile => 0;
-    protected virtual int TotalPoints => 0;
+    public virtual Dictionary<string, int> PointMapping => new Dictionary<string, int>();
+    public virtual int PointsPerPile => 0;
+    public virtual int TotalPoints => 0;
     public virtual string Name => throw new NotImplementedException("Name needs to be overridden");
     protected RoundContext context;
     protected Round nextState;
@@ -61,7 +61,7 @@ public class Round : IRound
         return points;
     }
 
-    public bool IsRoundOver(int round, Dictionary<string, int[]> playerPoints)
+    public virtual bool IsRoundOver(int round, Dictionary<string, int[]> playerPoints, int playedPiles)
     {
         int points = 0;
         foreach (var key in playerPoints.Keys)

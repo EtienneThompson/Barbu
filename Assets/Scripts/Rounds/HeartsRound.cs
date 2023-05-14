@@ -5,7 +5,7 @@ using UnityEngine;
 
 public class HeartsRound : Round
 {
-    protected override Dictionary<string, int> PointMapping => new Dictionary<string, int>
+    public override Dictionary<string, int> PointMapping => new Dictionary<string, int>
     {
         {"Heart2", 5},
         {"Heart3", 5},
@@ -21,8 +21,8 @@ public class HeartsRound : Round
         {"Heart13", 5},
         {"Heart14", 5},
     };
-    protected override int PointsPerPile => 0;
-    protected override int TotalPoints => 65;
+    public override int PointsPerPile => 0;
+    public override int TotalPoints => 65;
     public override string Name => nameof(HeartsRound);
 
     public HeartsRound(RoundContext context)

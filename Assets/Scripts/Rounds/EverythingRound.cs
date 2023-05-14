@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class EverythingRound : Round
 {
-    protected override Dictionary<string, int> PointMapping => new Dictionary<string, int>
+    public override Dictionary<string, int> PointMapping => new Dictionary<string, int>
     {
         {"Heart2", -5},
         {"Heart3", -5},
@@ -23,8 +23,8 @@ public class EverythingRound : Round
         {"Spade12", -10},
         {"Club12", -10}
     };
-    protected override int PointsPerPile => -5;
-    protected override int TotalPoints => -210;
+    public override int PointsPerPile => -5;
+    public override int TotalPoints => -210;
     public override string Name => nameof(EverythingRound);
 
     public EverythingRound(RoundContext context)

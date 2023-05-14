@@ -5,15 +5,15 @@ using UnityEngine;
 
 public class QueensRound : Round
 {
-    protected override Dictionary<string, int> PointMapping => new Dictionary<string, int>
+    public override Dictionary<string, int> PointMapping => new Dictionary<string, int>
     {
         {"Heart12", 10},
         {"Diamond12", 10},
         {"Spade12", 10},
         {"Club12", 10},
     };
-    protected override int PointsPerPile => 0;
-    protected override int TotalPoints => 40;
+    public override int PointsPerPile => 0;
+    public override int TotalPoints => 40;
     public override string Name => nameof(QueensRound);
 
     public QueensRound(RoundContext context)

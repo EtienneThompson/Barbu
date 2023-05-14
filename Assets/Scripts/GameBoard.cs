@@ -71,7 +71,7 @@ public class GameBoard : MonoBehaviour
             default:
                 throw new Exception("Incorrect game name provided");
         }
-        this.stateMachine.SetCardPlayable(true);
+        this.roundManager.PreRound();
     }
 
     public void CleanupRound()

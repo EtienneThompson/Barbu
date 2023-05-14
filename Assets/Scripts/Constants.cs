@@ -4,7 +4,11 @@ using UnityEngine;
 
 public class Constants
 {
-    public const int MaxRounds = 6;
+    public const int CardsInDeck = 52;
+
+    public const int CardsInHand = 13;
+
+    public const int NumPilesPerRound = 13;
 
     public const int CardsPerPile = 4;
 
