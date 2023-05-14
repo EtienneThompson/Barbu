@@ -47,4 +47,9 @@ public class Constants
         public const string Player3 = "3";
         public const string Player4 = "4";
     }
+
+    public static class PlayerPrefsKeys
+    {
+        public const string SortingOptions = "SortingOptions";
+    }
 }
