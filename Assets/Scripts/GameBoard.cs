@@ -151,7 +151,6 @@ public class GameBoard : MonoBehaviour
             }
         }
 
-        Settings.SortingPreference = Settings.SortingOptions.SuitLowToHigh;
         hands[0].SortHand(Settings.SortingPreference);
 
         for (int i = 0; i < 13; i++)

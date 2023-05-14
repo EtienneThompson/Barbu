@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -31,6 +32,8 @@ public class Settings
         /// </summary>
         SuitHighToLow = 4,
     }
+
+    public static SortingOptions[] HandSortingOptions => (SortingOptions[])Enum.GetValues(typeof(SortingOptions));
 
     public static SortingOptions SortingPreference
     {
