@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class Hand
@@ -23,6 +24,16 @@ public class Hand
     public Card[] GetHand()
     {
         return this.cards;
+    }
+
+    public Card GetCardAtPosition(int position)
+    {
+        if (position < 0 || position > this.cards.Length)
+        {
+            throw new IndexOutOfRangeException("Must be a valid card in the hand.");
+        }
+
+        return this.cards[position];
     }
 
     public List<Card> CardsInSuit(string suit)
@@ -92,5 +103,10 @@ public class Hand
         }
 
         return minRank;
+    }
+
+    public void SortHand(Settings.SortingOptions option)
+    {
+        this.cards = this.cards.OrderBy(c => c.GetSortingRank(option)).ToArray();
     }
 }

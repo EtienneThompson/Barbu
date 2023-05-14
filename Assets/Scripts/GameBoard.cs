@@ -139,6 +139,24 @@ public class GameBoard : MonoBehaviour
         {
             for (int j = 0; j < 4; j++)
             {
+                GameObject myCard = Instantiate(Resources.Load("BlankPlayingCard", typeof(GameObject)), new Vector3(0, 0, 0), Quaternion.identity) as GameObject;
+                Card card = myCard.GetComponent<Card>();
+                var index = i * 4 + j;
+                var suit = cards[index].Substring(0, cards[index].Length - 2);
+                var rank = cards[index].Substring(cards[index].Length - 2);
+                var playerId = (j + 1).ToString();
+                card.InitializeData(suit, rank, playerId);
+
+                hands[j].AddCard(card);
+            }
+        }
+
+        hands[0].SortHand(Settings.SortingPreference);
+
+        for (int i = 0; i < 13; i++)
+        {
+            for (int j = 0; j < 4; j++)
+            {
                 Vector3 position;
                 float rotateX = 0.0f;
                 float rotateY = 0.0f;
@@ -166,15 +184,8 @@ public class GameBoard : MonoBehaviour
                     rotateX = -70.0f;
                 }
 
-                GameObject myCard = Instantiate(Resources.Load("BlankPlayingCard", typeof(GameObject)), position, Quaternion.identity) as GameObject;
-                Card card = myCard.GetComponent<Card>();
-                var index = i * 4 + j;
-                var suit = cards[index].Substring(0, cards[index].Length - 2);
-                var rank = cards[index].Substring(cards[index].Length - 2);
-                var playerId = (j + 1).ToString();
-                card.Initialize(suit, rank, playerId, rotateX, rotateY, rotateZ);
-
-                hands[j].AddCard(card);
+                var cardToInit = hands[j].GetCardAtPosition(i);
+                cardToInit.InitializeGameObject(position, rotateX, rotateY, rotateZ);
             }
         }
     }

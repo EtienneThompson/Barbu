@@ -18,28 +18,33 @@ public class Card : MonoBehaviour
     private StateMachine stateMachine;
     private Renderer meshRenderer;
     private Color initialColor;
+    private string resourceRank;
 
     public delegate void OnPlayed(Card card);
     public static OnPlayed onPlayed;
 
-    public void Initialize(string s, string r, string playerId, float rotateX, float rotateY, float rotateZ)
+    public void InitializeData(string suit, string rank, string playerId)
     {
-        this.meshRenderer = GetComponent<MeshRenderer>();
-        this.suit = s;
-
-        this.rank = System.Int32.Parse(r);
+        this.playerId = playerId;
+        this.suit = suit;
+        this.resourceRank = rank;
+        this.rank = System.Int32.Parse(rank);
         if (this.rank == 1)
         {
-            // Handle case where Ace is lowest in the resource pack, but highest rank.
+            // Handle case where Ace is lowest in the resource pack, but highest rank in the game.
             this.rank = 14;
         }
+    }
 
-        this.playerId = playerId;
+    public void InitializeGameObject(Vector3 position, float rotateX, float rotateY, float rotateZ)
+    {
+        this.meshRenderer = GetComponent<MeshRenderer>();
         this.state = CardState.Waiting;
         this.stateMachine = new StateMachine();
 
-        string path = "PlayingCards/Resource/Materials/BackColor_Black/Black_PlayingCards_" + this.suit + r + "_00";
+        string path = "PlayingCards/Resource/Materials/BackColor_Black/Black_PlayingCards_" + this.suit + this.resourceRank + "_00";
         this.meshRenderer.material = Resources.Load(path, typeof(Material)) as Material;
+        transform.position = position;
         transform.Rotate(rotateX, rotateY, rotateZ, Space.Self);
         this.initialColor = this.meshRenderer.material.GetColor("_EmissionColor");
     }
@@ -70,6 +75,24 @@ public class Card : MonoBehaviour
         return this.suit + this.rank.ToString();
     }
 
+    public int GetSortingRank(Settings.SortingOptions option)
+    {
+        switch (option)
+        {
+            case Settings.SortingOptions.HighToLow:
+                return -1 * this.GetRankSortingRank();
+            case Settings.SortingOptions.LowToHigh:
+                return this.GetRankSortingRank();
+            case Settings.SortingOptions.SuitHighToLow:
+                return -1 * (this.GetSuitSortingRank() + this.GetRankSortingRank());
+            case Settings.SortingOptions.SuitLowToHigh:
+                return this.GetSuitSortingRank() + this.GetRankSortingRank();
+            case Settings.SortingOptions.None:
+            default:
+                return 0;
+        }
+    }
+
     public void PlayCard()
     {
         transform.rotation = Quaternion.Euler(new Vector3(0, 0, 0));
@@ -87,6 +110,28 @@ public class Card : MonoBehaviour
     public void RemoveHighlight()
     {
         this.meshRenderer.material.SetColor("_EmissionColor", initialColor);
+    }
+
+    private int GetSuitSortingRank()
+    {
+        switch (this.suit)
+        {
+            case Constants.CardSuits.Heart:
+                return 0;
+            case Constants.CardSuits.Diamond:
+                return 20;
+            case Constants.CardSuits.Spade:
+                return 40;
+            case Constants.CardSuits.Club:
+                return 60;
+            default:
+                return 80;
+        }
+    }
+
+    private int GetRankSortingRank()
+    {
+        return this.rank;
     }
 
     IEnumerator MoveToCenterRoutine()

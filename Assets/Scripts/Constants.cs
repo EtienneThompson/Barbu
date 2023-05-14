@@ -12,6 +12,14 @@ public class Constants
 
     public const int CardsPerPile = 4;
 
+    public static class CardSuits
+    {
+        public const string Heart = "Heart";
+        public const string Diamond = "Diamond";
+        public const string Spade = "Spade";
+        public const string Club = "Club";
+    }
+
     public static class TraditionalRoundManager
     {
         public const string GameName = "Traditional";
@@ -46,5 +54,10 @@ public class Constants
         public const string Player2 = "2";
         public const string Player3 = "3";
         public const string Player4 = "4";
+    }
+
+    public static class PlayerPrefsKeys
+    {
+        public const string SortingOptions = "SortingOptions";
     }
 }

@@ -10,3 +10,17 @@
     flex-direction: column;
     align-items: center;
 }
+
+#row {
+    flex-grow: 1;
+    flex-direction: row;
+    justify-content: center;
+}
+
+.arrow-button {
+    height: 30px;
+}
+
+.selection-box {
+    width: 100px;
+}

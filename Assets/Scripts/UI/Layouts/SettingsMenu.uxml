@@ -9,6 +9,12 @@
     <ui:VisualElement name="container">
         <ui:VisualElement name="column">
             <ui:Label text="Settings" />
+            <ui:VisualElement name="row">
+                <ui:Label text="Hand Sorting" />
+                <ui:Button class="arrow-button" name="sortingPrevious" text="&lt;" />
+                <ui:Label class="selection-box" name="currentlySelectedSortingOption" text="None" />
+                <ui:Button class="arrow-button" name="sortingNext" text="&gt;" />
+            </ui:VisualElement>
             <ui:Button class="settings-button" name="close" text="Close" />
         </ui:VisualElement>
     </ui:VisualElement>
