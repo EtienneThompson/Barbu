@@ -14,7 +14,6 @@ public class RoundRegistration
         typeof(KingOfHeartsRound),
         typeof(PilesRound),
         typeof(NothingRound),
-        typeof(EverythingRound),
     };
 
     public static Round GetRandomRound()

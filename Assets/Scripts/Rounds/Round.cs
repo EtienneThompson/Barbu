@@ -61,7 +61,7 @@ public class Round : IRound
         return points;
     }
 
-    public bool IsRoundOver(int round, Dictionary<string, int[]> playerPoints)
+    public virtual bool IsRoundOver(int round, Dictionary<string, int[]> playerPoints, int playedPiles)
     {
         int points = 0;
         foreach (var key in playerPoints.Keys)

@@ -4,9 +4,22 @@ using UnityEngine;
 
 public class ChaosRound : Round
 {
-    public override Dictionary<string, int> PointMapping => new Dictionary<string, int>();
+    public override Dictionary<string, int> PointMapping => ComputedPointMapping;
     public override int PointsPerPile => this.ComputedPointsPerPile;
-    public override int TotalPoints => this.ComputedTotalPoints;
+    public override int TotalPoints
+    {
+        get
+        {
+            int total = 0;
+            foreach (var points in this.PointMapping)
+            {
+                total += points.Value;
+            }
+            
+            total += Constants.NumPilesPerRound * this.ComputedPointsPerPile;
+            return total;
+        }
+    }
     public override string Name
     {
         get
@@ -23,24 +36,32 @@ public class ChaosRound : Round
             return nameBuilder.Trim();
         }
     }
+    private Dictionary<string, int> ComputedPointMapping;
     private int ComputedPointsPerPile;
-    private int ComputedTotalPoints;
     private List<Round> mergedRounds;
 
     public ChaosRound(RoundContext context)
     : base(context)
     {
+        this.ComputedPointMapping = new Dictionary<string, int>();
         this.ComputedPointsPerPile = 0;
-        this.ComputedTotalPoints = 0;
         this.mergedRounds = new List<Round>();
     }
 
     public ChaosRound(RoundContext context, Round next)
     : base(context, next)
     {
+        this.ComputedPointMapping = new Dictionary<string, int>();
         this.ComputedPointsPerPile = 0;
-        this.ComputedTotalPoints = 0;
         this.mergedRounds = new List<Round>();
+    }
+
+    /// <summary>
+    /// Only end chaos rounds when all piles have been played.
+    /// </summary>
+    public override bool IsRoundOver(int round, Dictionary<string, int[]> playerPoints, int pilesPlayed)
+    {
+        return pilesPlayed == Constants.NumPilesPerRound;
     }
 
     public void MergeRound(Round round)
@@ -51,15 +72,11 @@ public class ChaosRound : Round
         {
             if (!this.PointMapping.ContainsKey(points.Key))
             {
-                this.PointMapping[points.Key] = points.Value;
-                this.ComputedTotalPoints += points.Value;
+                this.PointMapping[points.Key] = 0;
             }
+            this.PointMapping[points.Key] += points.Value;
         }
 
-        if (round.PointsPerPile > 0 && this.ComputedPointsPerPile == 0)
-        {
-            this.ComputedPointsPerPile = round.PointsPerPile;
-            this.ComputedTotalPoints += 13 * round.PointsPerPile;
-        }
+        this.ComputedPointsPerPile += round.PointsPerPile;
     }
 }
