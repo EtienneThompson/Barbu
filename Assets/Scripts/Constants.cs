@@ -60,4 +60,16 @@ public class Constants
     {
         public const string SortingOptions = "SortingOptions";
     }
+
+    public static class AdGameIds
+    {
+        public const string AppleGameId = "5285615";
+        public const string AppleBannerId = "Banner_iOS";
+        public const string AppleInterstitialId = "Interstitial_iOS";
+        public const string AppleRewardedId = "Rewarded_iOS";
+        public const string AndroidGameId = "5285614";
+        public const string AndroidBannerId = "Banner_Android";
+        public const string AndroidInterstitialId = "Interstitial_Android";
+        public const string AndroidRewardedId = "Rewarded_Android";
+    }
 }

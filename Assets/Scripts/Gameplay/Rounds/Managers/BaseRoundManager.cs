@@ -102,7 +102,8 @@ public class BaseRoundManager : IRoundManager
         this.gameBoard.CleanupRound();
         if (this.currentRound + 1 == this.totalRounds)
         {
-            Debug.Log("GAME OVER!!!");
+            AdvertisementController advertisementController = this.gameBoard.GetComponent<AdvertisementController>();
+            advertisementController.RequestToShowInterstitial();
         }
         else
         {

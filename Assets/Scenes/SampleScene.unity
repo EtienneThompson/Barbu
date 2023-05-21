@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 705507994}
-  m_IndirectSpecularColor: {r: 0.17276774, g: 0.21589115, b: 0.2978246, a: 1}
+  m_IndirectSpecularColor: {r: 0.172768, g: 0.21589169, b: 0.29782546, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -1444,6 +1444,7 @@ GameObject:
   - component: {fileID: 671643515}
   - component: {fileID: 671643514}
   - component: {fileID: 671643518}
+  - component: {fileID: 671643519}
   m_Layer: 0
   m_Name: GameBoard
   m_TagString: Untagged
@@ -1540,6 +1541,18 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 17a4468432e8e4e0ebfc072c7874a795, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &671643519
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 671643513}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: eb06980dff7fd0f44acc539c808018d2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1 &705507993
