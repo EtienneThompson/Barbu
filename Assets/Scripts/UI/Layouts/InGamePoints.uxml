@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ui:UXML
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:ui="UnityEngine.UIElements"
+    xmlns:editor="UnityEditor.UIElements"
+    xsi:noNamespaceSchemaLocation="../../../../UIElementsSchema/UIElements.xsd"
+>
+    <Style src="InGamePoints.uss" />
+    <ui:VisualElement name="container">
+        <ui:VisualElement name="top-left-row">
+            <ui:VisualElement class="point-container">
+                <ui:Label class="point-label" text="Player 3 →" />
+                <ui:Label class="text" text="Points 3" />
+                <ui:VisualElement class="horizontal-line" />
+                <ui:Label class="point-label" text="Player 2 ↓" />
+                <ui:Label class="text" text="Points 2" />
+            </ui:VisualElement>
+        </ui:VisualElement>
+        <ui:VisualElement name="bottom-right-row">
+            <ui:VisualElement class="point-container">
+                <ui:Label class="point-label" text="↑ Player 4" />
+                <ui:Label class="text" text="Points 4" />
+                <ui:VisualElement class="horizontal-line" />
+                <ui:Label class="point-label" text="← Player 1" />
+                <ui:Label class="text" text="Points 1"/>
+            </ui:VisualElement>
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>
