@@ -102,9 +102,9 @@ public class Card : MonoBehaviour
         this.stateMachine.SetCardPlayable(false);
     }
 
-    public void Highlight()
+    public void Highlight(Color color)
     {
-        this.meshRenderer.material.SetColor("_EmissionColor", Color.yellow);
+        this.meshRenderer.material.SetColor("_EmissionColor", color);
     }
 
     public void RemoveHighlight()

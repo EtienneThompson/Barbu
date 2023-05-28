@@ -31,7 +31,7 @@ public class PlayerState : GameState
         }
         foreach (var card in cardsInSuit)
         {
-            card.Highlight();
+            card.Highlight(Color.yellow);
         }
 
         GameObject player1WonPilesObject = GameObject.Find("MustPlayStartingSuit");

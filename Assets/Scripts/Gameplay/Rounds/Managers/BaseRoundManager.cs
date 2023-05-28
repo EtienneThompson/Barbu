@@ -8,7 +8,6 @@ using TMPro;
 public class BaseRoundManager : IRoundManager
 {
     protected Card[] currentPile = new Card[Constants.CardsPerPile];
-    protected int numCardsInPile = 0;
     protected int pilesPlayed = 0;
     protected string roundStartingPlayerId = Constants.PlayerIds.Player1;
     protected int currentRound = 0;
@@ -153,21 +152,20 @@ public class BaseRoundManager : IRoundManager
     protected void OnCardPlayed(Card card)
     {
         this.stateMachine.SetCardPlayable(false);
+        this.gameStateContext.CleanUp();
 
-        if (this.numCardsInPile == 0)
+        if (this.stateMachine.NumCardsPlayed() == 1)
         {
             this.stateMachine.SetStartingSuit(card.suit);
             GameObject startingSuitLabelObject = GameObject.Find("StartingSuitLabel");
             TextMeshProUGUI startingSuitLabel = startingSuitLabelObject.GetComponent<TextMeshProUGUI>();
             startingSuitLabel.text = "Starting Suit: " + card.suit;
+            card.Highlight(Color.green);
         }
         
-        this.currentPile[this.numCardsInPile] = card;
-        this.numCardsInPile++;
+        this.currentPile[this.stateMachine.NumCardsPlayed() - 1] = card;
 
-        this.gameStateContext.CleanUp();
-
-        if (this.numCardsInPile == Constants.CardsPerPile) {
+        if (this.stateMachine.NumCardsPlayed() == Constants.CardsPerPile) {
             if (this.ResolvePile())
             {
                 return;
@@ -176,7 +174,7 @@ public class BaseRoundManager : IRoundManager
 
         this.stateMachine.SetCardPlayable(true);
 
-        if (this.numCardsInPile == 0)
+        if (this.stateMachine.NumCardsPlayed() == 0)
         {
             // Start the new state so that if the player is a computer they will make a move.
             this.gameStateContext.Start();
@@ -193,7 +191,7 @@ public class BaseRoundManager : IRoundManager
     {
         this.pilesPlayed++;
         var highestCardIndex = 0;
-        for (int i = 0; i < this.numCardsInPile; i++)
+        for (int i = 0; i < Constants.CardsPerPile; i++)
         {
             if (this.currentPile[i].suit == this.stateMachine.GetStartingSuit() &&
                 this.currentPile[i].rank > this.currentPile[highestCardIndex].rank)
@@ -215,14 +213,13 @@ public class BaseRoundManager : IRoundManager
         this.inGamePointsController.UpdatePlayerPoints(playerId, pilePoints);
 
         // Hide the cards in the UI.
-        for (int i = 0; i < this.numCardsInPile; i++)
+        for (int i = 0; i < this.stateMachine.NumCardsPlayed(); i++)
         {
             this.currentPile[i].gameObject.SetActive(false);
             this.currentPile[i].GetComponent<Renderer>().enabled = false;
             this.currentPile[i] = null;
         }
 
-        this.numCardsInPile = 0;
         this.stateMachine.ResetNumCardsPlayed();
         this.stateMachine.SetStartingSuit(string.Empty);
 
