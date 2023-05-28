@@ -14,7 +14,7 @@
 
 .overlay-button {
     font-size: 5px;
-    height: 5%;
-    width: 3%;
+    height: 10%;
+    width: 6%;
     border-radius: 50%;
 }

@@ -31,7 +31,6 @@ public class SettingsMenuController : MonoBehaviour
         this.currentlySelectedSortingOption = root.Q<Label>("currentlySelectedSortingOption");
         this.currentlySelectedSortingOption.text = Settings.SortingPreference.ToString();
         this.currentSortingOption = Array.IndexOf(Settings.HandSortingOptions, Settings.SortingPreference);
-        Debug.Log(this.currentlySelectedSortingOption);
 
         this.sortingPreviousBtn.RegisterCallback<ClickEvent>(HandleSortingPreviousButtonClick);
         this.sortingNextBtn.RegisterCallback<ClickEvent>(HandleSortingNextButtonClick);

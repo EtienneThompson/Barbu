@@ -116,6 +116,7 @@ public class BaseRoundManager : IRoundManager
         {
             Debug.Log("ROUND OVER!!!");
             this.gameBoard.SetupRound();
+            this.inGamePointsController.ResetPoints();
         }
     }
 
