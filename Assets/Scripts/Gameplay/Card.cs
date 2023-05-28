@@ -1,5 +1,5 @@
+using System;
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class Card : MonoBehaviour
@@ -136,8 +136,27 @@ public class Card : MonoBehaviour
 
     IEnumerator MoveToCenterRoutine()
     {
-        var center = new Vector3(0.0f, -19.0f + 0.1f * stateMachine.NumCardsPlayed(), -25.0f);
-        var rotate = new Vector3(0.0f, Random.Range(-5.0f, 5.0f), 0.0f);
+        Vector3 center;
+        var verticalPosition = -19.0f + 0.1f * this.stateMachine.NumCardsPlayed();
+        switch (this.playerId)
+        {
+            case Constants.PlayerIds.Player1:
+                center = new Vector3(0.0f, verticalPosition, -45.0f);
+                break;
+            case Constants.PlayerIds.Player2:
+                center = new Vector3(-20.0f, verticalPosition, -25.0f);
+                break;
+            case Constants.PlayerIds.Player3:
+                center = new Vector3(0.0f, verticalPosition, -5.0f);
+                break;
+            case Constants.PlayerIds.Player4:
+                center = new Vector3(20.0f, verticalPosition, -25.0f);
+                break;
+            default:
+                throw new Exception("This card has an invalid player id " + this.playerId);
+        }
+
+        var rotate = new Vector3(0.0f, UnityEngine.Random.Range(-5.0f, 5.0f), 0.0f);
         while (transform.position != center)
         {
             transform.position = Vector3.MoveTowards(transform.position, center, speed * Time.deltaTime);
