@@ -20,10 +20,16 @@ public class BaseRoundManager : IRoundManager
     protected StateMachine stateMachine;
     protected ScoreMenu scoreMenu;
     protected GameBoard gameBoard;
+    protected InGamePointsController inGamePointsController;
     protected Dictionary<string, List<Card[]>> playerWonPiles;
     protected Dictionary<string, int[]>playerPoints;
 
-    public BaseRoundManager(int totalRounds, GameBoard gameBoard, ScoreMenu scoreMenu, Hand[] hands)
+    public BaseRoundManager(
+        int totalRounds,
+        GameBoard gameBoard,
+        ScoreMenu scoreMenu,
+        InGamePointsController inGamePointsController,
+        Hand[] hands)
     {
         this.roundContext = new RoundContext();
         this.gameStateContext = new GameStateContext();
@@ -32,6 +38,7 @@ public class BaseRoundManager : IRoundManager
         this.stateMachine.SetStartingSuit(string.Empty);
         this.scoreMenu = scoreMenu;
         this.gameBoard = gameBoard;
+        this.inGamePointsController = inGamePointsController;
         this.totalRounds = totalRounds;
 
         // Initialize general gameplay loop.
@@ -201,9 +208,10 @@ public class BaseRoundManager : IRoundManager
 
         var copiedPile = (Card[])this.currentPile.Clone();
         this.playerWonPiles[playerId].Add(copiedPile);
-        this.playerPoints[playerId][this.currentRound] += this.roundContext.CalculatePointsInPile(this.currentPile);
+        var pilePoints = this.roundContext.CalculatePointsInPile(this.currentPile);
+        this.playerPoints[playerId][this.currentRound] += pilePoints;
 
-        this.UpdateUiLabels();
+        this.inGamePointsController.UpdatePlayerPoints(playerId, pilePoints);
 
         // Hide the cards in the UI.
         for (int i = 0; i < this.numCardsInPile; i++)
@@ -238,40 +246,5 @@ public class BaseRoundManager : IRoundManager
         }
 
         return null;
-    }
-
-    private void UpdateUiLabels()
-    {
-        GameObject player1WonPilesObject = GameObject.Find("Player1WonPiles");
-        TextMeshProUGUI player1WonPiles = player1WonPilesObject.GetComponent<TextMeshProUGUI>();
-        player1WonPiles.text = "Player 1 Won Piles: " + this.playerWonPiles[Constants.PlayerIds.Player1].Count;
-
-        GameObject player1PointsObject = GameObject.Find("Player1Points");
-        TextMeshProUGUI player1Points = player1PointsObject.GetComponent<TextMeshProUGUI>();
-        player1Points.text = "Player 1 Points: " + this.playerPoints[Constants.PlayerIds.Player1][this.currentRound];
-
-        GameObject player2WonPilesObject = GameObject.Find("Player2WonPiles");
-        TextMeshProUGUI player2WonPiles = player2WonPilesObject.GetComponent<TextMeshProUGUI>();
-        player2WonPiles.text = "Player 2 Won Piles: " + this.playerWonPiles[Constants.PlayerIds.Player2].Count;
-
-        GameObject player2PointsObject = GameObject.Find("Player2Points");
-        TextMeshProUGUI player2Points = player2PointsObject.GetComponent<TextMeshProUGUI>();
-        player2Points.text = "Player 2 Points: " + this.playerPoints[Constants.PlayerIds.Player2][this.currentRound];
-
-        GameObject player3WonPilesObject = GameObject.Find("Player3WonPiles");
-        TextMeshProUGUI player3WonPiles = player3WonPilesObject.GetComponent<TextMeshProUGUI>();
-        player3WonPiles.text = "Player 3 Won Piles: " + this.playerWonPiles[Constants.PlayerIds.Player3].Count;
-
-        GameObject player3PointsObject = GameObject.Find("Player3Points");
-        TextMeshProUGUI player3Points = player3PointsObject.GetComponent<TextMeshProUGUI>();
-        player3Points.text = "Player 3 Points: " + this.playerPoints[Constants.PlayerIds.Player3][this.currentRound];
-
-        GameObject player4WonPilesObject = GameObject.Find("Player4WonPiles");
-        TextMeshProUGUI player4WonPiles = player4WonPilesObject.GetComponent<TextMeshProUGUI>();
-        player4WonPiles.text = "Player 4 Won Piles: " + this.playerWonPiles[Constants.PlayerIds.Player4].Count;
-
-        GameObject player4PointsObject = GameObject.Find("Player4Points");
-        TextMeshProUGUI player4Points = player4PointsObject.GetComponent<TextMeshProUGUI>();
-        player4Points.text = "Player 4 Points: " + this.playerPoints[Constants.PlayerIds.Player4][this.currentRound];
     }
 }

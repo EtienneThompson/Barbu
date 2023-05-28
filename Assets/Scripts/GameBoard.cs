@@ -15,6 +15,7 @@ public class GameBoard : MonoBehaviour
     private Hand[] hands = new Hand[4];
     private IRoundManager roundManager;
     private ScoreMenu scoreMenu;
+    private InGamePointsController inGamePointsController;
 
     public static GameBoard instance;
 
@@ -45,28 +46,31 @@ public class GameBoard : MonoBehaviour
         settingsMenu.SetActive(false);
 
         this.scoreMenu = scoreBoard.GetComponent<ScoreMenu>();
+        GameObject inGamePoints = GameObject.Find(Constants.GameObjects.InGamePoints);
+        this.inGamePointsController = inGamePoints.GetComponent<InGamePointsController>();
 
         this.DealHand();
-        this.roundManager = new TraditionalRoundManager(this, this.scoreMenu, this.hands);
+        this.roundManager = new TraditionalRoundManager(this, this.scoreMenu, this.inGamePointsController, this.hands);
         this.roundManager.PreRound();
     }
 
     public void CreateNewGame(string gameName)
     {
         this.stateMachine.SetCardPlayable(false);
+        this.inGamePointsController.ResetPoints();
         this.roundManager.Destroy();
         this.CleanupRound();
         this.DealHand();
         switch (gameName)
         {
             case Constants.TraditionalRoundManager.GameName:
-                this.roundManager = new TraditionalRoundManager(this, this.scoreMenu, this.hands);
+                this.roundManager = new TraditionalRoundManager(this, this.scoreMenu, this.inGamePointsController, this.hands);
                 break;
             case Constants.SingleRoundManager.GameName:
-                this.roundManager = new SingleRoundManager(this, this.scoreMenu, this.hands);
+                this.roundManager = new SingleRoundManager(this, this.scoreMenu, this.inGamePointsController, this.hands);
                 break;
             case Constants.ChaosRoundManager.GameName:
-                this.roundManager = new ChaosRoundManager(this, this.scoreMenu, this.hands);
+                this.roundManager = new ChaosRoundManager(this, this.scoreMenu, this.inGamePointsController, this.hands);
                 break;
             default:
                 throw new Exception("Incorrect game name provided");

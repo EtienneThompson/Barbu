@@ -46,6 +46,7 @@ public class Constants
         public const string GamesMenu = "GamesMenu";
         public const string SettingsMenu = "SettingsMenu";
         public const string RoundOverlay = "RoundOverlay";
+        public const string InGamePoints = "InGamePoints";
     }
 
     public static class PlayerIds
