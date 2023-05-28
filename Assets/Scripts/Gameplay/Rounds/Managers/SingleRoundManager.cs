@@ -4,8 +4,8 @@ using UnityEngine;
 
 public class SingleRoundManager : BaseRoundManager
 {
-    public SingleRoundManager(GameBoard gameBoard, ScoreMenu scoreMenu, Hand[] hands)
-    : base(Constants.SingleRoundManager.MaxRounds, gameBoard, scoreMenu, hands)
+    public SingleRoundManager(GameBoard gameBoard, ScoreMenu scoreMenu, InGamePointsController inGamePointsController, Hand[] hands)
+    : base(Constants.SingleRoundManager.MaxRounds, gameBoard, scoreMenu, inGamePointsController, hands)
     {
         var heartsRound = new HeartsRound(this.roundContext);
         this.roundContext.SetState(heartsRound);

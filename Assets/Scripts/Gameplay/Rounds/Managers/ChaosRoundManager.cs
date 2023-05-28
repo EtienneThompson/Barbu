@@ -4,8 +4,8 @@ using UnityEngine;
 
 public class ChaosRoundManager : BaseRoundManager
 {
-    public ChaosRoundManager(GameBoard gameBoard, ScoreMenu scoreMenu, Hand[] hands)
-    : base(Constants.ChaosRoundManager.MaxRounds, gameBoard, scoreMenu, hands)
+    public ChaosRoundManager(GameBoard gameBoard, ScoreMenu scoreMenu, InGamePointsController inGamePointsController, Hand[] hands)
+    : base(Constants.ChaosRoundManager.MaxRounds, gameBoard, scoreMenu, inGamePointsController, hands)
     {
         var chaosRound = new ChaosRound(this.roundContext);
 

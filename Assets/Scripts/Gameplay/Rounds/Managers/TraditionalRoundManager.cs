@@ -3,8 +3,8 @@ using System.Collections.Generic;
 
 public class TraditionalRoundManager : BaseRoundManager
 {
-    public TraditionalRoundManager(GameBoard gameBoard, ScoreMenu scoreMenu, Hand[] hands)
-    : base(Constants.TraditionalRoundManager.MaxRounds, gameBoard, scoreMenu, hands)
+    public TraditionalRoundManager(GameBoard gameBoard, ScoreMenu scoreMenu, InGamePointsController inGamePointsController, Hand[] hands)
+    : base(Constants.TraditionalRoundManager.MaxRounds, gameBoard, scoreMenu, inGamePointsController, hands)
     {
         var everythingRound = new EverythingRound(this.roundContext);
         var nothingRound = new NothingRound(this.roundContext, everythingRound);
