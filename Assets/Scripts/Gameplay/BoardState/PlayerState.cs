@@ -31,12 +31,8 @@ public class PlayerState : GameState
         }
         foreach (var card in cardsInSuit)
         {
-            card.Highlight();
+            card.Highlight(Color.yellow);
         }
-
-        GameObject player1WonPilesObject = GameObject.Find("MustPlayStartingSuit");
-        TextMeshProUGUI player1WonPiles = player1WonPilesObject.GetComponent<TextMeshProUGUI>();
-        player1WonPiles.text = "Must Play Starting Suit: " + this.stateMachine.MustPlayCardInStartingSuit();
     }
 
     public override void CleanUp()

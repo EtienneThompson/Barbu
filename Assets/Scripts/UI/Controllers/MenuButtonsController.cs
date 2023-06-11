@@ -15,7 +15,7 @@ public class MenuButtonsController : MonoBehaviour
     {
         this.gamesMenu = GameObject.Find(Constants.GameObjects.GamesMenu);
         this.settingsMenu = GameObject.Find(Constants.GameObjects.SettingsMenu);
-        this.menuButtons = GameObject.Find(Constants.GameObjects.MenuButtons);
+        this.menuButtons = GameObject.Find(Constants.GameObjects.InGamePoints);
         var document = this.menuButtons.GetComponent<UIDocument>();
         var root = document.rootVisualElement;
 

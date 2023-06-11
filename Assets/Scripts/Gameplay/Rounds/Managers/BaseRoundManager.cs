@@ -8,11 +8,11 @@ using TMPro;
 public class BaseRoundManager : IRoundManager
 {
     protected Card[] currentPile = new Card[Constants.CardsPerPile];
-    protected int numCardsInPile = 0;
     protected int pilesPlayed = 0;
     protected string roundStartingPlayerId = Constants.PlayerIds.Player1;
     protected int currentRound = 0;
     protected int totalRounds;
+    protected Card highestCard;
 
     protected RoundContext roundContext;
     protected GameStateContext gameStateContext;
@@ -40,6 +40,7 @@ public class BaseRoundManager : IRoundManager
         this.gameBoard = gameBoard;
         this.inGamePointsController = inGamePointsController;
         this.totalRounds = totalRounds;
+        this.highestCard = null;
 
         // Initialize general gameplay loop.
         var playerState = new PlayerState(this.gameStateContext, Constants.PlayerIds.Player1, hands[0]);
@@ -153,21 +154,25 @@ public class BaseRoundManager : IRoundManager
     protected void OnCardPlayed(Card card)
     {
         this.stateMachine.SetCardPlayable(false);
-
-        if (this.numCardsInPile == 0)
-        {
-            this.stateMachine.SetStartingSuit(card.suit);
-            GameObject startingSuitLabelObject = GameObject.Find("StartingSuitLabel");
-            TextMeshProUGUI startingSuitLabel = startingSuitLabelObject.GetComponent<TextMeshProUGUI>();
-            startingSuitLabel.text = "Starting Suit: " + card.suit;
-        }
-        
-        this.currentPile[this.numCardsInPile] = card;
-        this.numCardsInPile++;
-
         this.gameStateContext.CleanUp();
 
-        if (this.numCardsInPile == Constants.CardsPerPile) {
+        if (this.stateMachine.NumCardsPlayed() == 1)
+        {
+            this.stateMachine.SetStartingSuit(card.suit);
+        }
+
+        this.currentPile[this.stateMachine.NumCardsPlayed() - 1] = card;
+
+        if (highestCard != null)
+        {
+            highestCard.RemoveHighlight();
+        }
+
+        var highestCardIndex = this.FindHighestCardIndex();
+        this.highestCard = this.currentPile[highestCardIndex];
+        this.highestCard.Highlight(new Color(0.0f, 0.0f, 255.0f, 1.0f));
+
+        if (this.stateMachine.NumCardsPlayed() == Constants.CardsPerPile) {
             if (this.ResolvePile())
             {
                 return;
@@ -176,7 +181,7 @@ public class BaseRoundManager : IRoundManager
 
         this.stateMachine.SetCardPlayable(true);
 
-        if (this.numCardsInPile == 0)
+        if (this.stateMachine.NumCardsPlayed() == 0)
         {
             // Start the new state so that if the player is a computer they will make a move.
             this.gameStateContext.Start();
@@ -192,15 +197,7 @@ public class BaseRoundManager : IRoundManager
     private bool ResolvePile()
     {
         this.pilesPlayed++;
-        var highestCardIndex = 0;
-        for (int i = 0; i < this.numCardsInPile; i++)
-        {
-            if (this.currentPile[i].suit == this.stateMachine.GetStartingSuit() &&
-                this.currentPile[i].rank > this.currentPile[highestCardIndex].rank)
-            {
-                highestCardIndex = i;
-            }
-        }
+        var highestCardIndex = this.FindHighestCardIndex();
 
         // Determine which player's card was the highest one played.
         var playerId = this.currentPile[highestCardIndex].playerId;
@@ -215,15 +212,15 @@ public class BaseRoundManager : IRoundManager
         this.inGamePointsController.UpdatePlayerPoints(playerId, pilePoints);
 
         // Hide the cards in the UI.
-        for (int i = 0; i < this.numCardsInPile; i++)
+        for (int i = 0; i < this.stateMachine.NumCardsPlayed(); i++)
         {
             this.currentPile[i].gameObject.SetActive(false);
             this.currentPile[i].GetComponent<Renderer>().enabled = false;
             this.currentPile[i] = null;
         }
 
-        this.numCardsInPile = 0;
         this.stateMachine.ResetNumCardsPlayed();
+        this.highestCard = null;
         this.stateMachine.SetStartingSuit(string.Empty);
 
         if (this.roundContext.IsRoundOver(this.currentRound, this.playerPoints, this.pilesPlayed))
@@ -234,6 +231,26 @@ public class BaseRoundManager : IRoundManager
         }
 
         return false;
+    }
+
+    private int FindHighestCardIndex()
+    {
+        var highestCardIndex = 0;
+        for (int i = 0; i < this.currentPile.Length; i++)
+        {
+            if (this.currentPile[i] == null)
+            {
+                continue;
+            }
+
+            if (this.currentPile[i].suit == this.stateMachine.GetStartingSuit() &&
+                this.currentPile[i].rank > this.currentPile[highestCardIndex].rank)
+            {
+                highestCardIndex = i;
+            }
+        }
+
+        return highestCardIndex;
     }
 
     private GameState GetPlayerFromId(string id)
