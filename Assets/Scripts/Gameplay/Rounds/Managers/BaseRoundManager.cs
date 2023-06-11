@@ -157,9 +157,6 @@ public class BaseRoundManager : IRoundManager
         if (this.stateMachine.NumCardsPlayed() == 1)
         {
             this.stateMachine.SetStartingSuit(card.suit);
-            GameObject startingSuitLabelObject = GameObject.Find("StartingSuitLabel");
-            TextMeshProUGUI startingSuitLabel = startingSuitLabelObject.GetComponent<TextMeshProUGUI>();
-            startingSuitLabel.text = "Starting Suit: " + card.suit;
             card.Highlight(Color.green);
         }
         
