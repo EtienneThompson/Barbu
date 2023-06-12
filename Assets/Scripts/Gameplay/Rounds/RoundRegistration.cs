@@ -10,10 +10,26 @@ public class RoundRegistration
     public static Type[] registeredRounds = new Type[]
     {
         typeof(HeartsRound),
+        typeof(DiamondsRound),
+        typeof(SpadesRound),
+        typeof(ClubsRound),
+        typeof(TwosRound),
+        typeof(ThreesRound),
+        typeof(FoursRound),
+        typeof(FivesRound),
+        typeof(SixesRound),
+        typeof(SevensRound),
+        typeof(EightsRound),
+        typeof(NinesRound),
+        typeof(TensRound),
+        typeof(JacksRound),
         typeof(QueensRound),
+        typeof(KingOfHeartsRound),
+        typeof(AcesRound),
         typeof(KingOfHeartsRound),
         typeof(PilesRound),
         typeof(NothingRound),
+        typeof(FaceCardsRound),
     };
 
     public static Round GetRandomRound()
