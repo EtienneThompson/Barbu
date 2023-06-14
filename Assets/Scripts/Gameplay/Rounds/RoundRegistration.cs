@@ -1,7 +1,4 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Reflection;
 using System.Runtime.Serialization;
 using UnityEngine;
 
@@ -30,6 +27,8 @@ public class RoundRegistration
         typeof(PilesRound),
         typeof(NothingRound),
         typeof(FaceCardsRound),
+        typeof(EvensRound),
+        typeof(OddsRound),
     };
 
     public static Round GetRandomRound()
