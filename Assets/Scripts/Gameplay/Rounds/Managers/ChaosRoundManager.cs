@@ -19,4 +19,14 @@ public class ChaosRoundManager : BaseRoundManager
         this.roundContext.SetState(chaosRound);
         this.gameStateContext.Start();
     }
+
+    protected override void MarkGameAsFinished()
+    {
+        Statistics.IncrementGamesFinished(Statistics.GameTypes.Chaos);
+    }
+
+    protected override void MarkGameAsWon()
+    {
+        Statistics.IncrementGamesWon(Statistics.GameTypes.Chaos);
+    }
 }

@@ -11,4 +11,14 @@ public class SingleRoundManager : BaseRoundManager
         this.roundContext.SetState(heartsRound);
         this.gameStateContext.Start();
     }
+
+    protected override void MarkGameAsFinished()
+    {
+        Statistics.IncrementGamesFinished(Statistics.GameTypes.Single);
+    }
+
+    protected override void MarkGameAsWon()
+    {
+        Statistics.IncrementGamesWon(Statistics.GameTypes.Single);
+    }
 }

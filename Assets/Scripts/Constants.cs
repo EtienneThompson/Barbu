@@ -60,6 +60,16 @@ public class Constants
     public static class PlayerPrefsKeys
     {
         public const string SortingOptions = "SortingOptions";
+
+        public const string TraditionalGamesPlayed = "TraditionalGamesPlayed";
+        public const string TraditionalGamesFinished = "TraditionalGamesFinished";
+        public const string TraditionalGamesWon = "TraditionalGamesWon";
+        public const string SingleGamesPlayed = "SingleGamesPlayed";
+        public const string SingleGamesFinished = "SingleGamesFinished";
+        public const string SingleGamesWon = "SingleGamesWon";
+        public const string ChaosGamesPlayed = "ChaosGamesPlayed";
+        public const string ChaosGamesFinished = "ChaosGamesFinished";
+        public const string ChaosGamesWon = "ChaosGamesWon";
     }
 
     public static class AdGameIds
