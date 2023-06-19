@@ -51,6 +51,7 @@ public class GameBoard : MonoBehaviour
 
         this.DealHand();
         this.roundManager = new TraditionalRoundManager(this, this.scoreMenu, this.inGamePointsController, this.hands);
+        Statistics.IncrementGamesPlayed(Statistics.GameTypes.Traditional);
         this.roundManager.PreRound();
     }
 
@@ -65,12 +66,15 @@ public class GameBoard : MonoBehaviour
         {
             case Constants.TraditionalRoundManager.GameName:
                 this.roundManager = new TraditionalRoundManager(this, this.scoreMenu, this.inGamePointsController, this.hands);
+                Statistics.IncrementGamesPlayed(Statistics.GameTypes.Traditional);
                 break;
             case Constants.SingleRoundManager.GameName:
                 this.roundManager = new SingleRoundManager(this, this.scoreMenu, this.inGamePointsController, this.hands);
+                Statistics.IncrementGamesPlayed(Statistics.GameTypes.Single);
                 break;
             case Constants.ChaosRoundManager.GameName:
                 this.roundManager = new ChaosRoundManager(this, this.scoreMenu, this.inGamePointsController, this.hands);
+                Statistics.IncrementGamesPlayed(Statistics.GameTypes.Chaos);
                 break;
             default:
                 throw new Exception("Incorrect game name provided");

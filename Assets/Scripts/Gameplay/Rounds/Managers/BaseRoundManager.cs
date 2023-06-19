@@ -110,6 +110,18 @@ public class BaseRoundManager : IRoundManager
         this.gameBoard.CleanupRound();
         if (this.currentRound + 1 == this.totalRounds)
         {
+            Debug.Log("Marking game as finished");
+            this.MarkGameAsFinished();
+            Statistics.GetGamesFinished();
+
+            var winningPlayer = this.GetWinningPlayerId();
+            if (winningPlayer.Equals(Constants.PlayerIds.Player1))
+            {
+                Debug.Log("Marking game as won");
+                this.MarkGameAsWon();
+                Statistics.GetGamesWon();
+            }
+
             AdvertisementController advertisementController = this.gameBoard.GetComponent<AdvertisementController>();
             advertisementController.RequestToShowInterstitial();
         }
@@ -194,6 +206,16 @@ public class BaseRoundManager : IRoundManager
         }
     }
 
+    protected virtual void MarkGameAsFinished()
+    {
+        throw new Exception("This method must be overridden.");
+    }
+
+    protected virtual void MarkGameAsWon()
+    {
+        throw new Exception("This method must be overridden.");
+    }
+
     private bool ResolvePile()
     {
         this.pilesPlayed++;
@@ -231,6 +253,19 @@ public class BaseRoundManager : IRoundManager
         }
 
         return false;
+    }
+
+    private string GetWinningPlayerId()
+    {
+        Dictionary<string, int> playerPointsSum = new Dictionary<string, int>
+        {
+            [Constants.PlayerIds.Player1] = this.playerPoints[Constants.PlayerIds.Player1].Sum(),
+            [Constants.PlayerIds.Player2] = this.playerPoints[Constants.PlayerIds.Player2].Sum(),
+            [Constants.PlayerIds.Player3] = this.playerPoints[Constants.PlayerIds.Player3].Sum(),
+            [Constants.PlayerIds.Player4] = this.playerPoints[Constants.PlayerIds.Player4].Sum(),
+        };
+
+        return playerPointsSum.Aggregate((l, r) => l.Value < r.Value ? l : r).Key;
     }
 
     private int FindHighestCardIndex()

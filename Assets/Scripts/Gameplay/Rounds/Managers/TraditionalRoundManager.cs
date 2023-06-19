@@ -16,4 +16,14 @@ public class TraditionalRoundManager : BaseRoundManager
 
         this.gameStateContext.Start();
     }
+
+    protected override void MarkGameAsFinished()
+    {
+        Statistics.IncrementGamesFinished(Statistics.GameTypes.Traditional);
+    }
+
+    protected override void MarkGameAsWon()
+    {
+        Statistics.IncrementGamesWon(Statistics.GameTypes.Traditional);
+    }
 }
