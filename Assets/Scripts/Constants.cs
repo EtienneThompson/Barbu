@@ -47,6 +47,7 @@ public class Constants
         public const string SettingsMenu = "SettingsMenu";
         public const string RoundOverlay = "RoundOverlay";
         public const string InGamePoints = "InGamePoints";
+        public const string HowToPlayScreen = "HowToPlayScreen";
     }
 
     public static class PlayerIds
@@ -60,6 +61,7 @@ public class Constants
     public static class PlayerPrefsKeys
     {
         public const string SortingOptions = "SortingOptions";
+        public const string SeenHowToPlayInstructions = "SeenHowToPlayInstructions";
 
         public const string TraditionalGamesPlayed = "TraditionalGamesPlayed";
         public const string TraditionalGamesFinished = "TraditionalGamesFinished";

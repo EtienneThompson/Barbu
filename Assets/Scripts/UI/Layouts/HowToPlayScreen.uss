@@ -1,0 +1,36 @@
+#container {
+	flex-grow: 1;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+	width: 100%;
+	background-color: white;
+}
+
+#horizontal-end {
+	flex-grow: 1;
+	flex-direction: row;
+	justify-content: flex-end;
+	align-items: flex-start;
+	width: 80%;
+	height: 10%;
+	margin-bottom: 10px;
+}
+
+#horizontal-start {
+	flex-grow: 1;
+	flex-direction: row;
+	align-items: flex-start;
+	width: 80%;
+	height: 85%;
+}
+
+#vertical-scroller {
+	width: 100%;
+	height: 40%;
+}
+
+.rules-text {
+	color: black;
+	white-space: normal;
+}
