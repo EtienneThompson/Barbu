@@ -45,6 +45,16 @@ public class GameBoard : MonoBehaviour
         GameObject settingsMenu = GameObject.Find(Constants.GameObjects.SettingsMenu);
         settingsMenu.SetActive(false);
 
+        if (Settings.HasSeenHowToPlayByDefault())
+        {
+            GameObject howToPlayScreen = GameObject.Find(Constants.GameObjects.HowToPlayScreen);
+            howToPlayScreen.SetActive(false);
+        }
+        else
+        {
+            Settings.SetSeenHowToPlayByDefault();
+        }
+
         this.scoreMenu = scoreBoard.GetComponent<ScoreMenu>();
         GameObject inGamePoints = GameObject.Find(Constants.GameObjects.InGamePoints);
         this.inGamePointsController = inGamePoints.GetComponent<InGamePointsController>();

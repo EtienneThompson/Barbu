@@ -21,6 +21,7 @@
                 <ui:VisualElement name="vertical-top">
                     <ui:Button class="overlay-button" name="settings" text="Settings" />
                     <ui:Button class="overlay-button" name="games" text="Games" />
+                    <ui:Button class="overlay-button" name="howtoplay" text="How To Play" />
                 </ui:VisualElement>
             </ui:VisualElement>
         </ui:VisualElement>

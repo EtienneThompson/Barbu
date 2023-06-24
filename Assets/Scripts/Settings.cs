@@ -45,4 +45,14 @@ public class Settings
             PlayerPrefs.SetInt(Constants.PlayerPrefsKeys.SortingOptions, (int)value);
         }
     }
+
+    public static bool HasSeenHowToPlayByDefault()
+    {
+        return PlayerPrefs.GetInt(Constants.PlayerPrefsKeys.SeenHowToPlayInstructions) == 1;
+    }
+
+    public static void SetSeenHowToPlayByDefault()
+    {
+        PlayerPrefs.SetInt(Constants.PlayerPrefsKeys.SeenHowToPlayInstructions, 1);
+    }
 }
