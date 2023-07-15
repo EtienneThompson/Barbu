@@ -7,9 +7,17 @@
 >
     <Style src="GamesMenu.uss" />
     <ui:VisualElement name="column">
-        <ui:Button class="games-button" name="traditional" text="Traditional" />
-        <ui:Button class="games-button" name="single" text="Single" />
-        <ui:Button class="games-button" name="chaos" text="Chaos" />
-        <ui:Button class="games-button" name="close" text="Close" />
+        <ui:VisualElement name="row">
+            <ui:Button class="games-button" name="traditional" text="Traditional" />
+        </ui:VisualElement>
+        <ui:VisualElement name="row">
+            <ui:Button class="games-button" name="single" text="Single" />
+        </ui:VisualElement>
+        <ui:VisualElement name="row">
+            <ui:Button class="games-button" name="chaos" text="Chaos" />
+        </ui:VisualElement>
+        <ui:VisualElement name="row">
+            <ui:Button class="games-button" name="close" text="Close" />
+        </ui:VisualElement>
     </ui:VisualElement>
 </ui:UXML>
