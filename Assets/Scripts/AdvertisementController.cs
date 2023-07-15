@@ -16,14 +16,19 @@ public class AdvertisementController : MonoBehaviour, IUnityAdsInitializationLis
         {
             this.adId = Constants.AdGameIds.AppleGameId;
         }
+        else if (Application.platform == RuntimePlatform.Android)
+        {
+            this.adId = Constants.AdGameIds.AndroidGameId;
+        }
         else
         {
             this.adId = Constants.AdGameIds.AndroidGameId;
         }
 
+        Debug.Log("Using ad id " + this.adId);
         if (!Advertisement.isInitialized && Advertisement.isSupported)
         {
-            Advertisement.Initialize(this.adId, true, this);
+            Advertisement.Initialize(this.adId);
         }
     }
 
