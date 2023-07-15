@@ -20,6 +20,7 @@ public class BaseRoundManager : IRoundManager
     protected StateMachine stateMachine;
     protected ScoreMenu scoreMenu;
     protected GameBoard gameBoard;
+    protected AdvertisementController advertisementController;
     protected InGamePointsController inGamePointsController;
     protected Dictionary<string, List<Card[]>> playerWonPiles;
     protected Dictionary<string, int[]>playerPoints;
@@ -41,6 +42,8 @@ public class BaseRoundManager : IRoundManager
         this.inGamePointsController = inGamePointsController;
         this.totalRounds = totalRounds;
         this.highestCard = null;
+        this.advertisementController = this.gameBoard.GetComponent<AdvertisementController>();
+        this.advertisementController.RequestToShowInterstitial();
 
         // Initialize general gameplay loop.
         var playerState = new PlayerState(this.gameStateContext, Constants.PlayerIds.Player1, hands[0]);
@@ -122,8 +125,7 @@ public class BaseRoundManager : IRoundManager
                 Statistics.GetGamesWon();
             }
 
-            AdvertisementController advertisementController = this.gameBoard.GetComponent<AdvertisementController>();
-            advertisementController.RequestToShowInterstitial();
+            this.advertisementController.ShowInterstitialAd();
         }
         else
         {
