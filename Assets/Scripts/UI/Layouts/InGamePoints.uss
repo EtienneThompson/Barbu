@@ -9,17 +9,31 @@
 #generic-row {
 	flex-grow: 1;
 	flex-direction: row;
-	width: 100%;
+	width: 90%;
 	height: 100%;
 }
 
-#top-left-row {
+#left-column {
 	flex-grow: 1;
-	flex-direction: row;
+	flex-direction: column;
 	justify-content: flex-start;
 	align-items: flex-start;
 	height: 100%;
 	width: 100%;
+}
+
+#right-column {
+	flex-grow: 1;
+	flex-direction: column;
+	width: 100%;
+}
+
+#top-right-row {
+	flex-grow: 1;
+	flex-direction: row;
+	justify-content: flex-end;
+	width: auto;
+	height: 100%;
 }
 
 #bottom-right-row {
@@ -27,8 +41,12 @@
 	flex-direction: row;
 	justify-content: flex-end;
 	align-items: flex-end;
+	width: auto;
 	height: 100%;
-	width: 100%;
+}
+
+#button-column {
+	width: 40px;
 }
 
 .point-container {
@@ -54,7 +72,7 @@
 
 .overlay-button {
     font-size: 5px;
-    height: 10%;
-    width: 6%;
+    height: 25px;
+    width: 30px;
     border-radius: 50%;
 }

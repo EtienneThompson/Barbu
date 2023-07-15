@@ -8,7 +8,7 @@
     <Style src="InGamePoints.uss" />
     <ui:VisualElement name="container">
         <ui:VisualElement name="generic-row">
-            <ui:VisualElement name="top-left-row">
+            <ui:VisualElement name="left-column">
                 <ui:VisualElement class="point-container">
                     <ui:Label class="point-label" text="Player 3 →" />
                     <ui:Label name="player3points" class="text" text="Points 3" />
@@ -17,21 +17,23 @@
                     <ui:Label name="player2points" class="text" text="Points 2" />
                 </ui:VisualElement>
             </ui:VisualElement>
-            <ui:VisualElement name="horizontal-end">
-                <ui:VisualElement name="vertical-top">
-                    <ui:Button class="overlay-button" name="settings" text="Settings" />
-                    <ui:Button class="overlay-button" name="games" text="Games" />
-                    <ui:Button class="overlay-button" name="howtoplay" text="How To Play" />
+            <ui:VisualElement name="right-column">
+                <ui:VisualElement name="top-right-row">
+                    <ui:VisualElement name="button-column">
+                        <ui:Button class="overlay-button" name="settings" text="Settings" />
+                        <ui:Button class="overlay-button" name="games" text="Games" />
+                        <ui:Button class="overlay-button" name="howtoplay" text="How To Play" />
+                    </ui:VisualElement>
                 </ui:VisualElement>
-            </ui:VisualElement>
-        </ui:VisualElement>
-        <ui:VisualElement name="bottom-right-row">
-            <ui:VisualElement class="point-container">
-                <ui:Label class="point-label" text="↑ Player 4" />
-                <ui:Label name="player4points" class="text" text="Points 4" />
-                <ui:VisualElement class="horizontal-line" />
-                <ui:Label class="point-label" text="← Player 1" />
-                <ui:Label name="player1points" class="text" text="Points 1"/>
+                <ui:VisualElement name="bottom-right-row">
+                    <ui:VisualElement class="point-container">
+                        <ui:Label class="point-label" text="↑ Player 4" />
+                        <ui:Label name="player4points" class="text" text="Points 4" />
+                        <ui:VisualElement class="horizontal-line" />
+                        <ui:Label class="point-label" text="← Player 1" />
+                        <ui:Label name="player1points" class="text" text="Points 1"/>
+                    </ui:VisualElement>
+                </ui:VisualElement>
             </ui:VisualElement>
         </ui:VisualElement>
     </ui:VisualElement>
