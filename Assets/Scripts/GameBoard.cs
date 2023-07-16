@@ -70,6 +70,7 @@ public class GameBoard : MonoBehaviour
         this.stateMachine.SetCardPlayable(false);
         this.inGamePointsController.ResetPoints();
         this.roundManager.Destroy();
+        this.roundManager = null;
         this.CleanupRound();
         this.DealHand();
         switch (gameName)
@@ -145,7 +146,7 @@ public class GameBoard : MonoBehaviour
         }
     }
 
-    private void DealHand<T>(T[] deck)
+    private void DealHand(string[] deck)
     {
         for (int i = 0; i < 4; i++)
         {
@@ -160,8 +161,8 @@ public class GameBoard : MonoBehaviour
                 GameObject myCard = Instantiate(Resources.Load("BlankPlayingCard", typeof(GameObject)), new Vector3(0, 0, 0), Quaternion.identity) as GameObject;
                 Card card = myCard.GetComponent<Card>();
                 var index = i * 4 + j;
-                var suit = cards[index].Substring(0, cards[index].Length - 2);
-                var rank = cards[index].Substring(cards[index].Length - 2);
+                var suit = deck[index].Substring(0, deck[index].Length - 2);
+                var rank = deck[index].Substring(deck[index].Length - 2);
                 var playerId = (j + 1).ToString();
                 card.InitializeData(suit, rank, playerId);
 

@@ -13,8 +13,11 @@ public class StateMachine
 
     private bool playerCardMustBeStartingSuit;
 
+    private EventsController eventsController;
+
     public StateMachine()
     {
+        this.eventsController = EventsController.GetInstance();
     }
 
     public int NumCardsPlayed()
@@ -70,5 +73,14 @@ public class StateMachine
     public void SetMenuOpen(bool state)
     {
         instance.menuOpen = state;
+
+        if (state)
+        {
+            this.eventsController.Pause();
+        }
+        else
+        {
+            this.eventsController.Resume();
+        }
     }
 }
