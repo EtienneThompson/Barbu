@@ -16,12 +16,10 @@ public class Card : MonoBehaviour
     public CardState state;
     public const float speed = 150.0f;
     private StateMachine stateMachine;
+    private EventsController eventsController;
     private Renderer meshRenderer;
     private Color initialColor;
     private string resourceRank;
-
-    public delegate void OnPlayed(Card card);
-    public static OnPlayed onPlayed;
 
     public void InitializeData(string suit, string rank, string playerId)
     {
@@ -41,6 +39,7 @@ public class Card : MonoBehaviour
         this.meshRenderer = GetComponent<MeshRenderer>();
         this.state = CardState.Waiting;
         this.stateMachine = new StateMachine();
+        this.eventsController = EventsController.GetInstance();
 
         string path = "PlayingCards/Resource/Materials/BackColor_Black/Black_PlayingCards_" + this.suit + this.resourceRank + "_00";
         this.meshRenderer.material = Resources.Load(path, typeof(Material)) as Material;
@@ -164,6 +163,6 @@ public class Card : MonoBehaviour
             yield return null;
         }
         yield return new WaitForSeconds(0.5f);
-        onPlayed(this);
+        eventsController.Play(this);
     }
 }

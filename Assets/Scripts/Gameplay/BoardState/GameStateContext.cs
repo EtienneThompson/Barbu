@@ -16,21 +16,29 @@ public class GameStateContext : IEventListener
 
     public void Next()
     {
+        // Don't move to the next state if gets called while setting up.
+        if (this.stateMachine.IsSettingUp())
+        {
+            return;
+        }
+
         // If next is called, move to the next state, but only start if the machine
         // isn't paused.
-        Debug.Log("Going to next state");
         current.GoNext();
 
         if (!this.isPaused)
         {
-            Debug.Log("Game is not paused, starting...");
             current.Start();
         }
     }
 
     public void Start()
     {
-        Debug.Log("Starting game context");
+        if (this.stateMachine.IsSettingUp())
+        {
+            return;
+        }
+
         if (!this.isPaused)
         {
             Debug.Log("Game is not paused, starting...");
@@ -40,14 +48,12 @@ public class GameStateContext : IEventListener
 
     public void Pause()
     {
-        Debug.Log("Pause event received. Pausing game...");
         // Setting isPaused to true will break the computer states from running.
         this.isPaused = true;
     }
 
     public void Resume()
     {
-        Debug.Log("Resume event received. Resuming game...");
         // Need to start the state machine again, so will call start.
         this.isPaused = false;
         this.Start();

@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 
@@ -9,9 +7,6 @@ using UnityEngine;
 ///
 /// For example, the gameplay loop system can subscribe to the pause or resume
 /// delegates to be told when to stop by another system, i.e. the menuing system.
-///
-/// The singleton state machine should be the only controller to call these methods.
-/// In practice, this should also be a singleton.
 /// </summary>
 public class EventsController
 {
@@ -20,6 +15,9 @@ public class EventsController
 
     public delegate void ResumeGame();
     public static ResumeGame resumeGame;
+
+    public delegate void PlayCard(Card card);
+    public static PlayCard playCard;
 
     private static EventsController singleton;
 
@@ -48,5 +46,10 @@ public class EventsController
     {
         Debug.Log("EventsController - Resuming game");
         resumeGame();
+    }
+
+    public void Play(Card card)
+    {
+        playCard(card);
     }
 }

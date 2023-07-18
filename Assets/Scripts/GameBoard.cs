@@ -55,6 +55,7 @@ public class GameBoard : MonoBehaviour
             Settings.SetSeenHowToPlayByDefault();
         }
 
+        this.stateMachine.SetIsSettingUp(true);
         this.scoreMenu = scoreBoard.GetComponent<ScoreMenu>();
         GameObject inGamePoints = GameObject.Find(Constants.GameObjects.InGamePoints);
         this.inGamePointsController = inGamePoints.GetComponent<InGamePointsController>();
@@ -62,16 +63,17 @@ public class GameBoard : MonoBehaviour
         this.DealHand();
         this.roundManager = new TraditionalRoundManager(this, this.scoreMenu, this.inGamePointsController, this.hands);
         Statistics.IncrementGamesPlayed(Statistics.GameTypes.Traditional);
+        this.stateMachine.SetIsSettingUp(false);
         this.roundManager.PreRound();
     }
 
     public void CreateNewGame(string gameName)
     {
+        this.stateMachine.SetIsSettingUp(true);
         this.stateMachine.SetCardPlayable(false);
         this.stateMachine.ResetNumCardsPlayed();
         this.inGamePointsController.ResetPoints();
         this.roundManager.Destroy();
-        this.roundManager = null;
         this.CleanupRound();
         this.DealHand();
         switch (gameName)
@@ -91,6 +93,7 @@ public class GameBoard : MonoBehaviour
             default:
                 throw new Exception("Incorrect game name provided");
         }
+        this.stateMachine.SetIsSettingUp(false);
         this.roundManager.PreRound();
     }
 
