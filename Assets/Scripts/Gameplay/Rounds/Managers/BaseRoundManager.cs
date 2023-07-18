@@ -158,16 +158,16 @@ public class BaseRoundManager : IRoundManager, IEventListener
     {
         // Listen for events when cards are being played.
         EventsController.playCard+= this.OnCardPlayed;
-        ScoreMenu.onRoundOver += this.CleanupRound;
-        RoundOverlayController.finishedAnimation += this.StartRound;
+        EventsController.endRound += this.CleanupRound;
+        EventsController.roundAnimationOver += this.StartRound;
     }
 
     public void Destroy()
     {
         // Deregister event listeners when this round is no longer applicable.
         EventsController.playCard -= this.OnCardPlayed;
-        ScoreMenu.onRoundOver -= this.CleanupRound;
-        RoundOverlayController.finishedAnimation -= this.StartRound;
+        EventsController.endRound -= this.CleanupRound;
+        EventsController.roundAnimationOver -= this.StartRound;
 
         // Clean up any dependency listeners.
         this.gameStateContext.Destroy();

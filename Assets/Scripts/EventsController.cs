@@ -19,6 +19,12 @@ public class EventsController
     public delegate void PlayCard(Card card);
     public static PlayCard playCard;
 
+    public delegate void RoundOver();
+    public static RoundOver endRound;
+
+    public delegate void RoundAnimationOver();
+    public static RoundAnimationOver roundAnimationOver;
+
     private static EventsController singleton;
 
     private EventsController()
@@ -51,5 +57,15 @@ public class EventsController
     public void Play(Card card)
     {
         playCard(card);
+    }
+
+    public void EndRound()
+    {
+        endRound();
+    }
+
+    public void FinishRoundAnimation()
+    {
+        roundAnimationOver();
     }
 }

@@ -41,7 +41,6 @@ public class GameStateContext : IEventListener
 
         if (!this.isPaused)
         {
-            Debug.Log("Game is not paused, starting...");
             current.Start();
         }
     }
