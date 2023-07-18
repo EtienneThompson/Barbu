@@ -25,7 +25,7 @@ public class GameBoard : MonoBehaviour
         Application.targetFrameRate = 60;
         instance = this;
 
-        stateMachine = new StateMachine();
+        this.stateMachine = new StateMachine();
 
         // Create the deck of 52 cards.
         for (int i = 0; i < kCardSuits.Length; i++)
@@ -68,6 +68,7 @@ public class GameBoard : MonoBehaviour
     public void CreateNewGame(string gameName)
     {
         this.stateMachine.SetCardPlayable(false);
+        this.stateMachine.ResetNumCardsPlayed();
         this.inGamePointsController.ResetPoints();
         this.roundManager.Destroy();
         this.roundManager = null;
@@ -150,8 +151,7 @@ public class GameBoard : MonoBehaviour
     {
         for (int i = 0; i < 4; i++)
         {
-            Hand hand = new Hand();
-            hands[i] = hand;
+            hands[i] = new Hand();
         }
 
         for (int i = 0; i < 13; i++)

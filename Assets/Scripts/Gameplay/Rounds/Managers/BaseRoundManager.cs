@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
 
-public class BaseRoundManager : IRoundManager
+public class BaseRoundManager : IRoundManager, IEventListener
 {
     protected Card[] currentPile = new Card[Constants.CardsPerPile];
     protected int pilesPlayed = 0;
@@ -75,11 +75,7 @@ public class BaseRoundManager : IRoundManager
 
         // Set the initial state to the player.
         this.gameStateContext.SetState(playerState);
-
-        // Listen for events when cards are being played.
-        Card.onPlayed += this.OnCardPlayed;
-        ScoreMenu.onRoundOver += this.CleanupRound;
-        RoundOverlayController.finishedAnimation += this.StartRound;
+        this.Setup();
     }
 
     /// <summary>
@@ -158,11 +154,23 @@ public class BaseRoundManager : IRoundManager
         this.PreRound();
     }
 
+    public void Setup()
+    {
+        // Listen for events when cards are being played.
+        Card.onPlayed += this.OnCardPlayed;
+        ScoreMenu.onRoundOver += this.CleanupRound;
+        RoundOverlayController.finishedAnimation += this.StartRound;
+    }
+
     public void Destroy()
     {
         // Deregister event listeners when this round is no longer applicable.
         Card.onPlayed -= this.OnCardPlayed;
         ScoreMenu.onRoundOver -= this.CleanupRound;
+        RoundOverlayController.finishedAnimation -= this.StartRound;
+
+        // Clean up any dependency listeners.
+        this.gameStateContext.Destroy();
     }
 
     protected void OnCardPlayed(Card card)

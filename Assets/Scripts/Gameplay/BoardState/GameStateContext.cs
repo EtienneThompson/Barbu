@@ -2,16 +2,16 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class GameStateContext
+public class GameStateContext : IEventListener
 {
+    private StateMachine stateMachine;
     private IGameState current;
     private bool isPaused;
 
     public GameStateContext()
     {
-        // Listen to global pause/resume events.
-        EventsController.pauseGame += this.Pause;
-        EventsController.resumeGame += this.Resume;
+        this.stateMachine = new StateMachine();
+        this.Setup();
     }
 
     public void Next()
@@ -66,5 +66,19 @@ public class GameStateContext
     public IGameState GetCurrentState()
     {
         return this.current;
+    }
+
+    public void Setup()
+    {
+        // Listen to global pause/resume events.
+        EventsController.pauseGame += this.Pause;
+        EventsController.resumeGame += this.Resume;
+    }
+
+    public void Destroy()
+    {
+        // Stop listening.
+        EventsController.pauseGame -= this.Pause;
+        EventsController.resumeGame -= this.Resume;
     }
 }
