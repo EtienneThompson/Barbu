@@ -25,7 +25,7 @@ public class GameBoard : MonoBehaviour
         Application.targetFrameRate = 60;
         instance = this;
 
-        stateMachine = new StateMachine();
+        this.stateMachine = new StateMachine();
 
         // Create the deck of 52 cards.
         for (int i = 0; i < kCardSuits.Length; i++)
@@ -55,6 +55,7 @@ public class GameBoard : MonoBehaviour
             Settings.SetSeenHowToPlayByDefault();
         }
 
+        this.stateMachine.SetIsSettingUp(true);
         this.scoreMenu = scoreBoard.GetComponent<ScoreMenu>();
         GameObject inGamePoints = GameObject.Find(Constants.GameObjects.InGamePoints);
         this.inGamePointsController = inGamePoints.GetComponent<InGamePointsController>();
@@ -62,12 +63,15 @@ public class GameBoard : MonoBehaviour
         this.DealHand();
         this.roundManager = new TraditionalRoundManager(this, this.scoreMenu, this.inGamePointsController, this.hands);
         Statistics.IncrementGamesPlayed(Statistics.GameTypes.Traditional);
+        this.stateMachine.SetIsSettingUp(false);
         this.roundManager.PreRound();
     }
 
     public void CreateNewGame(string gameName)
     {
+        this.stateMachine.SetIsSettingUp(true);
         this.stateMachine.SetCardPlayable(false);
+        this.stateMachine.ResetNumCardsPlayed();
         this.inGamePointsController.ResetPoints();
         this.roundManager.Destroy();
         this.CleanupRound();
@@ -89,6 +93,7 @@ public class GameBoard : MonoBehaviour
             default:
                 throw new Exception("Incorrect game name provided");
         }
+        this.stateMachine.SetIsSettingUp(false);
         this.roundManager.PreRound();
     }
 
@@ -145,12 +150,11 @@ public class GameBoard : MonoBehaviour
         }
     }
 
-    private void DealHand<T>(T[] deck)
+    private void DealHand(string[] deck)
     {
         for (int i = 0; i < 4; i++)
         {
-            Hand hand = new Hand();
-            hands[i] = hand;
+            hands[i] = new Hand();
         }
 
         for (int i = 0; i < 13; i++)
@@ -160,8 +164,8 @@ public class GameBoard : MonoBehaviour
                 GameObject myCard = Instantiate(Resources.Load("BlankPlayingCard", typeof(GameObject)), new Vector3(0, 0, 0), Quaternion.identity) as GameObject;
                 Card card = myCard.GetComponent<Card>();
                 var index = i * 4 + j;
-                var suit = cards[index].Substring(0, cards[index].Length - 2);
-                var rank = cards[index].Substring(cards[index].Length - 2);
+                var suit = deck[index].Substring(0, deck[index].Length - 2);
+                var rank = deck[index].Substring(deck[index].Length - 2);
                 var playerId = (j + 1).ToString();
                 card.InitializeData(suit, rank, playerId);
 

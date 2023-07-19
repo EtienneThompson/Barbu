@@ -1,19 +1,15 @@
-using System;
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UIElements;
 
 public class ScoreMenu : MonoBehaviour
 {
-    private int currentRound;
-    public delegate void OnRoundOver();
-    public static OnRoundOver onRoundOver;
-
+    private EventsController eventsController;
     private Dictionary<int, Label[]> roundLabelMap;
 
     public void OnEnable()
     {
+        this.eventsController = EventsController.GetInstance();
         GameObject scoreBoard = GameObject.Find(Constants.GameObjects.ScoreMenuCanvas);
         var document = scoreBoard.GetComponent<UIDocument>();
         var root = document.rootVisualElement;
@@ -76,14 +72,13 @@ public class ScoreMenu : MonoBehaviour
         if (gameObject.activeSelf && Input.GetMouseButtonDown(0))
         {
             gameObject.SetActive(false);
-            onRoundOver();
+            this.eventsController.EndRound();
         }
     }
 
     public void UpdateScores(int round, Dictionary<string, int[]> playerPoints)
     {
         gameObject.SetActive(true);
-        this.currentRound = round;
         var total0Text = 0;
         var total1Text = 0;
         var total2Text = 0;

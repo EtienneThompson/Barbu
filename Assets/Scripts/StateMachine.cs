@@ -6,6 +6,7 @@ public class StateMachine
 {
     private static readonly StateMachine instance = new StateMachine();
 
+    private bool isSettingUp = false;
     private int numCardsPlayed = 0;
     private bool canCardBePlayed = false;
     private string startingSuit = string.Empty;
@@ -13,8 +14,21 @@ public class StateMachine
 
     private bool playerCardMustBeStartingSuit;
 
+    private EventsController eventsController;
+
     public StateMachine()
     {
+        this.eventsController = EventsController.GetInstance();
+    }
+
+    public void SetIsSettingUp(bool isSetup)
+    {
+        instance.isSettingUp = isSetup;
+    }
+
+    public bool IsSettingUp()
+    {
+        return instance.isSettingUp;
     }
 
     public int NumCardsPlayed()
@@ -67,8 +81,17 @@ public class StateMachine
         return instance.menuOpen;
     }
 
-    public void SetMenuOpen(bool state)
+    public void SetMenuOpen(bool isOpen)
     {
-        instance.menuOpen = state;
+        instance.menuOpen = isOpen;
+
+        if (isOpen)
+        {
+            this.eventsController.Pause();
+        }
+        else
+        {
+            this.eventsController.Resume();
+        }
     }
 }
