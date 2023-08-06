@@ -74,5 +74,16 @@
     font-size: 5px;
     height: 25px;
     width: 30px;
-    border-radius: 50%;
+	border-radius: 5px;
+	background-color: white;
+	border-color: none;
+}
+
+.button-text {
+	color: #000000;
+	-unity-font-style: bold;
+}
+
+#new-game-image {
+	--unity-image: resource("Icons/Buttons/new_game_button");
 }

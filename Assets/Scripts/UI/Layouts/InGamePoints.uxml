@@ -20,9 +20,18 @@
             <ui:VisualElement name="right-column">
                 <ui:VisualElement name="top-right-row">
                     <ui:VisualElement name="button-column">
-                        <ui:Button class="overlay-button" name="settings" text="Settings" />
-                        <ui:Button class="overlay-button" name="games" text="Games" />
-                        <ui:Button class="overlay-button" name="howtoplay" text="How To Play" />
+                        <ui:Button class="overlay-button" name="settings">
+                            <ui:Image style="--unity-image: resource('Icons/Buttons/settings_button');" />
+                            <ui:Label class="button-text" text="Settings" />
+                        </ui:Button>
+                        <ui:Button class="overlay-button" name="games">
+                            <ui:Image style="--unity-image: resource('Icons/Buttons/new_game_button');" />
+                            <ui:Label class="button-text" text="Games" />
+                        </ui:Button>
+                        <ui:Button class="overlay-button" name="howtoplay">
+                            <ui:Image style="--unity-image: resource('Icons/Buttons/rules_button');" />
+                            <ui:Label class="button-text" text="Rules" />
+                        </ui:Button>
                     </ui:VisualElement>
                 </ui:VisualElement>
                 <ui:VisualElement name="bottom-right-row">
