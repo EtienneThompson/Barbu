@@ -9,12 +9,31 @@
     <ui:VisualElement name="container">
         <ui:VisualElement name="generic-row">
             <ui:VisualElement name="left-column">
-                <ui:VisualElement class="point-container">
-                    <ui:Label class="point-label" text="Player 3 →" />
-                    <ui:Label name="player3points" class="text" text="Points 3" />
-                    <ui:VisualElement class="horizontal-line" />
-                    <ui:Label class="point-label" text="Player 2 ↓" />
-                    <ui:Label name="player2points" class="text" text="Points 2" />
+            </ui:VisualElement>
+            <ui:VisualElement name="middle-column">
+                <ui:VisualElement name="top-points-row">
+                    <ui:VisualElement name="left-points-section">
+                        <ui:VisualElement class="point-circle circle-1">
+                            <ui:Label name="player3points" class="point-text" text="0" />
+                        </ui:VisualElement>
+                    </ui:VisualElement>
+                    <ui:VisualElement name="right-points-section">
+                        <ui:VisualElement class="point-circle circle-2">
+                            <ui:Label name="player4points" class="point-text" text="0" />
+                        </ui:VisualElement>
+                    </ui:VisualElement>
+                </ui:VisualElement>
+                <ui:VisualElement name="bottom-points-row">
+                    <ui:VisualElement name="left-points-section">
+                        <ui:VisualElement class="point-circle circle-3">
+                            <ui:Label name="player2points" class="point-text" text="0" />
+                        </ui:VisualElement>
+                    </ui:VisualElement>
+                    <ui:VisualElement name="right-points-section">
+                        <ui:VisualElement class="point-circle circle-4">
+                            <ui:Label name="player1points" class="point-text" text="0" />
+                        </ui:VisualElement>
+                    </ui:VisualElement>
                 </ui:VisualElement>
             </ui:VisualElement>
             <ui:VisualElement name="right-column">
@@ -35,13 +54,6 @@
                     </ui:VisualElement>
                 </ui:VisualElement>
                 <ui:VisualElement name="bottom-right-row">
-                    <ui:VisualElement class="point-container">
-                        <ui:Label class="point-label" text="↑ Player 4" />
-                        <ui:Label name="player4points" class="text" text="Points 4" />
-                        <ui:VisualElement class="horizontal-line" />
-                        <ui:Label class="point-label" text="← Player 1" />
-                        <ui:Label name="player1points" class="text" text="Points 1"/>
-                    </ui:VisualElement>
                 </ui:VisualElement>
             </ui:VisualElement>
         </ui:VisualElement>

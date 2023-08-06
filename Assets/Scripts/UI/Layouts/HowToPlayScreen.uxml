@@ -1,21 +1,15 @@
-<?xml version="1.0" encoding="utf-8"?>
-<ui:UXML
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xmlns:ui="UnityEngine.UIElements"
-    xmlns:editor="UnityEditor.UIElements"
-    xsi:noNamespaceSchemaLocation="../../../../UIElementsSchema/UIElements.xsd"
->
-    <Style src="HowToPlayScreen.uss" />
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+    <Style src="project://database/Assets/Scripts/UI/Layouts/HowToPlayScreen.uss?fileID=7433441132597879392&amp;guid=8a827927c22705d4880e4e06b34f998a&amp;type=3#HowToPlayScreen" />
     <ui:VisualElement name="container">
         <ui:VisualElement name="horizontal-end">
-            <ui:Button class="close-button" name="close" text="X" />
+            <ui:Button name="close" text="X" class="close-button" />
         </ui:VisualElement>
         <ui:VisualElement name="horizontal-start">
             <ui:ScrollView name="vertical-scroller" mode="vertical" vertical-scroller-visibility="always">
                 <ui:TextElement text="Welcome to Le Barbu!" />
                 <ui:TextElement text="Thanks for trying out the app! This app is still being actively developed and updated - please keep coming back and trying out the new look and features that are planned!" />
-                <ui:TextElement text="Whether you've played before or are a seasoned veteran, this is a quick overview of the rules and this app." />
-                <ui:TextElement text="Le barbu is a trick-taking card game, where players all contribute to a trick or pile which one player wins and is awarded points based on what is in the pile. Players contribute in clock-wise turn order, and the first player to put down a card sets what the starting suit is. Each player must also play a card of the starting suit if able, or any other card if they don't have any. Cards are ranked with 2 being the lowest and ace being the highest. Once each player has played a card in the current pile, the player that played the highest ranked card of the starting suit wins the pile. They then play the first card of the next pile. This continues until all piles have been won, or all points in that round have been awarded." />
+                <ui:TextElement text="Whether you&apos;ve played before or are a seasoned veteran, this is a quick overview of the rules and this app." />
+                <ui:TextElement text="Le barbu is a trick-taking card game, where players all contribute to a trick or pile which one player wins and is awarded points based on what is in the pile. Players contribute in clock-wise turn order, and the first player to put down a card sets what the starting suit is. Each player must also play a card of the starting suit if able, or any other card if they don&apos;t have any. Cards are ranked with 2 being the lowest and ace being the highest. Once each player has played a card in the current pile, the player that played the highest ranked card of the starting suit wins the pile. They then play the first card of the next pile. This continues until all piles have been won, or all points in that round have been awarded." />
                 <ui:TextElement text="Points in Le Barbu are actually bad! You want to be the player with the lowest number of points to win. Points are awarded by the current round. In traditional games, there are 6 rounds. Those being:" />
                 <ui:TextElement text="1. Hearts Round - 5 points per heart" />
                 <ui:TextElement text="2. Queens Round - 10 points per queen" />

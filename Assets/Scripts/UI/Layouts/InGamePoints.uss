@@ -19,13 +19,52 @@
 	justify-content: flex-start;
 	align-items: flex-start;
 	height: 100%;
+	width: 30%;
+}
+
+#middle-column {
+	flex-grow: 1;
+	flex-direction: column;
+	height: 100%;
 	width: 100%;
 }
 
 #right-column {
 	flex-grow: 1;
 	flex-direction: column;
+	width: 30%;
+}
+
+#top-points-row {
+	flex-grow: 1;
+	flex-direction: row;
+	height: 100%;
 	width: 100%;
+}
+
+#bottom-points-row {
+	flex-grow: 1;
+	flex-direction: row;
+	height: 100%;
+	width: 100%;
+}
+
+#left-points-section {
+	flex-grow: 1;
+	flex-direction: column;
+	width: 100%;
+	height: 100%;
+	justify-content: center;
+	align-items: center;
+}
+
+#right-points-section {
+	flex-grow: 1;
+	flex-direction: column;
+	width: 100%;
+	height: 100%;
+	justify-content: center;
+	align-items: center;
 }
 
 #top-right-row {
@@ -60,14 +99,41 @@
 	padding: 0;
 }
 
-.text {
-	color: white;
+.point-circle {
+	background-color: black;
+	rotate: 45deg;
+	height: 30px;
+	width: 30px;
+	-unity-text-align: middle-center;
 }
 
-.horizontal-line {
-	background-color: white;
-	width: 100%;
-	height: 2px;
+.circle-1 {
+	border-top-right-radius: 50%;
+	border-bottom-left-radius: 50%;
+	border-bottom-right-radius: 50%;
+}
+
+.circle-2 {
+	border-top-left-radius: 50%;
+	border-bottom-left-radius: 50%;
+	border-bottom-right-radius: 50%;
+}
+
+.circle-3 {
+	border-top-left-radius: 50%;
+	border-top-right-radius: 50%;
+	border-bottom-right-radius: 50%;
+}
+
+.circle-4 {
+	border-top-left-radius: 50%;
+	border-top-right-radius: 50%;
+	border-bottom-left-radius: 50%;
+}
+
+.point-text {
+	color: white;
+	rotate: -45deg;
 }
 
 .overlay-button {
@@ -82,8 +148,4 @@
 .button-text {
 	color: #000000;
 	-unity-font-style: bold;
-}
-
-#new-game-image {
-	--unity-image: resource("Icons/Buttons/new_game_button");
 }
