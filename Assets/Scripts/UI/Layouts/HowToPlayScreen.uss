@@ -36,3 +36,33 @@
 	color: black;
 	white-space: normal;
 }
+
+.close-button {
+	background-color: white;
+	border-color: white;
+}
+
+.unity-scroller__high-button {
+	background-color: white;
+	border-color: white;
+}
+
+.unity-scroller__low-button {
+	background-color: white;
+	border-color: white;
+}
+
+.unity-scroller__slider {
+	background-color: white;
+	border-color: white;
+}
+
+.unity-base-slider__tracker {
+	background-color: white;
+	border-color: white;
+}
+
+.unity-base-slider__dragger {
+	border-radius: 10px;
+	background-color: gray;
+}

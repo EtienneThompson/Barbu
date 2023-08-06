@@ -76,7 +76,7 @@
     width: 30px;
 	border-radius: 5px;
 	background-color: white;
-	border-color: none;
+	border-color: white;
 }
 
 .button-text {
