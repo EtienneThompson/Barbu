@@ -6,19 +6,27 @@
         </ui:VisualElement>
         <ui:VisualElement name="horizontal-start">
             <ui:ScrollView name="vertical-scroller" mode="vertical" vertical-scroller-visibility="always">
-                <ui:TextElement text="Welcome to Le Barbu!" />
-                <ui:TextElement text="Thanks for trying out the app! This app is still being actively developed and updated - please keep coming back and trying out the new look and features that are planned!" />
-                <ui:TextElement text="Whether you&apos;ve played before or are a seasoned veteran, this is a quick overview of the rules and this app." />
-                <ui:TextElement text="Le barbu is a trick-taking card game, where players all contribute to a trick or pile which one player wins and is awarded points based on what is in the pile. Players contribute in clock-wise turn order, and the first player to put down a card sets what the starting suit is. Each player must also play a card of the starting suit if able, or any other card if they don&apos;t have any. Cards are ranked with 2 being the lowest and ace being the highest. Once each player has played a card in the current pile, the player that played the highest ranked card of the starting suit wins the pile. They then play the first card of the next pile. This continues until all piles have been won, or all points in that round have been awarded." />
-                <ui:TextElement text="Points in Le Barbu are actually bad! You want to be the player with the lowest number of points to win. Points are awarded by the current round. In traditional games, there are 6 rounds. Those being:" />
-                <ui:TextElement text="1. Hearts Round - 5 points per heart" />
-                <ui:TextElement text="2. Queens Round - 10 points per queen" />
-                <ui:TextElement text="3. King of Hearts Round - 40 points for the King of Hearts" />
-                <ui:TextElement text="4. Piles Round - 5 points per pile" />
-                <ui:TextElement text="5. Nothing Round - the first 4 rounds are combined together" />
-                <ui:TextElement text="6. Everything round - the first 4 rounds are combined together, but will remove your points instead!" />
-                <ui:TextElement text="There are also two other game modes in this app - single mode which lets you play a single round of the above 6 to practice, and the chaos round - a fun custom mode where 2-4 different rounds are randomly chosen and combined together for a completely unique experience! There are more than the above 6 rounds included in this game mode." />
-                <ui:TextElement text="Have fun with the game!" />
+                <ui:TextElement class="bold header" text="Welcome to Le Barbu" />
+                <ui:TextElement text="Thanks for playing! Whether you&apos;ve played the game before or are brand new, this page will go over the rules of the game." />
+                <ui:TextElement class="bold subheader" text="Overview" />
+                <ui:TextElement text="Le Barbu is a card game played by 4 players and is of the trick-taking family of games, like Hearts or Spades. The cards are ranked from 2 to Ace, with 2 being the lowest, and Ace being the highest. The suits don’t affect ranking. The deck is dealt evenly between the 4 players, with each player receiving 13 cards. Starting player will rotate left between the players." />
+                <ui:TextElement class="bold subheader" text="Playing Tricks" />
+                <ui:TextElement text="The starting player will pick a card from their hand to play. The card they play sets what is known as the starting suit. Each other player must play a card of the starting suit if they have one. If they have no cards of the starting suit, they are able to play any card in their hand. Each player will play one card per trick. After each trick, the player that won the trick will start play." />
+                <ui:TextElement class="bold subheader" text="Resolving tricks" />
+                <ui:TextElement text="When each player has finished playing a card into the current trick, the winner of the pile needs to be determined. The player who played the highest ranked card of the starting suit wins the pile. For example, if diamond is the starting suit, and the cards are a 3 of diamonds, jack of diamonds, nine of diamonds, and ace of spaces, the player that played the jack of diamonds would win the pile, because it is the highest card of the starting suit, even though the ace is a higher rank." />
+                <ui:TextElement class="bold subheader" text="How scoring works" />
+                <ui:TextElement text="A round ends when players have played every card in their hand, or when all of the points for that round have been distributed. Points are awarded based on the current theme of the round. Each round will attribute a different amount of points to different cards, and you will receive the points for each card that awards points that you won in tricks. In this game though, points are bad! You want to be the closes to 0 points (or the smallest negative number) in order to win." />
+                <ui:TextElement class="bold subheader" text="The different themed rounds" />
+                <ui:TextElement text="In this version of Le Barbu, you play through sequentially themed rounds. These rounds affect how the final scoring of the cards are determined." />
+                <ui:TextElement text="&lt;b&gt;1. Hearts Round&lt;/b&gt; - In this round, each heart a player wins in a trick awards 5 points. With 13 hearts, this round awards a total 65 points." />
+                <ui:TextElement text="&lt;b&gt;2. Queens Round&lt;/b&gt; - In this round, each queen a player wins in a trick awards 10 points. With 4 queens, this round awards a total of 40 points." />
+                <ui:TextElement text="&lt;b&gt;3. King of Hearts Round&lt;/b&gt; - In this round, only a single card awards points - the King of Hearts - and it awards 40 points!" />
+                <ui:TextElement text="&lt;b&gt;4. No Tricks Round&lt;/b&gt; - In this round, each trick a player wins awards 5 points. With 13 tricks to win, this round awards 65 points." />
+                <ui:TextElement text="&lt;b&gt;5. Nothing Round&lt;/b&gt; - In this round, all of the previous rounds are merged together and their points are additive. Each heart awards 5 points, each queen awards 10, each trick awards 5, and the king of hearts awards 40. If you win the king of hearts in a pile, it is 50 points, 5 from it being a heart, 5 from the trick it is won in, and 40 from the king of hearts." />
+                <ui:TextElement text="&lt;b&gt;6. Everything Round&lt;/b&gt; - This round is the same as the everything round, but this is the opportunity to remove your points. The first 4 rounds are combined but award negative points, so this is the only round you want to win tricks!" />
+                <ui:TextElement class="bold subheader" text="The Different Game Modes" />
+                <ui:TextElement text="This app offers a few different game modes to choose from when playing. You can play a traditional game of Le Barbu, where you play through the above themed rounds sequentially, a single round, where you can pick one of the above themes to play a quick round of, or a unique game mode called the chaos mode. The chaos mode takes 2-3 themed rounds of the above, but also among brand new themes, and merges them together, providing a unique experience each time you play!" />
+                <ui:TextElement class="bold header" text="Good luck, have fun, and thanks for playing!" />
             </ui:ScrollView>
         </ui:VisualElement>
     </ui:VisualElement>
