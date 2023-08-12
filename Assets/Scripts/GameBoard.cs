@@ -44,6 +44,8 @@ public class GameBoard : MonoBehaviour
         gamesMenu.SetActive(false);
         GameObject settingsMenu = GameObject.Find(Constants.GameObjects.SettingsMenu);
         settingsMenu.SetActive(false);
+        GameObject singleRoundMenu = GameObject.Find(Constants.GameObjects.SingleRoundMenu);
+        singleRoundMenu.SetActive(false);
 
         if (Settings.HasSeenHowToPlayByDefault())
         {
@@ -67,7 +69,7 @@ public class GameBoard : MonoBehaviour
         this.roundManager.PreRound();
     }
 
-    public void CreateNewGame(string gameName)
+    public void CreateNewGame(string gameName, string subType)
     {
         this.stateMachine.SetIsSettingUp(true);
         this.stateMachine.SetCardPlayable(false);
@@ -83,7 +85,7 @@ public class GameBoard : MonoBehaviour
                 Statistics.IncrementGamesPlayed(Statistics.GameTypes.Traditional);
                 break;
             case Constants.SingleRoundManager.GameName:
-                this.roundManager = new SingleRoundManager(this, this.scoreMenu, this.inGamePointsController, this.hands);
+                this.roundManager = new SingleRoundManager(this, this.scoreMenu, this.inGamePointsController, this.hands, subType);
                 Statistics.IncrementGamesPlayed(Statistics.GameTypes.Single);
                 break;
             case Constants.ChaosRoundManager.GameName:
