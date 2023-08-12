@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -8,7 +9,7 @@ public class GamesMenuController : MonoBehaviour
     private StateMachine stateMachine;
     private GameBoard gameBoard;
     private GameObject gamesMenu;
-    private GameObject menuButtons;
+    private GameObject singleRoundMenu;
     private Button traditionalBtn;
     private Button singleBtn;
     private Button chaosBtn;
@@ -19,8 +20,9 @@ public class GamesMenuController : MonoBehaviour
         this.stateMachine = new StateMachine();
         this.stateMachine.SetMenuOpen(true);
         this.gameBoard = GameObject.Find(Constants.GameObjects.GameBoard).GetComponent<GameBoard>();
-        this.menuButtons = GameObject.Find(Constants.GameObjects.MenuButtons);
         this.gamesMenu = GameObject.Find(Constants.GameObjects.GamesMenu);
+        this.singleRoundMenu = GameObjectExtensions.FindGameObjectByName(Constants.GameObjects.SingleRoundMenu, true);
+        
         var document = this.gamesMenu.GetComponent<UIDocument>();
         var root = document.rootVisualElement;
 
@@ -37,7 +39,6 @@ public class GamesMenuController : MonoBehaviour
 
     public void OnDisable()
     {
-        this.stateMachine.SetMenuOpen(false);
         this.traditionalBtn.UnregisterCallback<ClickEvent>(HandleTraditionalButtonClick);
         this.singleBtn.UnregisterCallback<ClickEvent>(HandleSingleButtonClick);
         this.chaosBtn.UnregisterCallback<ClickEvent>(HandleChaosButtonClick);
@@ -46,24 +47,27 @@ public class GamesMenuController : MonoBehaviour
 
     private void HandleTraditionalButtonClick(ClickEvent evt)
     {
-        this.gameBoard.CreateNewGame(Constants.TraditionalRoundManager.GameName);
+        this.gameBoard.CreateNewGame(Constants.TraditionalRoundManager.GameName, null);
         this.gamesMenu.SetActive(false);
+        this.stateMachine.SetMenuOpen(false);
     }
 
     private void HandleSingleButtonClick(ClickEvent evt)
     {
-        this.gameBoard.CreateNewGame(Constants.SingleRoundManager.GameName);
         this.gamesMenu.SetActive(false);
+        this.singleRoundMenu.SetActive(true);
     }
 
     private void HandleChaosButtonClick(ClickEvent evt)
     {
-        this.gameBoard.CreateNewGame(Constants.ChaosRoundManager.GameName);
+        this.gameBoard.CreateNewGame(Constants.ChaosRoundManager.GameName, null);
         this.gamesMenu.SetActive(false);
+        this.stateMachine.SetMenuOpen(false);
     }
 
     private void HandleCloseButtonClick(ClickEvent evt)
     {
         this.gamesMenu.SetActive(false);
+        this.stateMachine.SetMenuOpen(false);
     }
 }

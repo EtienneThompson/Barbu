@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ui:UXML
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:ui="UnityEngine.UIElements"
+    xmlns:editor="UnityEditor.UIElements"
+    xsi:noNamespaceSchemaLocation="../../../../UIElementsSchema/UIElements.xsd"
+>
+    <Style src="SingleRoundMenu.uss" />
+    <ui:VisualElement name="column">
+        <ui:VisualElement name="row">
+            <ui:Button class="games-button" name="hearts" text="Hearts" />
+        </ui:VisualElement>
+        <ui:VisualElement name="row">
+            <ui:Button class="games-button" name="queens" text="Queens" />
+        </ui:VisualElement>
+        <ui:VisualElement name="row">
+            <ui:Button class="games-button" name="kingofhearts" text="King of Hearts" />
+        </ui:VisualElement>
+        <ui:VisualElement name="row">
+            <ui:Button class="games-button" name="piles" text="Piles" />
+        </ui:VisualElement>
+        <ui:VisualElement name="row">
+            <ui:Button class="games-button" name="nothing" text="Nothing" />
+        </ui:VisualElement>
+        <ui:VisualElement name="row">
+            <ui:Button class="games-button" name="everything" text="Everything" />
+        </ui:VisualElement>
+        <ui:VisualElement name="row">
+            <ui:Button class="games-button" name="close" text="Close" />
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

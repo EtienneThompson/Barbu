@@ -29,6 +29,12 @@ public class Constants
     public static class SingleRoundManager
     {
         public const string GameName = "Single";
+        public const string Hearts = "Hearts";
+        public const string Queens = "Queens";
+        public const string KingOfHearts = "KingOfHearts";
+        public const string Piles = "Piles";
+        public const string Nothing = "Nothing";
+        public const string Everything = "Everything";
         public const int MaxRounds = 1;
     }
 
@@ -48,6 +54,7 @@ public class Constants
         public const string RoundOverlay = "RoundOverlay";
         public const string InGamePoints = "InGamePoints";
         public const string HowToPlayScreen = "HowToPlayScreen";
+        public const string SingleRoundMenu = "SingleRoundMenu";
     }
 
     public static class PlayerIds
