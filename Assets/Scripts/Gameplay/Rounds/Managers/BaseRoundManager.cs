@@ -96,7 +96,6 @@ public class BaseRoundManager : IRoundManager, IEventListener
         Debug.Log("StartRound");
         this.stateMachine.SetCardPlayable(true);
         this.gameStateContext.Start();
-        Debug.Log(this.roundContext.CurrentName());
         this.inGamePointsController.SetRoundName(this.roundContext.CurrentName());
     }
 
