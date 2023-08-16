@@ -1,9 +1,7 @@
 using System;
 using System.Linq;
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using TMPro;
 
 public class BaseRoundManager : IRoundManager, IEventListener
 {
@@ -87,6 +85,7 @@ public class BaseRoundManager : IRoundManager, IEventListener
         GameObject roundOverlay = GameObject.Find(Constants.GameObjects.RoundOverlay);
         var controller = roundOverlay.GetComponent<RoundOverlayController>();
         controller.DisplayRound(this.roundContext.CurrentName());
+        this.inGamePointsController.ResetRoundName();
     }
 
     /// <summary>
@@ -97,6 +96,7 @@ public class BaseRoundManager : IRoundManager, IEventListener
         Debug.Log("StartRound");
         this.stateMachine.SetCardPlayable(true);
         this.gameStateContext.Start();
+        this.inGamePointsController.SetRoundName(this.roundContext.CurrentName());
     }
 
     /// <summary>
@@ -107,6 +107,7 @@ public class BaseRoundManager : IRoundManager, IEventListener
         Debug.Log("CleanupRound");
         this.stateMachine.SetCardPlayable(false);
         this.gameBoard.CleanupRound();
+        this.inGamePointsController.ResetRoundName();
         if (this.currentRound + 1 == this.totalRounds)
         {
             Debug.Log("Marking game as finished");

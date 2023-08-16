@@ -88,6 +88,15 @@
 	width: 40px;
 }
 
+#round-name {
+	background-color: rgba(0, 0, 0, 0.8);
+	color: white;
+	border-radius: 10px;
+	padding: 5px;
+	overflow: visible;
+	font-size: 9px;
+}
+
 .point-container {
 	background-color: black;
 }
