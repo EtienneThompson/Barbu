@@ -9,6 +9,7 @@
     <ui:VisualElement name="container">
         <ui:VisualElement name="generic-row">
             <ui:VisualElement name="left-column">
+                <ui:Label name="round-name" text="" />
             </ui:VisualElement>
             <ui:VisualElement name="middle-column">
                 <ui:VisualElement name="top-points-row">

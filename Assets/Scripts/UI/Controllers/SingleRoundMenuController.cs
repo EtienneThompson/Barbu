@@ -40,7 +40,7 @@ public class SingleRoundMenuController : MonoBehaviour
         this.kingOfHeartsBtn.RegisterCallback<ClickEvent>(HandleKingOfHeartsButtonClick);
         this.pilesBtn.RegisterCallback<ClickEvent>(HandlePilesButtonClick);
         this.nothingBtn.RegisterCallback<ClickEvent>(HandleNothingButtonClick);
-        this.everythingBtn.RegisterCallback<ClickEvent>(HandleCloseButtonClick);
+        this.everythingBtn.RegisterCallback<ClickEvent>(HandleEverythingButtonClick);
         this.closeBtn.RegisterCallback<ClickEvent>(HandleCloseButtonClick);
     }
 

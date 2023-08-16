@@ -9,6 +9,7 @@ public class InGamePointsController : MonoBehaviour
     private Label player3points;
     private Label player4points;
     private Dictionary<string, Label> playerPoints;
+    private Label roundName;
 
     private void OnEnable()
     {
@@ -30,6 +31,20 @@ public class InGamePointsController : MonoBehaviour
             [Constants.PlayerIds.Player3] = this.player3points,
             [Constants.PlayerIds.Player4] = this.player4points,
         };
+
+        this.roundName = root.Q<Label>("round-name");
+    }
+
+    public void SetRoundName(string roundName)
+    {
+        this.roundName.text = roundName;
+        this.roundName.style.display = DisplayStyle.Flex;
+    }
+
+    public void ResetRoundName()
+    {
+        this.roundName.text = string.Empty;
+        this.roundName.style.display = DisplayStyle.None;
     }
 
     public void UpdatePlayerPoints(string player, int points)
