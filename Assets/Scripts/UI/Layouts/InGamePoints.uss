@@ -92,8 +92,9 @@
 	background-color: rgba(0, 0, 0, 0.8);
 	color: white;
 	border-radius: 10px;
-	width: 100%;
+	padding: 5px;
 	overflow: visible;
+	font-size: 9px;
 }
 
 .point-container {
