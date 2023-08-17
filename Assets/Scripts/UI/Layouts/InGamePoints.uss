@@ -94,7 +94,7 @@
 	border-radius: 10px;
 	padding: 5px;
 	overflow: visible;
-	font-size: 9px;
+	font-size: 6px;
 }
 
 .point-container {

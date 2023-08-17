@@ -13,7 +13,7 @@ public class SixesRound : Round
     };
     public override int PointsPerPile => 0;
     public override int TotalPoints => 65;
-    public override string Name => nameof(SixesRound);
+    public override string Name => Constants.RoundNames.SixesRound;
 
     public SixesRound(RoundContext context)
     : base(context)

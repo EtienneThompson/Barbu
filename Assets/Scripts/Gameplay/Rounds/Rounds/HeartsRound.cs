@@ -23,7 +23,7 @@ public class HeartsRound : Round
     };
     public override int PointsPerPile => 0;
     public override int TotalPoints => 65;
-    public override string Name => nameof(HeartsRound);
+    public override string Name => Constants.RoundNames.HeartsRound;
 
     public HeartsRound(RoundContext context)
     : base(context)

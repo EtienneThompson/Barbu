@@ -33,7 +33,7 @@ public class OddsRound : Round
     };
     public override int PointsPerPile => 0;
     public override int TotalPoints => 120;
-    public override string Name => nameof(OddsRound);
+    public override string Name => Constants.RoundNames.OddsRound;
 
     public OddsRound(RoundContext context)
     : base(context)

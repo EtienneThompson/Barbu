@@ -22,7 +22,7 @@ public class SpadesRound : Round
     };
     public override int PointsPerPile => 0;
     public override int TotalPoints => 65;
-    public override string Name => nameof(SpadesRound);
+    public override string Name => Constants.RoundNames.SpadesRound;
 
     public SpadesRound(RoundContext context)
     : base(context)

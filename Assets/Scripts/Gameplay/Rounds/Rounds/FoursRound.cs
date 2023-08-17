@@ -13,7 +13,7 @@ public class FoursRound : Round
     };
     public override int PointsPerPile => 0;
     public override int TotalPoints => 20;
-    public override string Name => nameof(FoursRound);
+    public override string Name => Constants.RoundNames.FoursRound;
 
     public FoursRound(RoundContext context)
     : base(context)

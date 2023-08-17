@@ -13,7 +13,7 @@ public class NinesRound : Round
     };
     public override int PointsPerPile => 0;
     public override int TotalPoints => 20;
-    public override string Name => nameof(NinesRound);
+    public override string Name => Constants.RoundNames.NinesRound;
 
     public NinesRound(RoundContext context)
     : base(context)

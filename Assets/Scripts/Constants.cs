@@ -1,7 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-
 public class Constants
 {
     public const int CardsInDeck = 52;
@@ -91,5 +87,33 @@ public class Constants
         public const string AndroidBannerId = "Banner_Android";
         public const string AndroidInterstitialId = "Interstitial_Android";
         public const string AndroidRewardedId = "Rewarded_Android";
+    }
+
+    public static class RoundNames
+    {
+        public const string AcesRound = "No Aces";
+        public const string ClubsRound = "No Clubs";
+        public const string DiamondRound = "No Diamonds";
+        public const string EightsRound = "No Eights";
+        public const string EvensRound = "No Evens";
+        public const string EverythingRound = "Everything";
+        public const string FaceCardsRound = "No Face Cards";
+        public const string FivesRound = "No Fives";
+        public const string FoursRound = "No Fours";
+        public const string HeartsRound = "No Hearts";
+        public const string JacksRound = "No Jacks";
+        public const string KingOfHeartsRound = "No King of Hearts";
+        public const string KingsRound = "No Kings";
+        public const string NinesRound = "No Nines";
+        public const string NothingRound = "Nothing";
+        public const string OddsRound = "No Odds";
+        public const string PilesRound = "No Piles";
+        public const string QueensRound = "No Queens";
+        public const string SevensRound = "No Sevens";
+        public const string SixesRound = "No Sixes";
+        public const string SpadesRound = "No Spades";
+        public const string TensRound = "No Tens";
+        public const string ThreesRound = "No Threes";
+        public const string TwosRound = "No Twos";
     }
 }

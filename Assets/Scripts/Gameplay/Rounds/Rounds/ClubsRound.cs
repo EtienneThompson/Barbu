@@ -22,7 +22,7 @@ public class ClubsRound : Round
     };
     public override int PointsPerPile => 0;
     public override int TotalPoints => 65;
-    public override string Name => nameof(ClubsRound);
+    public override string Name => Constants.RoundNames.ClubsRound;
 
     public ClubsRound(RoundContext context)
     : base(context)

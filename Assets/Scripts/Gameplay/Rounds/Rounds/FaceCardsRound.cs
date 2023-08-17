@@ -25,7 +25,7 @@ public class FaceCardsRound : Round
     };
     public override int PointsPerPile => 0;
     public override int TotalPoints => 80;
-    public override string Name => nameof(FaceCardsRound);
+    public override string Name => Constants.RoundNames.FaceCardsRound;
 
     public FaceCardsRound(RoundContext context)
     : base(context)

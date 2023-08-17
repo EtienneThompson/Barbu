@@ -13,7 +13,7 @@ public class TensRound : Round
     };
     public override int PointsPerPile => 0;
     public override int TotalPoints => 20;
-    public override string Name => nameof(TensRound);
+    public override string Name => Constants.RoundNames.TensRound;
 
     public TensRound(RoundContext context)
     : base(context)

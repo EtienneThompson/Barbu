@@ -13,7 +13,7 @@ public class KingsRound : Round
     };
     public override int PointsPerPile => 0;
     public override int TotalPoints => 40;
-    public override string Name => nameof(KingsRound);
+    public override string Name => Constants.RoundNames.KingsRound;
 
     public KingsRound(RoundContext context)
     : base(context)

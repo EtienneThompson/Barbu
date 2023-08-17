@@ -22,7 +22,7 @@ public class DiamondsRound : Round
     };
     public override int PointsPerPile => 0;
     public override int TotalPoints => 65;
-    public override string Name => nameof(DiamondsRound);
+    public override string Name => Constants.RoundNames.DiamondRound;
 
     public DiamondsRound(RoundContext context)
     : base(context)

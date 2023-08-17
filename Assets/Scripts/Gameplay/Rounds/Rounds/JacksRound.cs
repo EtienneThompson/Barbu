@@ -13,7 +13,7 @@ public class JacksRound : Round
     };
     public override int PointsPerPile => 0;
     public override int TotalPoints => 20;
-    public override string Name => nameof(JacksRound);
+    public override string Name => Constants.RoundNames.JacksRound;
 
     public JacksRound(RoundContext context)
     : base(context)

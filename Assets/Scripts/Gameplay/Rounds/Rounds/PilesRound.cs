@@ -7,7 +7,7 @@ public class PilesRound : Round
     public override Dictionary<string, int> PointMapping => new Dictionary<string, int>();
     public override int PointsPerPile => 5;
     public override int TotalPoints => 65;
-    public override string Name => nameof(PilesRound);
+    public override string Name => Constants.RoundNames.PilesRound;
 
     public PilesRound(RoundContext context)
     : base(context)
