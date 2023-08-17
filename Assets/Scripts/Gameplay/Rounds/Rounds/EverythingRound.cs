@@ -25,7 +25,7 @@ public class EverythingRound : Round
     };
     public override int PointsPerPile => -5;
     public override int TotalPoints => -210;
-    public override string Name => nameof(EverythingRound);
+    public override string Name => Constants.RoundNames.EverythingRound;
 
     public EverythingRound(RoundContext context)
     : base(context)

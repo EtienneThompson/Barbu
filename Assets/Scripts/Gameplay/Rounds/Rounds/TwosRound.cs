@@ -13,7 +13,7 @@ public class TwosRound : Round
     };
     public override int PointsPerPile => 0;
     public override int TotalPoints => 20;
-    public override string Name => nameof(TwosRound);
+    public override string Name => Constants.RoundNames.TwosRound;
 
     public TwosRound(RoundContext context)
     : base(context)

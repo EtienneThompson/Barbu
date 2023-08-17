@@ -13,7 +13,7 @@ public class AcesRound : Round
     };
     public override int PointsPerPile => 0;
     public override int TotalPoints => 40;
-    public override string Name => nameof(AcesRound);
+    public override string Name => Constants.RoundNames.AcesRound;
 
     public AcesRound(RoundContext context)
     : base(context)
