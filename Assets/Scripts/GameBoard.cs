@@ -37,6 +37,15 @@ public class GameBoard : MonoBehaviour
             }
         }
 
+        if (isIpad())
+        {
+            Debug.Log("It's an ipad!");
+            Camera camera = GameObject.Find("Main Camera").GetComponent<Camera>();
+            Debug.Log(camera);
+            camera.fieldOfView = 70;
+
+        }
+
         // Hide any UI objects.
         GameObject scoreBoard = GameObject.Find(Constants.GameObjects.ScoreMenuCanvas);
         scoreBoard.SetActive(false);
@@ -212,5 +221,41 @@ public class GameBoard : MonoBehaviour
                 cardToInit.InitializeGameObject(position, rotateX, rotateY, rotateZ);
             }
         }
+    }
+
+    private bool isIpad()
+    {
+        Debug.Log(UnityEngine.iOS.Device.generation);
+        return UnityEngine.iOS.Device.generation == UnityEngine.iOS.DeviceGeneration.iPad1Gen ||
+            UnityEngine.iOS.Device.generation == UnityEngine.iOS.DeviceGeneration.iPad2Gen ||
+            UnityEngine.iOS.Device.generation == UnityEngine.iOS.DeviceGeneration.iPad3Gen ||
+            UnityEngine.iOS.Device.generation == UnityEngine.iOS.DeviceGeneration.iPad4Gen ||
+            UnityEngine.iOS.Device.generation == UnityEngine.iOS.DeviceGeneration.iPad5Gen ||
+            UnityEngine.iOS.Device.generation == UnityEngine.iOS.DeviceGeneration.iPad6Gen ||
+            UnityEngine.iOS.Device.generation == UnityEngine.iOS.DeviceGeneration.iPad7Gen ||
+            UnityEngine.iOS.Device.generation == UnityEngine.iOS.DeviceGeneration.iPad8Gen ||
+            UnityEngine.iOS.Device.generation == UnityEngine.iOS.DeviceGeneration.iPad9Gen ||
+            UnityEngine.iOS.Device.generation == UnityEngine.iOS.DeviceGeneration.iPadAir1 ||
+            UnityEngine.iOS.Device.generation == UnityEngine.iOS.DeviceGeneration.iPadAir2 ||
+            UnityEngine.iOS.Device.generation == UnityEngine.iOS.DeviceGeneration.iPadAir3Gen ||
+            UnityEngine.iOS.Device.generation == UnityEngine.iOS.DeviceGeneration.iPadAir4Gen ||
+            UnityEngine.iOS.Device.generation == UnityEngine.iOS.DeviceGeneration.iPadAir5Gen ||
+            UnityEngine.iOS.Device.generation == UnityEngine.iOS.DeviceGeneration.iPadMini1Gen ||
+            UnityEngine.iOS.Device.generation == UnityEngine.iOS.DeviceGeneration.iPadMini2Gen ||
+            UnityEngine.iOS.Device.generation == UnityEngine.iOS.DeviceGeneration.iPadMini3Gen ||
+            UnityEngine.iOS.Device.generation == UnityEngine.iOS.DeviceGeneration.iPadMini4Gen ||
+            UnityEngine.iOS.Device.generation == UnityEngine.iOS.DeviceGeneration.iPadMini5Gen ||
+            UnityEngine.iOS.Device.generation == UnityEngine.iOS.DeviceGeneration.iPadMini6Gen ||
+            UnityEngine.iOS.Device.generation == UnityEngine.iOS.DeviceGeneration.iPadPro10Inch1Gen ||
+            UnityEngine.iOS.Device.generation == UnityEngine.iOS.DeviceGeneration.iPadPro10Inch2Gen ||
+            UnityEngine.iOS.Device.generation == UnityEngine.iOS.DeviceGeneration.iPadPro11Inch ||
+            UnityEngine.iOS.Device.generation == UnityEngine.iOS.DeviceGeneration.iPadPro11Inch2Gen ||
+            UnityEngine.iOS.Device.generation == UnityEngine.iOS.DeviceGeneration.iPadPro11Inch3Gen ||
+            UnityEngine.iOS.Device.generation == UnityEngine.iOS.DeviceGeneration.iPadPro1Gen ||
+            UnityEngine.iOS.Device.generation == UnityEngine.iOS.DeviceGeneration.iPadPro2Gen ||
+            UnityEngine.iOS.Device.generation == UnityEngine.iOS.DeviceGeneration.iPadPro3Gen ||
+            UnityEngine.iOS.Device.generation == UnityEngine.iOS.DeviceGeneration.iPadPro4Gen ||
+            UnityEngine.iOS.Device.generation == UnityEngine.iOS.DeviceGeneration.iPadPro5Gen ||
+            UnityEngine.iOS.Device.generation == UnityEngine.iOS.DeviceGeneration.iPadUnknown;
     }
 }
