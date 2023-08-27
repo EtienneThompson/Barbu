@@ -1,20 +1,23 @@
 using System;
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
 
-public class ComputerState : GameState
+public class EasyComputerState : GameState
 {
-    public ComputerState(GameStateContext context, string id, Hand hand)
+    public EasyComputerState(GameStateContext context, string id, Hand hand)
     : base(context, hand, id)
     {
     }
 
-    public ComputerState(GameStateContext context, GameState next, string id, Hand hand)
+    public EasyComputerState(GameStateContext context, GameState next, string id, Hand hand)
     : base(context, next, hand, id)
     {
     }
 
     public override void Start()
     {
-        if (!stateMachine.IsCardPlayable())
+        if (!this.stateMachine.IsCardPlayable())
         {
             throw new Exception("Computer can't make a move right now.");
         }
@@ -34,7 +37,6 @@ public class ComputerState : GameState
         }
         else
         {
-            // If no cards in hand of the same suit, then pick a random one.
             foreach (var card in this.hand.GetHand())
             {
                 if (card.state == Card.CardState.Waiting)
