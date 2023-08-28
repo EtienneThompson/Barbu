@@ -34,9 +34,14 @@ public class Settings
     public enum ComputerDifficulty
     {
         /// <summary>
-        /// The comuters should be relatively easy to beat.
+        /// The computers should be relatively easy to beat.
         /// </summary>
-        Easy
+        Easy,
+
+        /// <summary>
+        /// The computers should be more difficult than in normal mode.
+        /// </summary>
+        Normal,
     }
 
     public static SortingOptions[] HandSortingOptions => (SortingOptions[])Enum.GetValues(typeof(SortingOptions));

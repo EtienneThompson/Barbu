@@ -4,13 +4,15 @@ using UnityEngine;
 
 public class GameStateContext : IEventListener
 {
-    private StateMachine stateMachine;
+    private readonly StateMachine stateMachine;
+    private readonly RoundContext roundContext;
     private IGameState current;
     private bool isPaused;
 
-    public GameStateContext()
+    public GameStateContext(RoundContext roundContext)
     {
         this.stateMachine = new StateMachine();
+        this.roundContext = roundContext;
         this.Setup();
     }
 
@@ -71,6 +73,11 @@ public class GameStateContext : IEventListener
     public IGameState GetCurrentState()
     {
         return this.current;
+    }
+
+    public bool IsCurrentRoundPositive()
+    {
+        return this.roundContext.IsRoundPositive();
     }
 
     public void Setup()

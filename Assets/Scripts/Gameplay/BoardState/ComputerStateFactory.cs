@@ -8,6 +8,8 @@ public class ComputerStateFactory
     {
         switch (Settings.ComputerDifficultyPreference)
         {
+            case Settings.ComputerDifficulty.Normal:
+                return new NormalComputerState(context, next, id, hand);
             case Settings.ComputerDifficulty.Easy:
             default:
                 return new EasyComputerState(context, next, id, hand);
