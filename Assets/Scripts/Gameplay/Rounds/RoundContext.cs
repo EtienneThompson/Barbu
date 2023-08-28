@@ -39,4 +39,9 @@ public class RoundContext
     {
         return this.current.IsRoundOver(round, points, pilesPlayed);
     }
+
+    public bool IsRoundPositive()
+    {
+        return this.current.IsRoundPositive();
+    }
 }

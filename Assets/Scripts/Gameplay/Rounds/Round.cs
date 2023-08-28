@@ -71,4 +71,9 @@ public class Round : IRound
 
         return points == this.TotalPoints;
     }
+
+    public virtual bool IsRoundPositive()
+    {
+        return this.TotalPoints < 0;
+    }
 }

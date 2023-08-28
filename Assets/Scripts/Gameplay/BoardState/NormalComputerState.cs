@@ -1,6 +1,4 @@
 using System;
-using System.Collections.Generic;
-using UnityEngine;
 
 public class NormalComputerState : GameState
 {
@@ -25,7 +23,6 @@ public class NormalComputerState : GameState
         var cardsInSuit = this.hand.CardsInSuit(this.stateMachine.GetStartingSuit());
         var playableCards = cardsInSuit.Count > 0 ? cardsInSuit : this.hand.GetAvailableCards();
 
-        // First determine the lowest and highest available cards in the hand.
         Card lowestCard = null;
         Card highestCard = null;
         foreach (var card in playableCards)
@@ -41,10 +38,13 @@ public class NormalComputerState : GameState
             }
         }
 
-        // Rules
-        // 1. If the card is lower than the highest card, play it.
-        // 2. If no card is lower, play the first higher card.
-        // 3. Do the opposite in a positive round.
-        lowestCard.PlayCard();
+        if (this.context.IsCurrentRoundPositive())
+        {
+            highestCard.PlayCard();
+        }
+        else
+        {
+            lowestCard.PlayCard();
+        }
     }
 }

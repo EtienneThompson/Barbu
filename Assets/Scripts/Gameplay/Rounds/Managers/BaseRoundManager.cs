@@ -31,7 +31,7 @@ public class BaseRoundManager : IRoundManager, IEventListener
         Hand[] hands)
     {
         this.roundContext = new RoundContext();
-        this.gameStateContext = new GameStateContext();
+        this.gameStateContext = new GameStateContext(this.roundContext);
         this.players = new GameState[4];
         this.stateMachine = new StateMachine();
         this.stateMachine.SetStartingSuit(string.Empty);
