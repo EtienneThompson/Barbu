@@ -31,6 +31,14 @@ public class Settings
         SuitHighToLow = 4,
     }
 
+    public enum ComputerDifficulty
+    {
+        /// <summary>
+        /// The comuters should be relatively easy to beat.
+        /// </summary>
+        Easy
+    }
+
     public static SortingOptions[] HandSortingOptions => (SortingOptions[])Enum.GetValues(typeof(SortingOptions));
 
     public static SortingOptions SortingPreference
@@ -43,6 +51,21 @@ public class Settings
         set
         {
             PlayerPrefs.SetInt(Constants.PlayerPrefsKeys.SortingOptions, (int)value);
+        }
+    }
+
+    public static ComputerDifficulty[] ComputerDifficulties => (ComputerDifficulty[])Enum.GetValues(typeof(ComputerDifficulty));
+
+    public static ComputerDifficulty ComputerDifficultyPreference
+    {
+        get
+        {
+            return (ComputerDifficulty)PlayerPrefs.GetInt(Constants.PlayerPrefsKeys.ComputerDifficulty);
+        }
+
+        set
+        {
+            PlayerPrefs.SetInt(Constants.PlayerPrefsKeys.ComputerDifficulty, (int)value);
         }
     }
 

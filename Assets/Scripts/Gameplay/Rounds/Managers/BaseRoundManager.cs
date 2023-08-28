@@ -45,9 +45,9 @@ public class BaseRoundManager : IRoundManager, IEventListener
 
         // Initialize general gameplay loop.
         var playerState = new PlayerState(this.gameStateContext, Constants.PlayerIds.Player1, hands[0]);
-        var computerState3 = new ComputerState(this.gameStateContext, playerState, Constants.PlayerIds.Player4, hands[3]);
-        var computerState2 = new ComputerState(this.gameStateContext, computerState3, Constants.PlayerIds.Player3, hands[2]);
-        var computerState1 = new ComputerState(this.gameStateContext, computerState2, Constants.PlayerIds.Player2, hands[1]);
+        var computerState3 = ComputerStateFactory.GetComputerStateFromSettings(this.gameStateContext, Constants.PlayerIds.Player4, hands[3], playerState);
+        var computerState2 = ComputerStateFactory.GetComputerStateFromSettings(this.gameStateContext, Constants.PlayerIds.Player3, hands[2], computerState3);
+        var computerState1 = ComputerStateFactory.GetComputerStateFromSettings(this.gameStateContext, Constants.PlayerIds.Player2, hands[1], computerState2);
         playerState.SetNextState(computerState1);
 
         this.players[0] = playerState;
