@@ -64,6 +64,7 @@ public class Constants
     public static class PlayerPrefsKeys
     {
         public const string SortingOptions = "SortingOptions";
+        public const string ComputerDifficulty = "ComputerDifficulty";
         public const string SeenHowToPlayInstructions = "SeenHowToPlayInstructions";
 
         public const string TraditionalGamesPlayed = "TraditionalGamesPlayed";

@@ -1,11 +1,16 @@
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-
 public class ComputerStateFactory
 {
-    public static GameState GetComputerStateFromSettings()
+    public static GameState GetComputerStateFromSettings(
+        GameStateContext context,
+        string id,
+        Hand hand,
+        GameState next = null)
     {
-        return new EasyComputerState();
+        switch (Settings.ComputerDifficultyPreference)
+        {
+            case Settings.ComputerDifficulty.Easy:
+            default:
+                return new EasyComputerState(context, next, id, hand);
+        }
     }
 }
