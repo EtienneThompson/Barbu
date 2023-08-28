@@ -15,6 +15,12 @@
     height: 100%;
 }
 
+#settings-row {
+    flex-grow: 1;
+    flex-direction: row;
+    justify-content: center;
+    max-height: 30px;
+}
 
 #row {
     flex-grow: 1;
