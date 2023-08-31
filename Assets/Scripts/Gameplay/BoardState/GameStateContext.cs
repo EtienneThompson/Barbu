@@ -80,6 +80,11 @@ public class GameStateContext : IEventListener
         return this.roundContext.IsRoundPositive();
     }
 
+    public bool IsPointEarningCard(string cardName)
+    {
+        return this.roundContext.IsPointEarningCard(cardName);
+    }
+
     public void Setup()
     {
         // Listen to global pause/resume events.

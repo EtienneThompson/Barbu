@@ -194,6 +194,7 @@ public class BaseRoundManager : IRoundManager, IEventListener
         var highestCardIndex = this.FindHighestCardIndex();
         this.highestCard = this.currentPile[highestCardIndex];
         this.highestCard.Highlight(new Color(0.0f, 0.0f, 255.0f, 1.0f));
+        this.stateMachine.SetHighestRank(this.highestCard.rank);
 
         if (this.stateMachine.NumCardsPlayed() == Constants.CardsPerPile) {
             if (this.ResolvePile())

@@ -44,4 +44,9 @@ public class RoundContext
     {
         return this.current.IsRoundPositive();
     }
+
+    public bool IsPointEarningCard(string cardName)
+    {
+        return this.current.IsPointEarningCard(cardName);
+    }
 }

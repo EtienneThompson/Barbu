@@ -14,4 +14,5 @@ public interface IRound
     bool IsRoundOver(int round, Dictionary<string, int[]> points, int pilesplayed);
 
     bool IsRoundPositive();
+    bool IsPointEarningCard(string cardName);
 }

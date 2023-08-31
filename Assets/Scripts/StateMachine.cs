@@ -7,6 +7,7 @@ public class StateMachine
     private bool canCardBePlayed = false;
     private string startingSuit = string.Empty;
     private bool menuOpen = false;
+    private int highestRank = 0;
 
     private bool playerCardMustBeStartingSuit;
 
@@ -89,5 +90,15 @@ public class StateMachine
         {
             this.eventsController.Resume();
         }
+    }
+
+    public int GetHighestRankedCard()
+    {
+        return instance.highestRank;
+    }
+
+    public void SetHighestRank(int rank)
+    {
+        instance.highestRank = rank;
     }
 }
