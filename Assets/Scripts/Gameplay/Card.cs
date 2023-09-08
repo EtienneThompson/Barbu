@@ -14,7 +14,7 @@ public class Card : MonoBehaviour
     public int rank;
     public string playerId;
     public CardState state;
-    public const float speed = 150.0f;
+    public const float speed = 30.0f;
     private StateMachine stateMachine;
     private EventsController eventsController;
     private Renderer meshRenderer;
@@ -135,21 +135,22 @@ public class Card : MonoBehaviour
 
     IEnumerator MoveToCenterRoutine()
     {
+        transform.localScale = new Vector3(0.7f, 0.7f, 0.7f);
         Vector3 center;
-        var verticalPosition = -19.0f + 0.1f * this.stateMachine.NumCardsPlayed();
+        var verticalPosition = 0.5f + this.stateMachine.NumCardsPlayed() * 0.01f;
         switch (this.playerId)
         {
             case Constants.PlayerIds.Player1:
-                center = new Vector3(0.0f, verticalPosition, -45.0f);
+                center = new Vector3(0.0f, verticalPosition, -3.0f);
                 break;
             case Constants.PlayerIds.Player2:
-                center = new Vector3(-20.0f, verticalPosition, -25.0f);
+                center = new Vector3(-3.0f, verticalPosition, 0.0f);
                 break;
             case Constants.PlayerIds.Player3:
-                center = new Vector3(0.0f, verticalPosition, -5.0f);
+                center = new Vector3(0.0f, verticalPosition, 3.0f);
                 break;
             case Constants.PlayerIds.Player4:
-                center = new Vector3(20.0f, verticalPosition, -25.0f);
+                center = new Vector3(3.0f, verticalPosition, 0.0f);
                 break;
             default:
                 throw new Exception("This card has an invalid player id " + this.playerId);

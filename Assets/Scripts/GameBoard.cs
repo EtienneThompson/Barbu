@@ -184,25 +184,24 @@ public class GameBoard : MonoBehaviour
                 float rotateZ = 0.0f;
                 if (j == 0)
                 {
-                    position = new Vector3((i - 6) * 10, (i / 10.0f) + 1, -100);
-                    rotateX = -45.0f;
+                    position = new Vector3((i - 13) + 6, 0.5f + (0.01f * i), -12);
                 }
                 else if (j == 1)
                 {
-                    position = new Vector3(-90, 10, (i - 8) * 10);
+                    position = new Vector3(-22, 0.5f + (-0.01f * i), (i - 13) + 6);
                     rotateY = 90.0f;
-                    rotateX = -70.0f;
+                    rotateZ = 180.0f;
                 }
                 else if (j == 2)
                 {
-                    position = new Vector3((i - 6) * 10, 10, 40);
-                    rotateX = 90.0f;
+                    position = new Vector3((i - 13) + 6, 0.5f + (-0.01f * i), 12);
+                    rotateZ = 180.0f;
                 }
                 else
                 {
-                    position = new Vector3(90, 10, (i - 8) * 10);
+                    position = new Vector3(22, 0.5f + (0.01f * i), (i - 13) + 6);
                     rotateY = -90.0f;
-                    rotateX = -70.0f;
+                    rotateZ = 180.0f;
                 }
 
                 var cardToInit = hands[j].GetCardAtPosition(i);
