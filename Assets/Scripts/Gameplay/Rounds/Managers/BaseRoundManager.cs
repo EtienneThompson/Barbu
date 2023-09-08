@@ -254,6 +254,7 @@ public class BaseRoundManager : IRoundManager, IEventListener
         }
 
         this.stateMachine.ResetNumCardsPlayed();
+        this.stateMachine.SetHighestRank(0);
         this.highestCard = null;
         this.stateMachine.SetStartingSuit(string.Empty);
 
