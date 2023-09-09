@@ -111,6 +111,11 @@ public class Card : MonoBehaviour
         this.meshRenderer.material.SetColor("_EmissionColor", initialColor);
     }
 
+    public void StartPileResolution(string player)
+    {
+        StartCoroutine(MoveTowardsPlayer(player));
+    }
+
     private int GetSuitSortingRank()
     {
         switch (this.suit)
@@ -165,5 +170,37 @@ public class Card : MonoBehaviour
         }
         yield return new WaitForSeconds(0.5f);
         eventsController.Play(this);
+    }
+
+    IEnumerator MoveTowardsPlayer(string player)
+    {
+        Vector3 finalPosition;
+        switch (player)
+        {
+            case Constants.PlayerIds.Player1:
+                finalPosition = new Vector3(0, 0.25f, -25);
+                break;
+            case Constants.PlayerIds.Player2:
+                finalPosition = new Vector3(-50, 0.25f, 0);
+                break;
+            case Constants.PlayerIds.Player3:
+                finalPosition = new Vector3(0, 0.25f, 25);
+                break;
+            case Constants.PlayerIds.Player4:
+                finalPosition = new Vector3(50, 0.25f, 0);
+                break;
+            default:
+                throw new Exception("The provided player id is invalid");
+        }
+
+        while (transform.position != finalPosition)
+        {
+            transform.position = Vector3.MoveTowards(transform.position, finalPosition, speed * 2 * Time.deltaTime);
+            yield return null;
+        }
+        yield return new WaitForSeconds(0.1f);
+        this.gameObject.SetActive(false);
+        this.meshRenderer.enabled = false;
+        this.eventsController.MarkCardAsFinishedResolving();
     }
 }
