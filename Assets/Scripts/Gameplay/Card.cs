@@ -210,7 +210,7 @@ public class Card : MonoBehaviour
         this.eventsController.MarkCardAsFinishedResolving();
     }
 
-    private IEnumerator AdjustPositionInHand(int index, int cardsInHand)
+    private IEnumerator AdjustPositionInHand(float index, float cardsInHand)
     {
         Vector3 finalPosition;
         switch (this.playerId)
