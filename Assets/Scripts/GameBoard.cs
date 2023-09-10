@@ -184,7 +184,7 @@ public class GameBoard : MonoBehaviour
                 float rotateZ = 0.0f;
                 if (j == 0)
                 {
-                    position = new Vector3((i - 13) + 6, 0.5f + (0.01f * i), -12);
+                    position = new Vector3((i * 2) - 12, 0.5f + (0.01f * i), -12);
                 }
                 else if (j == 1)
                 {

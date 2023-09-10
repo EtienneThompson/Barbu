@@ -31,7 +31,15 @@ public class GameState : IGameState
 
     public virtual void CleanUp()
     {
-        // Do nothing, this will be overridden by states appropriately.
+        // Always adjust the position of the cards in the hand.
+        int index = 0;
+        var availableCards = this.hand.GetAvailableCards();
+        var cardsInHand = availableCards.Count;
+        foreach (var card in availableCards)
+        {
+            card.StartPositionAdjustment(index, cardsInHand);
+            index++;
+        }
     }
 
     public virtual void GoNext()
