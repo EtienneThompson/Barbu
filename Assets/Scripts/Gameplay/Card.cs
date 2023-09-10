@@ -233,7 +233,7 @@ public class Card : MonoBehaviour
 
         while (transform.position != finalPosition)
         {
-            transform.position = Vector3.MoveTowards(transform.position, finalPosition, speed * 0.5f * Time.deltaTime);
+            transform.position = Vector3.MoveTowards(transform.position, finalPosition, speed * 0.75f * Time.deltaTime);
             yield return null;
         }
     }
