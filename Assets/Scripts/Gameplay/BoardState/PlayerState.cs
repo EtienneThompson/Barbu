@@ -43,5 +43,7 @@ public class PlayerState : GameState
         {
             card.RemoveHighlight();
         }
+
+        base.CleanUp();
     }
 }

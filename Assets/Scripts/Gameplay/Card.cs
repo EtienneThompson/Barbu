@@ -116,6 +116,11 @@ public class Card : MonoBehaviour
         StartCoroutine(MoveTowardsPlayer(player));
     }
 
+    public void StartPositionAdjustment(int index, int cardsInHand)
+    {
+        StartCoroutine(AdjustPositionInHand(index, cardsInHand));
+    }
+
     private int GetSuitSortingRank()
     {
         switch (this.suit)
@@ -138,7 +143,7 @@ public class Card : MonoBehaviour
         return this.rank;
     }
 
-    IEnumerator MoveToCenterRoutine()
+    private IEnumerator MoveToCenterRoutine()
     {
         transform.localScale = new Vector3(0.7f, 0.7f, 0.7f);
         Vector3 center;
@@ -172,7 +177,7 @@ public class Card : MonoBehaviour
         eventsController.Play(this);
     }
 
-    IEnumerator MoveTowardsPlayer(string player)
+    private IEnumerator MoveTowardsPlayer(string player)
     {
         Vector3 finalPosition;
         switch (player)
@@ -198,9 +203,38 @@ public class Card : MonoBehaviour
             transform.position = Vector3.MoveTowards(transform.position, finalPosition, speed * 2 * Time.deltaTime);
             yield return null;
         }
+
         yield return new WaitForSeconds(0.1f);
         this.gameObject.SetActive(false);
         this.meshRenderer.enabled = false;
         this.eventsController.MarkCardAsFinishedResolving();
+    }
+
+    private IEnumerator AdjustPositionInHand(int index, int cardsInHand)
+    {
+        Vector3 finalPosition;
+        switch (this.playerId)
+        {
+            case Constants.PlayerIds.Player1:
+                finalPosition = new Vector3((index * 2) - (cardsInHand - 1), 0.5f + (0.01f * index), -12);
+                break;
+            case Constants.PlayerIds.Player2:
+                finalPosition = new Vector3(-22, 0.5f + (-0.01f * index), index - (cardsInHand / 2));
+                break;
+            case Constants.PlayerIds.Player3:
+                finalPosition = new Vector3(index - (cardsInHand / 2), 0.5f + (-0.01f * index), 12);
+                break;
+            case Constants.PlayerIds.Player4:
+                finalPosition = new Vector3(22, 0.5f + (0.01f * index), index - (cardsInHand / 2));
+                break;
+            default:
+                throw new Exception("The provided player id is invalid");
+        }
+
+        while (transform.position != finalPosition)
+        {
+            transform.position = Vector3.MoveTowards(transform.position, finalPosition, speed * 0.5f * Time.deltaTime);
+            yield return null;
+        }
     }
 }
