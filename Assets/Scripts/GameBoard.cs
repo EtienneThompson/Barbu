@@ -188,18 +188,18 @@ public class GameBoard : MonoBehaviour
                 }
                 else if (j == 1)
                 {
-                    position = new Vector3(-22, 0.5f + (-0.01f * i), (i - 13) + 6);
+                    position = new Vector3(-22, 0.5f + (-0.01f * i), i - 6);
                     rotateY = 90.0f;
                     rotateZ = 180.0f;
                 }
                 else if (j == 2)
                 {
-                    position = new Vector3((i - 13) + 6, 0.5f + (-0.01f * i), 12);
+                    position = new Vector3(i - 6, 0.5f + (-0.01f * i), 12);
                     rotateZ = 180.0f;
                 }
                 else
                 {
-                    position = new Vector3(22, 0.5f + (0.01f * i), (i - 13) + 6);
+                    position = new Vector3(22, 0.5f + (0.01f * i), i - 6);
                     rotateY = -90.0f;
                     rotateZ = 180.0f;
                 }
