@@ -29,6 +29,16 @@ public class Settings
         /// Cards are ordered from largest to smallest within their suit.
         /// </summary>
         SuitHighToLow = 4,
+
+        /// <summary>
+        /// Cards are ordered from smallest to largest within their suit, with the suit colors alternating.
+        /// </summary>
+        SuitLowToHighAlternating = 5,
+
+        /// <summary>
+        /// Cards are ordered from largest to smallest within their suit, with the suit colors alternating.
+        /// </summary>
+        SuitHighToLowAlternating = 6,
     }
 
     public enum ComputerDifficulty
