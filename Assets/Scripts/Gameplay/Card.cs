@@ -86,6 +86,10 @@ public class Card : MonoBehaviour
                 return -1 * (this.GetSuitSortingRank() + this.GetRankSortingRank());
             case Settings.SortingOptions.SuitLowToHigh:
                 return this.GetSuitSortingRank() + this.GetRankSortingRank();
+            case Settings.SortingOptions.SuitHighToLowAlternating:
+                return this.GetSuitSortingRank(alternating: true) + this.GetRankSortingRank();
+            case Settings.SortingOptions.SuitLowToHighAlternating:
+                return this.GetSuitSortingRank(alternating: true) + this.GetRankSortingRank();
             case Settings.SortingOptions.None:
             default:
                 return 0;
@@ -121,16 +125,16 @@ public class Card : MonoBehaviour
         StartCoroutine(AdjustPositionInHand(index, cardsInHand));
     }
 
-    private int GetSuitSortingRank()
+    private int GetSuitSortingRank(bool alternating = false)
     {
         switch (this.suit)
         {
             case Constants.CardSuits.Heart:
                 return 0;
             case Constants.CardSuits.Diamond:
-                return 20;
+                return 20 * (alternating ? 2 : 1);
             case Constants.CardSuits.Spade:
-                return 40;
+                return (int)(40.0f * (alternating ? 0.5f : 1.0f));
             case Constants.CardSuits.Club:
                 return 60;
             default:
