@@ -25,11 +25,16 @@ public class EventsController
     public delegate void RoundAnimationOver();
     public static RoundAnimationOver roundAnimationOver;
 
+    public delegate void PileResolutionFinished();
+    public static PileResolutionFinished endPileResolution;
+
     private static EventsController singleton;
+
+    private int numCardsFinishedResolvingInPile;
 
     private EventsController()
     {
-
+        this.numCardsFinishedResolvingInPile = 0;
     }
 
     public static EventsController GetInstance()
@@ -67,5 +72,15 @@ public class EventsController
     public void FinishRoundAnimation()
     {
         roundAnimationOver();
+    }
+
+    public void MarkCardAsFinishedResolving()
+    {
+        this.numCardsFinishedResolvingInPile++;
+        if (this.numCardsFinishedResolvingInPile == 4)
+        {
+            this.numCardsFinishedResolvingInPile = 0;
+            endPileResolution();
+        }
     }
 }

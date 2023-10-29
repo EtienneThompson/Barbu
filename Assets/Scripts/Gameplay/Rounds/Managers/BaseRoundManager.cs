@@ -161,6 +161,7 @@ public class BaseRoundManager : IRoundManager, IEventListener
         EventsController.playCard+= this.OnCardPlayed;
         EventsController.endRound += this.CleanupRound;
         EventsController.roundAnimationOver += this.StartRound;
+        EventsController.endPileResolution += this.OnPileResolved;
     }
 
     public void Destroy()
@@ -169,6 +170,7 @@ public class BaseRoundManager : IRoundManager, IEventListener
         EventsController.playCard -= this.OnCardPlayed;
         EventsController.endRound -= this.CleanupRound;
         EventsController.roundAnimationOver -= this.StartRound;
+        EventsController.endPileResolution -= this.OnPileResolved;
 
         // Clean up any dependency listeners.
         this.gameStateContext.Destroy();
@@ -197,25 +199,19 @@ public class BaseRoundManager : IRoundManager, IEventListener
         this.stateMachine.SetHighestRank(this.highestCard.rank);
 
         if (this.stateMachine.NumCardsPlayed() == Constants.CardsPerPile) {
-            if (this.ResolvePile())
-            {
-                return;
-            }
+            this.ResolvePile();
+            return;
         }
 
         this.stateMachine.SetCardPlayable(true);
+        this.gameStateContext.Next();
+    }
 
-        if (this.stateMachine.NumCardsPlayed() == 0)
-        {
-            // Start the new state so that if the player is a computer they will make a move.
-            this.gameStateContext.Start();
-        }
-        else
-        {
-            // If we just resolved a pile and therefore have no cards, then we
-            // don't want to move past the starting player state.
-            this.gameStateContext.Next();
-        }
+    protected void OnPileResolved()
+    {
+        this.stateMachine.SetCardPlayable(true);
+        // Start the new state so that if the player is a computer they will make a move.
+        this.gameStateContext.Start();
     }
 
     protected virtual void MarkGameAsFinished()
@@ -228,7 +224,7 @@ public class BaseRoundManager : IRoundManager, IEventListener
         throw new Exception("This method must be overridden.");
     }
 
-    private bool ResolvePile()
+    private void ResolvePile()
     {
         this.pilesPlayed++;
         var highestCardIndex = this.FindHighestCardIndex();
@@ -245,11 +241,9 @@ public class BaseRoundManager : IRoundManager, IEventListener
 
         this.inGamePointsController.UpdatePlayerPoints(playerId, pilePoints);
 
-        // Hide the cards in the UI.
         for (int i = 0; i < this.stateMachine.NumCardsPlayed(); i++)
         {
-            this.currentPile[i].gameObject.SetActive(false);
-            this.currentPile[i].GetComponent<Renderer>().enabled = false;
+            this.currentPile[i].GetComponent<Card>().StartPileResolution(playerId);
             this.currentPile[i] = null;
         }
 
@@ -262,10 +256,7 @@ public class BaseRoundManager : IRoundManager, IEventListener
         {
             this.pilesPlayed = 0;
             this.scoreMenu.UpdateScores(this.currentRound, this.playerPoints);
-            return true;
         }
-
-        return false;
     }
 
     private string GetWinningPlayerId()

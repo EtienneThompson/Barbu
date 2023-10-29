@@ -14,7 +14,7 @@ public class Card : MonoBehaviour
     public int rank;
     public string playerId;
     public CardState state;
-    public const float speed = 150.0f;
+    public const float speed = 30.0f;
     private StateMachine stateMachine;
     private EventsController eventsController;
     private Renderer meshRenderer;
@@ -86,6 +86,10 @@ public class Card : MonoBehaviour
                 return -1 * (this.GetSuitSortingRank() + this.GetRankSortingRank());
             case Settings.SortingOptions.SuitLowToHigh:
                 return this.GetSuitSortingRank() + this.GetRankSortingRank();
+            case Settings.SortingOptions.SuitHighToLowAlternating:
+                return this.GetSuitSortingRank(alternating: true) + this.GetRankSortingRank();
+            case Settings.SortingOptions.SuitLowToHighAlternating:
+                return this.GetSuitSortingRank(alternating: true) + this.GetRankSortingRank();
             case Settings.SortingOptions.None:
             default:
                 return 0;
@@ -111,16 +115,26 @@ public class Card : MonoBehaviour
         this.meshRenderer.material.SetColor("_EmissionColor", initialColor);
     }
 
-    private int GetSuitSortingRank()
+    public void StartPileResolution(string player)
+    {
+        StartCoroutine(MoveTowardsPlayer(player));
+    }
+
+    public void StartPositionAdjustment(int index, int cardsInHand)
+    {
+        StartCoroutine(AdjustPositionInHand(index, cardsInHand));
+    }
+
+    private int GetSuitSortingRank(bool alternating = false)
     {
         switch (this.suit)
         {
             case Constants.CardSuits.Heart:
                 return 0;
             case Constants.CardSuits.Diamond:
-                return 20;
+                return 20 * (alternating ? 2 : 1);
             case Constants.CardSuits.Spade:
-                return 40;
+                return (int)(40.0f * (alternating ? 0.5f : 1.0f));
             case Constants.CardSuits.Club:
                 return 60;
             default:
@@ -133,23 +147,24 @@ public class Card : MonoBehaviour
         return this.rank;
     }
 
-    IEnumerator MoveToCenterRoutine()
+    private IEnumerator MoveToCenterRoutine()
     {
+        transform.localScale = new Vector3(0.7f, 0.7f, 0.7f);
         Vector3 center;
-        var verticalPosition = -19.0f + 0.1f * this.stateMachine.NumCardsPlayed();
+        var verticalPosition = 0.5f + this.stateMachine.NumCardsPlayed() * 0.01f;
         switch (this.playerId)
         {
             case Constants.PlayerIds.Player1:
-                center = new Vector3(0.0f, verticalPosition, -45.0f);
+                center = new Vector3(0.0f, verticalPosition, -3.0f);
                 break;
             case Constants.PlayerIds.Player2:
-                center = new Vector3(-20.0f, verticalPosition, -25.0f);
+                center = new Vector3(-3.0f, verticalPosition, 0.0f);
                 break;
             case Constants.PlayerIds.Player3:
-                center = new Vector3(0.0f, verticalPosition, -5.0f);
+                center = new Vector3(0.0f, verticalPosition, 3.0f);
                 break;
             case Constants.PlayerIds.Player4:
-                center = new Vector3(20.0f, verticalPosition, -25.0f);
+                center = new Vector3(3.0f, verticalPosition, 0.0f);
                 break;
             default:
                 throw new Exception("This card has an invalid player id " + this.playerId);
@@ -164,5 +179,66 @@ public class Card : MonoBehaviour
         }
         yield return new WaitForSeconds(0.5f);
         eventsController.Play(this);
+    }
+
+    private IEnumerator MoveTowardsPlayer(string player)
+    {
+        Vector3 finalPosition;
+        switch (player)
+        {
+            case Constants.PlayerIds.Player1:
+                finalPosition = new Vector3(0, 0.25f, -25);
+                break;
+            case Constants.PlayerIds.Player2:
+                finalPosition = new Vector3(-50, 0.25f, 0);
+                break;
+            case Constants.PlayerIds.Player3:
+                finalPosition = new Vector3(0, 0.25f, 25);
+                break;
+            case Constants.PlayerIds.Player4:
+                finalPosition = new Vector3(50, 0.25f, 0);
+                break;
+            default:
+                throw new Exception("The provided player id is invalid");
+        }
+
+        while (transform.position != finalPosition)
+        {
+            transform.position = Vector3.MoveTowards(transform.position, finalPosition, speed * 2 * Time.deltaTime);
+            yield return null;
+        }
+
+        yield return new WaitForSeconds(0.1f);
+        this.gameObject.SetActive(false);
+        this.meshRenderer.enabled = false;
+        this.eventsController.MarkCardAsFinishedResolving();
+    }
+
+    private IEnumerator AdjustPositionInHand(float index, float cardsInHand)
+    {
+        Vector3 finalPosition;
+        switch (this.playerId)
+        {
+            case Constants.PlayerIds.Player1:
+                finalPosition = new Vector3((index * 2) - (cardsInHand - 1), 0.5f + (0.01f * index), -12);
+                break;
+            case Constants.PlayerIds.Player2:
+                finalPosition = new Vector3(-22, 0.5f + (-0.01f * index), index - (cardsInHand / 2));
+                break;
+            case Constants.PlayerIds.Player3:
+                finalPosition = new Vector3(index - (cardsInHand / 2), 0.5f + (-0.01f * index), 12);
+                break;
+            case Constants.PlayerIds.Player4:
+                finalPosition = new Vector3(22, 0.5f + (0.01f * index), index - (cardsInHand / 2));
+                break;
+            default:
+                throw new Exception("The provided player id is invalid");
+        }
+
+        while (transform.position != finalPosition)
+        {
+            transform.position = Vector3.MoveTowards(transform.position, finalPosition, speed * 0.75f * Time.deltaTime);
+            yield return null;
+        }
     }
 }
