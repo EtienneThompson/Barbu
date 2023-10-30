@@ -81,4 +81,9 @@ public class Round : IRound
     {
         return this.PointMapping.ContainsKey(cardName);
     }
+
+    public int GetCardPointValue(string cardName)
+    {
+        return this.PointMapping.TryGetValue(cardName, out var value) ? value : 0;
+    }
 }

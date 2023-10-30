@@ -94,6 +94,7 @@ public class BaseRoundManager : IRoundManager, IEventListener
     public void StartRound()
     {
         Debug.Log("StartRound");
+        this.stateMachine.ResetNumCardsPlayed();
         this.stateMachine.SetCardPlayable(true);
         this.gameStateContext.Start();
         this.inGamePointsController.SetRoundName(this.roundContext.CurrentName());
@@ -241,7 +242,7 @@ public class BaseRoundManager : IRoundManager, IEventListener
 
         this.inGamePointsController.UpdatePlayerPoints(playerId, pilePoints);
 
-        for (int i = 0; i < this.stateMachine.NumCardsPlayed(); i++)
+        for (int i = 0; i < Constants.CardsPerPile; i++)
         {
             this.currentPile[i].GetComponent<Card>().StartPileResolution(playerId);
             this.currentPile[i] = null;

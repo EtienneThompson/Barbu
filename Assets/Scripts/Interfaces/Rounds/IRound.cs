@@ -15,4 +15,5 @@ public interface IRound
 
     bool IsRoundPositive();
     bool IsPointEarningCard(string cardName);
+    int GetCardPointValue(string cardName);
 }

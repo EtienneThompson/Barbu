@@ -1,6 +1,4 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 
 public class HardComputerState : GameState
@@ -27,84 +25,83 @@ public class HardComputerState : GameState
         var playableCards = cardsInSuit.Count > 0 ? cardsInSuit : this.hand.GetAvailableCards();
 
         Debug.Log("Player " + this.PlayerId + " cards");
-        List<CardPlayability> cardPlayability = new List<CardPlayability>();
-        foreach (var card in playableCards)
+
+        if (cardsInSuit.Count == 0)
         {
-            decimal ranking = 0.0M;
-            if (this.stateMachine.NumCardsPlayed() == 0)
+            Debug.Log("Computer has no cards in suit");
+            // Play the highest point-earning card.
+            var pointEarningCards = this.hand.GetCardsWithPoints(this.context);
+
+            if (pointEarningCards.Count > 0)
             {
-                // If the computer is playing first, rank card opposite to their rank.
-                ranking += 14 - card.rank;
+                Debug.Log("Computer has point earning cards, picking max value.");
+                var maxPoints = 0;
+                Card maxCard = null;
+                foreach (var card in pointEarningCards)
+                {
+                    var cardPointValue = this.context.GetCardPointValue(card.GetName());
+                    if (cardPointValue >= maxPoints && (maxCard == null || card.rank > maxCard.rank))
+                    {
+                        maxPoints = cardPointValue;
+                        maxCard = card;
+                    }
+                }
+
+                Debug.Log("Computer playing " + maxCard.GetName());
+                maxCard.PlayCard();
+                return;
             }
             else
             {
-                // If we can play an off suit card, rank all the higher numbers higher.
-                if (!card.suit.Equals(this.stateMachine.GetStartingSuit(), StringComparison.OrdinalIgnoreCase))
+                Debug.Log("Computer has no point earning cards, playing highest card.");
+                // If no cards earn points in the hand, then just play any card.
+                var highestCard = this.hand.GetHighestCard();
+                Debug.Log("Computer playing " + highestCard.GetName());
+                highestCard.PlayCard();
+                return;
+            }
+        }
+        else
+        {
+            Debug.Log("Computer has cards in starting suit");
+            if (playableCards.Count == 1)
+            {
+                Debug.Log("Computer has only one card in starting suit, playing it");
+                Debug.Log("Computer playing " + playableCards[0].GetName());
+                // If there's only one available card to play, play it.
+                playableCards[0].PlayCard();
+                return;
+            }
+            else
+            {
+                Debug.Log("Computer playing based on turn order");
+                Debug.Log("Computer is player " + this.stateMachine.NumCardsPlayed());
+                if (this.stateMachine.NumCardsPlayed() == 0)
                 {
-                    ranking += (decimal)card.rank;
-                    if (this.context.IsPointEarningCard(card.GetName()))
-                    {
-                        // Multiply point earning cards by 1.5, incentivizing aces and kings of non-point suits
-                        // over say 4s or 6s or point earning suits.
-                        ranking *= 1.5M;
-                    }
+                    Debug.Log("Computer playing first, using lowest card");
+                    Debug.Log("Number of cards to choose from: " + playableCards.Count);
+                    var lowestCard = this.hand.GetLowestCard(playableCards);
+                    Debug.Log("Computer playing " + lowestCard.GetName());
+                    lowestCard.PlayCard();
+                    return;
+                }
+                else if (this.stateMachine.NumCardsPlayed() == 1 || this.stateMachine.NumCardsPlayed() == 2)
+                {
+                    Debug.Log("Computer playing 2nd or 3rd");
+                    var bestCard = this.hand.GetCardBelowRank(playableCards, this.stateMachine.GetHighestRankedCard(), useLowestFallback: true);
+                    Debug.Log("Computer playing " + bestCard.GetName());
+                    bestCard.PlayCard();
+                    return;
                 }
                 else
                 {
-                    // Increase the ranking of each card lower than the current highest in proportion to its rank.
-                    if (card.rank < this.stateMachine.GetHighestRankedCard())
-                    {
-                        ranking += card.rank;
-                    }
-                    else
-                    {
-                        // This ranking should peak near the middle cards, and fall off towards the ends.
-                        if (card.rank < 6)
-                        {
-                            ranking += 0.0M;
-                        }
-                        else
-                        {
-                            ranking += (decimal)(card.rank * -0.25M + 3.5M);
-                        }
-                    }
-
-                    // Special logic if they're the last player, increase the ranking of the higher cards.
-                    if (this.stateMachine.NumCardsPlayed() == 3)
-                    {
-                        var multiplier = 1;
-                        // Derank higher cards when it is a point earning card.
-                        if (this.context.IsPointEarningCard(card.GetName()))
-                        {
-                            multiplier = -1;
-                        };
-
-                        ranking += multiplier * card.rank * 0.07M;
-                    }
-
-                    // Special logic if they're the first player, rank the lower cards higher.
-                    if (this.stateMachine.NumCardsPlayed() == 0)
-                    {
-                        ranking += 1 / card.rank;
-                    }
+                    Debug.Log("Computer going last");
+                    var bestCard = this.hand.GetCardBelowRank(playableCards, this.stateMachine.GetHighestRankedCard(), useLowestFallback: false);
+                    Debug.Log("Computer playing " + bestCard.GetName());
+                    bestCard.PlayCard();
+                    return;
                 }
             }
-
-            Debug.Log("Card: " + card.GetName());
-            Debug.Log("Ranking: " + ranking);
-
-            cardPlayability.Add(new CardPlayability
-            {
-                Card = card,
-                Ranking = ranking,
-            });
         }
-        Debug.Log("");
-
-        // Sort the ranking.
-        cardPlayability = cardPlayability.OrderByDescending(p => p.Ranking).ToList();
-        Debug.Log("Playing card: " + cardPlayability[0].Card.GetName());
-        Debug.Log("Played ranking: " + cardPlayability[0].Ranking);
-        cardPlayability[0].Card.PlayCard();
     }
 }
