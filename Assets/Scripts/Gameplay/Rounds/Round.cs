@@ -76,4 +76,14 @@ public class Round : IRound
     {
         return this.TotalPoints < 0;
     }
+
+    public bool IsPointEarningCard(string cardName)
+    {
+        return this.PointMapping.ContainsKey(cardName);
+    }
+
+    public int GetCardPointValue(string cardName)
+    {
+        return this.PointMapping.TryGetValue(cardName, out var value) ? value : 0;
+    }
 }

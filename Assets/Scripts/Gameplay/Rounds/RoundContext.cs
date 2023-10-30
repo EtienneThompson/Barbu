@@ -1,6 +1,4 @@
-using System.Collections;
 using System.Collections.Generic;
-using UnityEngine;
 
 public class RoundContext
 {
@@ -43,5 +41,15 @@ public class RoundContext
     public bool IsRoundPositive()
     {
         return this.current.IsRoundPositive();
+    }
+
+    public bool IsPointEarningCard(string cardName)
+    {
+        return this.current.IsPointEarningCard(cardName);
+    }
+
+    public int GetCardPointValue(string cardName)
+    {
+        return this.current.GetCardPointValue(cardName);
     }
 }

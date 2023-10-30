@@ -51,6 +51,25 @@ public class Hand
         return suitCards;
     }
 
+    public List<Card> GetCardsWithPoints(GameStateContext context, bool includePlayed = false)
+    {
+        var pointCards = new List<Card>();
+        foreach (var card in this.cards)
+        {
+            if (!includePlayed && card.state != Card.CardState.Waiting)
+            {
+                continue;
+            }
+
+            if (context.IsPointEarningCard(card.GetName()))
+            {
+                pointCards.Add(card);
+            }
+        }
+
+        return pointCards;
+    }
+
     public List<Card> GetAvailableCards()
     {
         var availableCards = new List<Card>();
@@ -86,6 +105,20 @@ public class Hand
         return maxRank;
     }
 
+    public Card GetHighestCard(List<Card> subset)
+    {
+        Card maxRank = null;
+        foreach (var card in subset)
+        {
+            if (maxRank == null || card.rank > maxRank.rank)
+            {
+                maxRank = card;
+            }
+        }
+
+        return maxRank;
+    }
+
     public Card GetLowestCard(bool includePlayed = false)
     {
         Card minRank = null;
@@ -103,6 +136,43 @@ public class Hand
         }
 
         return minRank;
+    }
+
+    public Card GetLowestCard(List<Card> subset)
+    {
+        Card minRank = null;
+        foreach (var card in subset)
+        {
+            if (minRank == null || card.rank < minRank.rank)
+            {
+                minRank = card;
+            }
+        }
+
+        return minRank;
+    }
+
+    public Card GetCardBelowRank(List<Card> subset, int rank, bool useLowestFallback = false)
+    {
+        Card maxRank = null;
+        foreach (var card in subset)
+        {
+            if (card.rank < rank && (maxRank == null || card.rank > maxRank.rank))
+            {
+                maxRank = card;
+            }
+        }
+
+        if (maxRank == null && useLowestFallback)
+        {
+            return this.GetLowestCard(subset);
+        }
+        else if (maxRank == null && !useLowestFallback)
+        {
+            return this.GetHighestCard(subset);
+        }
+
+        return maxRank;
     }
 
     public void SortHand(Settings.SortingOptions option)

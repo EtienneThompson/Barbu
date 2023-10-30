@@ -1,7 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-
 public class GameStateContext : IEventListener
 {
     private readonly StateMachine stateMachine;
@@ -78,6 +74,16 @@ public class GameStateContext : IEventListener
     public bool IsCurrentRoundPositive()
     {
         return this.roundContext.IsRoundPositive();
+    }
+
+    public bool IsPointEarningCard(string cardName)
+    {
+        return this.roundContext.IsPointEarningCard(cardName);
+    }
+
+    public int GetCardPointValue(string cardName)
+    {
+        return this.roundContext.GetCardPointValue(cardName);
     }
 
     public void Setup()
