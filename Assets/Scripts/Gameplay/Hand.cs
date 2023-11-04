@@ -175,6 +175,19 @@ public class Hand
         return maxRank;
     }
 
+    public Card GetCardAboveRank(List<Card> subset, int rank)
+    {
+        var maxCard = this.GetHighestCard(subset);
+        if (maxCard.rank >= rank)
+        {
+            return maxCard;
+        }
+        else
+        {
+            return this.GetLowestCard(subset);
+        }
+    }
+
     public void SortHand(Settings.SortingOptions option)
     {
         this.cards = this.cards.OrderBy(c => c.GetSortingRank(option)).ToArray();

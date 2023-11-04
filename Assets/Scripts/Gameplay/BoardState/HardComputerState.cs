@@ -21,6 +21,7 @@ public class HardComputerState : GameState
         }
 
         this.stateMachine.SetCardPlayable(false);
+        var isPositiveRound = this.context.IsCurrentRoundPositive();
         var cardsInSuit = this.hand.CardsInSuit(this.stateMachine.GetStartingSuit());
         var playableCards = cardsInSuit.Count > 0 ? cardsInSuit : this.hand.GetAvailableCards();
 
@@ -35,12 +36,16 @@ public class HardComputerState : GameState
             if (pointEarningCards.Count > 0)
             {
                 Debug.Log("Computer has point earning cards, picking max value.");
-                var maxPoints = 0;
+                var maxPoints = isPositiveRound ? int.MaxValue : int.MinValue;
                 Card maxCard = null;
                 foreach (var card in pointEarningCards)
                 {
                     var cardPointValue = this.context.GetCardPointValue(card.GetName());
-                    if (cardPointValue >= maxPoints && (maxCard == null || card.rank > maxCard.rank))
+                    if (!isPositiveRound && cardPointValue >= maxPoints && (maxCard == null || card.rank > maxCard.rank))
+                    {
+                        maxPoints = cardPointValue;
+                        maxCard = card;
+                    } else if (isPositiveRound && cardPointValue <= maxPoints && (maxCard == null || card.rank < maxCard.rank))
                     {
                         maxPoints = cardPointValue;
                         maxCard = card;
@@ -55,7 +60,7 @@ public class HardComputerState : GameState
             {
                 Debug.Log("Computer has no point earning cards, playing highest card.");
                 // If no cards earn points in the hand, then just play any card.
-                var highestCard = this.hand.GetHighestCard();
+                var highestCard = isPositiveRound ? this.hand.GetLowestCard() : this.hand.GetHighestCard();
                 Debug.Log("Computer playing " + highestCard.GetName());
                 highestCard.PlayCard();
                 return;
@@ -80,7 +85,7 @@ public class HardComputerState : GameState
                 {
                     Debug.Log("Computer playing first, using lowest card");
                     Debug.Log("Number of cards to choose from: " + playableCards.Count);
-                    var lowestCard = this.hand.GetLowestCard(playableCards);
+                    var lowestCard = isPositiveRound ? this.hand.GetHighestCard(playableCards) : this.hand.GetLowestCard(playableCards);
                     Debug.Log("Computer playing " + lowestCard.GetName());
                     lowestCard.PlayCard();
                     return;
@@ -88,7 +93,9 @@ public class HardComputerState : GameState
                 else if (this.stateMachine.NumCardsPlayed() == 1 || this.stateMachine.NumCardsPlayed() == 2)
                 {
                     Debug.Log("Computer playing 2nd or 3rd");
-                    var bestCard = this.hand.GetCardBelowRank(playableCards, this.stateMachine.GetHighestRankedCard(), useLowestFallback: true);
+                    var bestCard = isPositiveRound ?
+                        this.hand.GetCardAboveRank(playableCards, this.stateMachine.GetHighestRankedCard()) :
+                        this.hand.GetCardBelowRank(playableCards, this.stateMachine.GetHighestRankedCard(), useLowestFallback: true);
                     Debug.Log("Computer playing " + bestCard.GetName());
                     bestCard.PlayCard();
                     return;
@@ -96,7 +103,9 @@ public class HardComputerState : GameState
                 else
                 {
                     Debug.Log("Computer going last");
-                    var bestCard = this.hand.GetCardBelowRank(playableCards, this.stateMachine.GetHighestRankedCard(), useLowestFallback: false);
+                    var bestCard = isPositiveRound ?
+                        this.hand.GetCardAboveRank(playableCards, this.stateMachine.GetHighestRankedCard()) :
+                        this.hand.GetCardBelowRank(playableCards, this.stateMachine.GetHighestRankedCard(), useLowestFallback: false);
                     Debug.Log("Computer playing " + bestCard.GetName());
                     bestCard.PlayCard();
                     return;
