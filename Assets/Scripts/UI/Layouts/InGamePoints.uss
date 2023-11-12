@@ -147,14 +147,22 @@
 
 .overlay-button {
     font-size: 5px;
-    height: 25px;
+    height: 30px;
     width: 30px;
 	border-radius: 5px;
 	background-color: white;
 	border-color: white;
+	padding: 0px;
+}
+
+.icon-image {
+	min-height: 20px;
+	min-width: 20px;
 }
 
 .button-text {
 	color: #000000;
 	-unity-font-style: bold;
+	padding: 0px;
+	margin: 0px;
 }

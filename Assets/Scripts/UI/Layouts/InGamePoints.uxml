@@ -41,15 +41,15 @@
                 <ui:VisualElement name="top-right-row">
                     <ui:VisualElement name="button-column">
                         <ui:Button class="overlay-button" name="settings">
-                            <ui:Image style="--unity-image: resource('Icons/Buttons/settings_button');" />
+                            <ui:Image class="icon-image" style="--unity-image: resource('Assets/Resources/Icons/Buttons/settings_button.png');" />
                             <ui:Label class="button-text" text="Settings" />
                         </ui:Button>
                         <ui:Button class="overlay-button" name="games">
-                            <ui:Image style="--unity-image: resource('Icons/Buttons/new_game_button');" />
+                            <ui:Image class="icon-image" style="--unity-image: resource('Assets/Resources/Icons/Buttons/new_game_button.png');" />
                             <ui:Label class="button-text" text="Games" />
                         </ui:Button>
                         <ui:Button class="overlay-button" name="howtoplay">
-                            <ui:Image style="--unity-image: resource('Icons/Buttons/rules_button');" />
+                            <ui:Image class="icon-image" style="--unity-image: resource('Assets/Resources/Icons/Buttons/rules_button.png');" />
                             <ui:Label class="button-text" text="Rules" />
                         </ui:Button>
                     </ui:VisualElement>
