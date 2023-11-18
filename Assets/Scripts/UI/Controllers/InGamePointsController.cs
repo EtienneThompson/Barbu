@@ -4,6 +4,9 @@ using UnityEngine.UIElements;
 
 public class InGamePointsController : MonoBehaviour
 {
+    private Image settingsButtonImage;
+    private Image newGameButtonImage;
+    private Image rulesButtonImage;
     private Label player1points;
     private Label player2points;
     private Label player3points;
@@ -16,6 +19,18 @@ public class InGamePointsController : MonoBehaviour
         var inGamePoints = GameObject.Find(Constants.GameObjects.InGamePoints);
         var document = inGamePoints.GetComponent<UIDocument>();
         var root = document.rootVisualElement;
+
+        this.settingsButtonImage = root.Q<Image>("settingsButtonImage");
+        var settingsIcon = Resources.Load<Texture2D>("Icons/Buttons/settings_button");
+        this.settingsButtonImage.image = settingsIcon;
+
+        this.newGameButtonImage = root.Q<Image>("newGameButtonImage");
+        var newGameIcon = Resources.Load<Texture2D>("Icons/Buttons/new_game_button");
+        this.newGameButtonImage.image = newGameIcon;
+
+        this.rulesButtonImage = root.Q<Image>("rulesButtonImage");
+        var rulesIcon = Resources.Load<Texture2D>("Icons/Buttons/rules_button");
+        this.rulesButtonImage.image = rulesIcon;
 
         this.player1points = root.Q<Label>("player1points");
         this.player2points = root.Q<Label>("player2points");
