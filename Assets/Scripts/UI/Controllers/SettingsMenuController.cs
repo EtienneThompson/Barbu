@@ -45,6 +45,7 @@ public class SettingsMenuController : MonoBehaviour
         this.currentlySelectedDifficulty = root.Q<Label>("currentlySelectedDifficulty");
         _ = HandSortingStrings.TryGetValue(Settings.SortingPreference.ToString(), out var initialSortingOptionString);
         this.currentlySelectedSortingOption.text = initialSortingOptionString;
+        this.currentlySelectedSortingOption.style.unityFontDefinition = FontDefinition.FromFont(Resources.Load<Font>("Fonts/LucidaSansUnicodeRegular"));
         this.currentSortingOption = Array.IndexOf(Settings.HandSortingOptions, Settings.SortingPreference);
         this.currentlySelectedDifficulty.text = Settings.ComputerDifficultyPreference.ToString();
         this.currentDifficultyOption = Array.IndexOf(Settings.ComputerDifficulties, Settings.ComputerDifficultyPreference);
