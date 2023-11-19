@@ -1,9 +1,20 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UIElements;
 
 public class SettingsMenuController : MonoBehaviour
 {
+    private Dictionary<string, string> HandSortingStrings = new Dictionary<string, string> {
+        [Settings.SortingOptions.None.ToString()] = "No Sorting",
+        [Settings.SortingOptions.LowToHigh.ToString()] = "2 → A",
+        [Settings.SortingOptions.HighToLow.ToString()] = "A → 2",
+        [Settings.SortingOptions.SuitLowToHigh.ToString()] = "♥ ♦ ♠ ♣ 2 → A",
+        [Settings.SortingOptions.SuitHighToLow.ToString()] = "♥ ♦ ♠ ♣ A → 2",
+        [Settings.SortingOptions.SuitLowToHighAlternating.ToString()] = "♥ ♠ ♦ ♣ 2 → A",
+        [Settings.SortingOptions.SuitHighToLowAlternating.ToString()] = "♥ ♠ ♦ ♣ A → 2",
+    };
+
     private StateMachine stateMachine;
     private GameObject settingsMenu;
     private Button sortingPreviousBtn;
@@ -32,7 +43,9 @@ public class SettingsMenuController : MonoBehaviour
 
         this.currentlySelectedSortingOption = root.Q<Label>("currentlySelectedSortingOption");
         this.currentlySelectedDifficulty = root.Q<Label>("currentlySelectedDifficulty");
-        this.currentlySelectedSortingOption.text = Settings.SortingPreference.ToString();
+        _ = HandSortingStrings.TryGetValue(Settings.SortingPreference.ToString(), out var initialSortingOptionString);
+        this.currentlySelectedSortingOption.text = initialSortingOptionString;
+        this.currentlySelectedSortingOption.style.unityFontDefinition = FontDefinition.FromFont(Resources.Load<Font>("Fonts/LucidaSansUnicodeRegular"));
         this.currentSortingOption = Array.IndexOf(Settings.HandSortingOptions, Settings.SortingPreference);
         this.currentlySelectedDifficulty.text = Settings.ComputerDifficultyPreference.ToString();
         this.currentDifficultyOption = Array.IndexOf(Settings.ComputerDifficulties, Settings.ComputerDifficultyPreference);
@@ -58,7 +71,8 @@ public class SettingsMenuController : MonoBehaviour
     {
         Debug.Log("Sorting Previous button clicked");
         this.currentSortingOption = this.SafeMod(this.currentSortingOption - 1, Settings.HandSortingOptions.Length);
-        this.currentlySelectedSortingOption.text = Settings.HandSortingOptions[this.currentSortingOption].ToString();
+        _ = HandSortingStrings.TryGetValue(Settings.HandSortingOptions[this.currentSortingOption].ToString(), out var sortingOptionText);
+        this.currentlySelectedSortingOption.text = sortingOptionText;
         Settings.SortingPreference = Settings.HandSortingOptions[this.currentSortingOption];
     }
 
@@ -66,7 +80,8 @@ public class SettingsMenuController : MonoBehaviour
     {
         Debug.Log("Sorting Next button clicked");
         this.currentSortingOption = this.SafeMod(this.currentSortingOption + 1, Settings.HandSortingOptions.Length);
-        this.currentlySelectedSortingOption.text = Settings.HandSortingOptions[this.currentSortingOption].ToString();
+        _ = HandSortingStrings.TryGetValue(Settings.HandSortingOptions[this.currentSortingOption].ToString(), out var sortingOptionText);
+        this.currentlySelectedSortingOption.text = sortingOptionText;
         Settings.SortingPreference = Settings.HandSortingOptions[this.currentSortingOption];
     }
 
