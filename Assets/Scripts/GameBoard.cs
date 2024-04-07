@@ -19,6 +19,11 @@ public class GameBoard : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        Debug.Log("Testing");
+        ServiceLocator.Register<IRound, Round>();
+        ServiceLocator.Get<IRound>();
+
+        Debug.Log("Setup finished");
         Application.targetFrameRate = 60;
         instance = this;
 
