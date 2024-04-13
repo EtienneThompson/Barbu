@@ -112,18 +112,7 @@ public class BaseRoundManager : IRoundManager, IEventListener
         if (this.currentRound + 1 == this.totalRounds)
         {
             Debug.Log("Marking game as finished");
-            this.MarkGameAsFinished();
-            Statistics.GetGamesFinished();
-
-            var winningPlayer = this.GetWinningPlayerId();
-            if (winningPlayer.Equals(Constants.PlayerIds.Player1))
-            {
-                Debug.Log("Marking game as won");
-                this.MarkGameAsWon();
-                Statistics.GetGamesWon();
-            }
-
-            this.advertisementController.ShowInterstitialAd();
+            this.CompleteGame();
         }
         else
         {
@@ -156,6 +145,25 @@ public class BaseRoundManager : IRoundManager, IEventListener
         this.PreRound();
     }
 
+    public void CompleteGame()
+    {
+        this.MarkGameAsFinished();
+        Statistics.GetGamesFinished();
+
+        var winningPlayers = this.GetWinningPlayerIds();
+        Debug.Log("Winning players: " + winningPlayers.Length);
+        if (winningPlayers.Where(id => id == Constants.PlayerIds.Player1).Any())
+        {
+            Debug.Log("Marking game as won");
+            this.MarkGameAsWon();
+            Statistics.GetGamesWon();
+        }
+
+        GameObject roundOverlay = GameObject.Find(Constants.GameObjects.RoundOverlay);
+        var controller = roundOverlay.GetComponent<RoundOverlayController>();
+        controller.DisplayWinner(winningPlayers);
+    }
+
     public void Setup()
     {
         // Listen for events when cards are being played.
@@ -163,6 +171,7 @@ public class BaseRoundManager : IRoundManager, IEventListener
         EventsController.endRound += this.CleanupRound;
         EventsController.roundAnimationOver += this.StartRound;
         EventsController.endPileResolution += this.OnPileResolved;
+        EventsController.winnerAnimationOver += this.OnWinnerDisplayed;
     }
 
     public void Destroy()
@@ -172,6 +181,7 @@ public class BaseRoundManager : IRoundManager, IEventListener
         EventsController.endRound -= this.CleanupRound;
         EventsController.roundAnimationOver -= this.StartRound;
         EventsController.endPileResolution -= this.OnPileResolved;
+        EventsController.winnerAnimationOver -= this.OnWinnerDisplayed;
 
         // Clean up any dependency listeners.
         this.gameStateContext.Destroy();
@@ -213,6 +223,11 @@ public class BaseRoundManager : IRoundManager, IEventListener
         this.stateMachine.SetCardPlayable(true);
         // Start the new state so that if the player is a computer they will make a move.
         this.gameStateContext.Start();
+    }
+
+    protected void OnWinnerDisplayed()
+    {
+        this.advertisementController.ShowInterstitialAd();
     }
 
     protected virtual void MarkGameAsFinished()
@@ -260,7 +275,7 @@ public class BaseRoundManager : IRoundManager, IEventListener
         }
     }
 
-    private string GetWinningPlayerId()
+    private string[] GetWinningPlayerIds()
     {
         Dictionary<string, int> playerPointsSum = new Dictionary<string, int>
         {
@@ -270,7 +285,12 @@ public class BaseRoundManager : IRoundManager, IEventListener
             [Constants.PlayerIds.Player4] = this.playerPoints[Constants.PlayerIds.Player4].Sum(),
         };
 
-        return playerPointsSum.Aggregate((l, r) => l.Value < r.Value ? l : r).Key;
+        var minPoints = playerPointsSum.Min(selector => selector.Value);
+
+        return playerPointsSum
+            .Where(playerPoints => playerPoints.Value == minPoints)
+            .Select(points => points.Key)
+            .ToArray();
     }
 
     private int FindHighestCardIndex()

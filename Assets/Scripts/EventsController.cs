@@ -28,6 +28,9 @@ public class EventsController
     public delegate void PileResolutionFinished();
     public static PileResolutionFinished endPileResolution;
 
+    public delegate void WinnerAnimationOver();
+    public static WinnerAnimationOver winnerAnimationOver;
+
     private static EventsController singleton;
 
     private int numCardsFinishedResolvingInPile;
@@ -82,5 +85,10 @@ public class EventsController
             this.numCardsFinishedResolvingInPile = 0;
             endPileResolution();
         }
+    }
+
+    public void FinishWinnerAnimation()
+    {
+        winnerAnimationOver();
     }
 }
