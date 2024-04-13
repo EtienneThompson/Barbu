@@ -1,29 +1,32 @@
-using System.Collections;
-using System.Collections.Generic;
-
-public class TraditionalRoundManager : BaseRoundManager
+namespace Barbu.Gameplay.Rounds.Managers
 {
-    public TraditionalRoundManager(GameBoard gameBoard, ScoreMenu scoreMenu, InGamePointsController inGamePointsController, Hand[] hands)
-    : base(Constants.TraditionalRoundManager.MaxRounds, gameBoard, scoreMenu, inGamePointsController, hands)
-    {
-        var everythingRound = new EverythingRound(this.roundContext);
-        var nothingRound = new NothingRound(this.roundContext, everythingRound);
-        var pilesRound = new PilesRound(this.roundContext, nothingRound);
-        var kingOfHeartsRound = new KingOfHeartsRound(this.roundContext, pilesRound);
-        var queensRound = new QueensRound(this.roundContext, kingOfHeartsRound);
-        var heartsRound = new HeartsRound(this.roundContext, queensRound);
-        this.roundContext.SetState(heartsRound);
+    using Barbu.Gameplay.Rounds.Rounds;
+    using Barbu.UI.Controllers;
 
-        this.gameStateContext.Start();
-    }
-
-    protected override void MarkGameAsFinished()
+    public class TraditionalRoundManager : BaseRoundManager
     {
-        Statistics.IncrementGamesFinished(Statistics.GameTypes.Traditional);
-    }
+        public TraditionalRoundManager(GameBoard gameBoard, ScoreMenu scoreMenu, InGamePointsController inGamePointsController, Hand[] hands)
+        : base(Constants.TraditionalRoundManager.MaxRounds, gameBoard, scoreMenu, inGamePointsController, hands)
+        {
+            var everythingRound = new EverythingRound(this.roundContext);
+            var nothingRound = new NothingRound(this.roundContext, everythingRound);
+            var pilesRound = new PilesRound(this.roundContext, nothingRound);
+            var kingOfHeartsRound = new KingOfHeartsRound(this.roundContext, pilesRound);
+            var queensRound = new QueensRound(this.roundContext, kingOfHeartsRound);
+            var heartsRound = new HeartsRound(this.roundContext, queensRound);
+            this.roundContext.SetState(heartsRound);
 
-    protected override void MarkGameAsWon()
-    {
-        Statistics.IncrementGamesWon(Statistics.GameTypes.Traditional);
+            this.gameStateContext.Start();
+        }
+
+        protected override void MarkGameAsFinished()
+        {
+            Statistics.IncrementGamesFinished(Statistics.GameTypes.Traditional);
+        }
+
+        protected override void MarkGameAsWon()
+        {
+            Statistics.IncrementGamesWon(Statistics.GameTypes.Traditional);
+        }
     }
 }

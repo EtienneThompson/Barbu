@@ -1,55 +1,59 @@
-using System.Collections.Generic;
-
-public class RoundContext
+namespace Barbu.Gameplay.Rounds
 {
-    private IRound current;
+    using System.Collections.Generic;
+    using Barbu.Interfaces.Rounds;
 
-    public RoundContext()
+    public class RoundContext
     {
-    }
+        private IRound current;
 
-    public void Next()
-    {
-        current.GoNext();
-    }
+        public RoundContext()
+        {
+        }
 
-    public string CurrentName()
-    {
-        return current.Name;
-    }
+        public void Next()
+        {
+            current.GoNext();
+        }
 
-    public void SetState(IRound current)
-    {
-        this.current = current;
-    }
+        public string CurrentName()
+        {
+            return current.Name;
+        }
 
-    public int CalculatePointsInPile(Card[] pile)
-    {
-        return this.current.CalculatePointsInPile(pile);
-    }
+        public void SetState(IRound current)
+        {
+            this.current = current;
+        }
 
-    public int CalculateCurrentPoints(List<Card[]> piles)
-    {
-        return this.current.CalculatePointsInAllPiles(piles);
-    }
+        public int CalculatePointsInPile(Card[] pile)
+        {
+            return this.current.CalculatePointsInPile(pile);
+        }
 
-    public bool IsRoundOver(int round, Dictionary<string, int[]> points, int pilesPlayed)
-    {
-        return this.current.IsRoundOver(round, points, pilesPlayed);
-    }
+        public int CalculateCurrentPoints(List<Card[]> piles)
+        {
+            return this.current.CalculatePointsInAllPiles(piles);
+        }
 
-    public bool IsRoundPositive()
-    {
-        return this.current.IsRoundPositive();
-    }
+        public bool IsRoundOver(int round, Dictionary<string, int[]> points, int pilesPlayed)
+        {
+            return this.current.IsRoundOver(round, points, pilesPlayed);
+        }
 
-    public bool IsPointEarningCard(string cardName)
-    {
-        return this.current.IsPointEarningCard(cardName);
-    }
+        public bool IsRoundPositive()
+        {
+            return this.current.IsRoundPositive();
+        }
 
-    public int GetCardPointValue(string cardName)
-    {
-        return this.current.GetCardPointValue(cardName);
+        public bool IsPointEarningCard(string cardName)
+        {
+            return this.current.IsPointEarningCard(cardName);
+        }
+
+        public int GetCardPointValue(string cardName)
+        {
+            return this.current.GetCardPointValue(cardName);
+        }
     }
 }

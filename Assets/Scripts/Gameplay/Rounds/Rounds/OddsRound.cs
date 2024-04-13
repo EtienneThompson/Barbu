@@ -1,10 +1,11 @@
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-
-public class OddsRound : Round
+namespace Barbu.Gameplay.Rounds.Rounds
 {
-    public override Dictionary<string, int> PointMapping => new Dictionary<string, int>
+    using System.Collections.Generic;
+    using Barbu.Gameplay.Rounds;
+
+    public class OddsRound : Round
+    {
+        public override Dictionary<string, int> PointMapping => new Dictionary<string, int>
     {
         { "Heart3", 5 },
         { "Heart5", 5 },
@@ -31,17 +32,18 @@ public class OddsRound : Round
         { "Club11", 5 },
         { "Club13", 5 },
     };
-    public override int PointsPerPile => 0;
-    public override int TotalPoints => 120;
-    public override string Name => Constants.RoundNames.OddsRound;
+        public override int PointsPerPile => 0;
+        public override int TotalPoints => 120;
+        public override string Name => Constants.RoundNames.OddsRound;
 
-    public OddsRound(RoundContext context)
-    : base(context)
-    {
-    }
+        public OddsRound(RoundContext context)
+        : base(context)
+        {
+        }
 
-    public OddsRound(RoundContext context, Round next)
-    : base(context, next)
-    {
+        public OddsRound(RoundContext context, Round next)
+        : base(context, next)
+        {
+        }
     }
 }
