@@ -2,6 +2,7 @@ namespace Barbu.UI.Controllers
 {
     using System.Collections.Generic;
     using Barbu;
+    using Barbu.Models;
     using UnityEngine;
     using UnityEngine.UIElements;
 
@@ -75,7 +76,7 @@ namespace Barbu.UI.Controllers
             if (gameObject.activeSelf && Input.GetMouseButtonDown(0))
             {
                 gameObject.SetActive(false);
-                this.eventsController.EndRound();
+                this.eventsController.Fire(EventNames.RoundOver);
             }
         }
 

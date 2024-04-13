@@ -26,12 +26,12 @@ namespace Barbu.Gameplay.Rounds
             this.current = current;
         }
 
-        public int CalculatePointsInPile(Card[] pile)
+        public int CalculatePointsInPile(Pile pile)
         {
             return this.current.CalculatePointsInPile(pile);
         }
 
-        public int CalculateCurrentPoints(List<Card[]> piles)
+        public int CalculateCurrentPoints(List<Pile> piles)
         {
             return this.current.CalculatePointsInAllPiles(piles);
         }

@@ -1,7 +1,8 @@
 namespace Barbu
 {
-    using Barbu.Gameplay;
-    using UnityEngine;
+    using System;
+    using Barbu.Models;
+    using Newtonsoft.Json;
 
 
     /// <summary>
@@ -13,34 +14,19 @@ namespace Barbu
     /// </summary>
     public class EventsController
     {
-        public delegate void PauseGame();
-        public static PauseGame pauseGame;
-
-        public delegate void ResumeGame();
-        public static ResumeGame resumeGame;
-
-        public delegate void PlayCard(Card card);
-        public static PlayCard playCard;
-
-        public delegate void RoundOver();
-        public static RoundOver endRound;
-
-        public delegate void RoundAnimationOver();
-        public static RoundAnimationOver roundAnimationOver;
-
-        public delegate void PileResolutionFinished();
-        public static PileResolutionFinished endPileResolution;
-
-        public delegate void WinnerAnimationOver();
-        public static WinnerAnimationOver winnerAnimationOver;
+        public static event Action PauseGame;
+        public static event Action ResumeGame;
+        public static event Action<object> PlayCard;
+        public static event Action EndRound;
+        public static event Action CardInPileResolved;
+        public static event Action PileResolved;
+        public static event Action RoundAnimationOver;
+        public static event Action WinnerAnimationOver;
 
         private static EventsController singleton;
 
-        private int numCardsFinishedResolvingInPile;
-
         private EventsController()
         {
-            this.numCardsFinishedResolvingInPile = 0;
         }
 
         public static EventsController GetInstance()
@@ -53,46 +39,136 @@ namespace Barbu
             return singleton;
         }
 
-        public void Pause()
+        public void Subscribe(EventNames eventName, Action listener)
         {
-            Debug.Log("EventsController - Pausing game");
-            pauseGame();
-        }
-
-        public void Resume()
-        {
-            Debug.Log("EventsController - Resuming game");
-            resumeGame();
-        }
-
-        public void Play(Card card)
-        {
-            playCard(card);
-        }
-
-        public void EndRound()
-        {
-            endRound();
-        }
-
-        public void FinishRoundAnimation()
-        {
-            roundAnimationOver();
-        }
-
-        public void MarkCardAsFinishedResolving()
-        {
-            this.numCardsFinishedResolvingInPile++;
-            if (this.numCardsFinishedResolvingInPile == 4)
+            UnityEngine.Debug.Log($"Subscribing to event {eventName}");
+            switch (eventName)
             {
-                this.numCardsFinishedResolvingInPile = 0;
-                endPileResolution();
+                case EventNames.PauseGame:
+                    PauseGame += listener;
+                    return;
+                case EventNames.ResumeGame:
+                    ResumeGame += listener;
+                    return;
+                case EventNames.RoundOver:
+                    EndRound += listener;
+                    return;
+                case EventNames.CardInPileResolved:
+                    CardInPileResolved += listener;
+                    return;
+                case EventNames.PileResolved:
+                    PileResolved += listener;
+                    return;
+                case EventNames.RoundAnimationFinished:
+                    RoundAnimationOver += listener;
+                    return;
+                case EventNames.WinnerAnimationFinished:
+                    WinnerAnimationOver += listener;
+                    return;
+                default:
+                    throw new ArgumentException($"The event {eventName} is not able to be subscribed to!");
             }
         }
 
-        public void FinishWinnerAnimation()
+        public void Subscribe(EventNames eventName, Action<object> listener)
         {
-            winnerAnimationOver();
+            UnityEngine.Debug.Log($"Subscribing action {nameof(listener)} to event {eventName}");
+            switch (eventName)
+            {
+                case EventNames.PlayCard:
+                    PlayCard += listener;
+                    return;
+                default:
+                    throw new ArgumentException($"The event {eventName} is not able to be subscribed to!");
+            }
+        }
+
+        public void Unsubscribe(EventNames eventName, Action listener)
+        {
+            UnityEngine.Debug.Log($"Unsubscribing action {nameof(listener)} from event {eventName}");
+            switch (eventName)
+            {
+                case EventNames.PauseGame:
+                    PauseGame -= listener;
+                    return;
+                case EventNames.ResumeGame:
+                    ResumeGame -= listener;
+                    return;
+                case EventNames.RoundOver:
+                    EndRound -= listener;
+                    return;
+                case EventNames.CardInPileResolved:
+                    CardInPileResolved -= listener;
+                    return;
+                case EventNames.PileResolved:
+                    PileResolved -= listener;
+                    return;
+                case EventNames.RoundAnimationFinished:
+                    RoundAnimationOver -= listener;
+                    return;
+                case EventNames.WinnerAnimationFinished:
+                    WinnerAnimationOver -= listener;
+                    return;
+                default:
+                    throw new ArgumentException($"The event {eventName} is not able to be unsubscribed from!");
+            }
+        }
+
+        public void Unsubscribe(EventNames eventName, Action<object> listener)
+        {
+            UnityEngine.Debug.Log($"Unsubscribing action {nameof(listener)} from event {eventName}");
+            switch (eventName)
+            {
+                case EventNames.PlayCard:
+                    PlayCard -= listener;
+                    return;
+                default:
+                    throw new ArgumentException($"The event {eventName} is not able to be unsubscribed from!");
+            }
+        }
+
+        public void Fire(EventNames eventName)
+        {
+            UnityEngine.Debug.Log($"Firing event {eventName}");
+            switch (eventName)
+            {
+                case EventNames.PauseGame:
+                    PauseGame.Invoke();
+                    return;
+                case EventNames.ResumeGame:
+                    ResumeGame.Invoke();
+                    return;
+                case EventNames.RoundOver:
+                    EndRound.Invoke();
+                    return;
+                case EventNames.CardInPileResolved:
+                    CardInPileResolved.Invoke();
+                    return;
+                case EventNames.PileResolved:
+                    PileResolved.Invoke();
+                    return;
+                case EventNames.RoundAnimationFinished:
+                    RoundAnimationOver.Invoke();
+                    return;
+                case EventNames.WinnerAnimationFinished:
+                    WinnerAnimationOver.Invoke();
+                    return;
+                default:
+                    throw new ArgumentException($"The event {eventName} is not able to be subscribed to!");
+            }
+        }
+
+        public void Fire<T>(EventNames eventName, T data)
+        {
+            UnityEngine.Debug.Log($"Firing event ${eventName} with data ${data}");
+            switch (eventName)
+            {
+                case EventNames.PlayCard:
+                    PlayCard.Invoke(data);
+                    return;
+                default:
+                    throw new ArgumentException($"The event {eventName} is not able to be fired!");
+            }
         }
     }
 }

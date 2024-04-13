@@ -6,12 +6,13 @@ namespace Barbu.Gameplay.Rounds.Managers
     using Barbu.Gameplay.BoardState;
     using Barbu.Interfaces;
     using Barbu.Interfaces.Rounds;
+    using Barbu.Models;
     using Barbu.UI.Controllers;
     using UnityEngine;
 
     public class BaseRoundManager : IRoundManager, IEventListener
     {
-        protected Card[] currentPile = new Card[Constants.CardsPerPile];
+        protected Pile currentPile;
         protected int pilesPlayed = 0;
         protected string roundStartingPlayerId = Constants.PlayerIds.Player1;
         protected int currentRound = 0;
@@ -22,11 +23,12 @@ namespace Barbu.Gameplay.Rounds.Managers
         protected GameStateContext gameStateContext;
         protected GameState[] players;
         protected StateMachine stateMachine;
+        protected EventsController eventsController;
         protected ScoreMenu scoreMenu;
         protected GameBoard gameBoard;
         protected AdvertisementController advertisementController;
         protected InGamePointsController inGamePointsController;
-        protected Dictionary<string, List<Card[]>> playerWonPiles;
+        protected Dictionary<string, List<Pile>> playerWonPiles;
         protected Dictionary<string, int[]> playerPoints;
 
         public BaseRoundManager(
@@ -40,7 +42,9 @@ namespace Barbu.Gameplay.Rounds.Managers
             this.gameStateContext = new GameStateContext(this.roundContext);
             this.players = new GameState[4];
             this.stateMachine = new StateMachine();
+            this.eventsController = EventsController.GetInstance();
             this.stateMachine.SetStartingSuit(string.Empty);
+            this.currentPile = new Pile();
             this.scoreMenu = scoreMenu;
             this.gameBoard = gameBoard;
             this.inGamePointsController = inGamePointsController;
@@ -61,12 +65,12 @@ namespace Barbu.Gameplay.Rounds.Managers
             this.players[2] = computerState2;
             this.players[3] = computerState3;
 
-            this.playerWonPiles = new Dictionary<string, List<Card[]>>()
+            this.playerWonPiles = new Dictionary<string, List<Pile>>()
         {
-            { Constants.PlayerIds.Player1, new List<Card[]>() },
-            { Constants.PlayerIds.Player2, new List<Card[]>() },
-            { Constants.PlayerIds.Player3, new List<Card[]>() },
-            { Constants.PlayerIds.Player4, new List<Card[]>() },
+            { Constants.PlayerIds.Player1, new List<Pile>() },
+            { Constants.PlayerIds.Player2, new List<Pile>() },
+            { Constants.PlayerIds.Player3, new List<Pile>() },
+            { Constants.PlayerIds.Player4, new List<Pile>() },
         };
 
             this.playerPoints = new Dictionary<string, int[]>()
@@ -173,28 +177,29 @@ namespace Barbu.Gameplay.Rounds.Managers
         public void Setup()
         {
             // Listen for events when cards are being played.
-            EventsController.playCard += this.OnCardPlayed;
-            EventsController.endRound += this.CleanupRound;
-            EventsController.roundAnimationOver += this.StartRound;
-            EventsController.endPileResolution += this.OnPileResolved;
-            EventsController.winnerAnimationOver += this.OnWinnerDisplayed;
+            this.eventsController.Subscribe(EventNames.PlayCard, this.OnCardPlayed);
+            this.eventsController.Subscribe(EventNames.RoundOver, this.CleanupRound);
+            this.eventsController.Subscribe(EventNames.RoundAnimationFinished, this.StartRound);
+            this.eventsController.Subscribe(EventNames.PileResolved, this.OnPileResolved);
+            this.eventsController.Subscribe(EventNames.WinnerAnimationFinished, this.OnWinnerDisplayed);
         }
 
         public void Destroy()
         {
             // Deregister event listeners when this round is no longer applicable.
-            EventsController.playCard -= this.OnCardPlayed;
-            EventsController.endRound -= this.CleanupRound;
-            EventsController.roundAnimationOver -= this.StartRound;
-            EventsController.endPileResolution -= this.OnPileResolved;
-            EventsController.winnerAnimationOver -= this.OnWinnerDisplayed;
+            this.eventsController.Unsubscribe(EventNames.PlayCard, this.OnCardPlayed);
+            this.eventsController.Unsubscribe(EventNames.RoundOver, this.CleanupRound);
+            this.eventsController.Unsubscribe(EventNames.RoundAnimationFinished, this.StartRound);
+            this.eventsController.Unsubscribe(EventNames.PileResolved, this.OnPileResolved);
+            this.eventsController.Unsubscribe(EventNames.WinnerAnimationFinished, this.OnWinnerDisplayed);
 
             // Clean up any dependency listeners.
             this.gameStateContext.Destroy();
         }
 
-        protected void OnCardPlayed(Card card)
+        protected void OnCardPlayed(object payload)
         {
+            var card = (Card)payload;
             this.stateMachine.SetCardPlayable(false);
             this.gameStateContext.CleanUp();
 
@@ -203,15 +208,14 @@ namespace Barbu.Gameplay.Rounds.Managers
                 this.stateMachine.SetStartingSuit(card.suit);
             }
 
-            this.currentPile[this.stateMachine.NumCardsPlayed() - 1] = card;
+            this.currentPile.AddCardToPile(card);
 
             if (highestCard != null)
             {
                 highestCard.RemoveHighlight();
             }
 
-            var highestCardIndex = this.FindHighestCardIndex();
-            this.highestCard = this.currentPile[highestCardIndex];
+            this.highestCard = this.currentPile.GetHighestCard();
             this.highestCard.Highlight(new Color(0.0f, 0.0f, 255.0f, 1.0f));
             this.stateMachine.SetHighestRank(this.highestCard.rank);
 
@@ -250,25 +254,21 @@ namespace Barbu.Gameplay.Rounds.Managers
         private void ResolvePile()
         {
             this.pilesPlayed++;
-            var highestCardIndex = this.FindHighestCardIndex();
+            var highestCard = this.currentPile.GetHighestCard();
 
             // Determine which player's card was the highest one played.
-            var playerId = this.currentPile[highestCardIndex].playerId;
+            var playerId = highestCard.playerId;
             var player = this.GetPlayerFromId(playerId);
             this.gameStateContext.SetState(player);
 
-            var copiedPile = (Card[])this.currentPile.Clone();
-            this.playerWonPiles[playerId].Add(copiedPile);
+            this.playerWonPiles[playerId].Add(this.currentPile);
             var pilePoints = this.roundContext.CalculatePointsInPile(this.currentPile);
             this.playerPoints[playerId][this.currentRound] += pilePoints;
 
             this.inGamePointsController.UpdatePlayerPoints(playerId, pilePoints);
 
-            for (int i = 0; i < Constants.CardsPerPile; i++)
-            {
-                this.currentPile[i].GetComponent<Card>().StartPileResolution(playerId);
-                this.currentPile[i] = null;
-            }
+            this.currentPile.StartPileResolution(playerId);
+            this.currentPile = new Pile();
 
             this.stateMachine.ResetNumCardsPlayed();
             this.stateMachine.SetHighestRank(0);
@@ -298,26 +298,6 @@ namespace Barbu.Gameplay.Rounds.Managers
                 .Where(playerPoints => playerPoints.Value == minPoints)
                 .Select(points => points.Key)
                 .ToArray();
-        }
-
-        private int FindHighestCardIndex()
-        {
-            var highestCardIndex = 0;
-            for (int i = 0; i < this.currentPile.Length; i++)
-            {
-                if (this.currentPile[i] == null)
-                {
-                    continue;
-                }
-
-                if (this.currentPile[i].suit == this.stateMachine.GetStartingSuit() &&
-                    this.currentPile[i].rank > this.currentPile[highestCardIndex].rank)
-                {
-                    highestCardIndex = i;
-                }
-            }
-
-            return highestCardIndex;
         }
 
         private GameState GetPlayerFromId(string id)

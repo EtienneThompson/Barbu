@@ -12,8 +12,8 @@ namespace Barbu.Interfaces.Rounds
         string Name { get; }
         void GoNext();
         void SetNextState(Round next);
-        int CalculatePointsInPile(Card[] pile);
-        int CalculatePointsInAllPiles(List<Card[]> piles);
+        int CalculatePointsInPile(Pile pile);
+        int CalculatePointsInAllPiles(List<Pile> piles);
         bool IsRoundOver(int round, Dictionary<string, int[]> points, int pilesplayed);
 
         bool IsRoundPositive();
