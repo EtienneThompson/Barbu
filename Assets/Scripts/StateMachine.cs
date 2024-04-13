@@ -1,104 +1,109 @@
-public class StateMachine
+namespace Barbu
 {
-    private static readonly StateMachine instance = new StateMachine();
+    using Barbu.Gameplay;
 
-    private bool isSettingUp = false;
-    private int numCardsPlayed = 0;
-    private bool canCardBePlayed = false;
-    private string startingSuit = string.Empty;
-    private bool menuOpen = false;
-    private int highestRank = 0;
-
-    private bool playerCardMustBeStartingSuit;
-
-    private EventsController eventsController;
-
-    public StateMachine()
+    public class StateMachine
     {
-        this.eventsController = EventsController.GetInstance();
-    }
+        private static readonly StateMachine instance = new StateMachine();
 
-    public void SetIsSettingUp(bool isSetup)
-    {
-        instance.isSettingUp = isSetup;
-    }
+        private bool isSettingUp = false;
+        private int numCardsPlayed = 0;
+        private bool canCardBePlayed = false;
+        private string startingSuit = string.Empty;
+        private bool menuOpen = false;
+        private int highestRank = 0;
 
-    public bool IsSettingUp()
-    {
-        return instance.isSettingUp;
-    }
+        private bool playerCardMustBeStartingSuit;
 
-    public int NumCardsPlayed()
-    {
-        return instance.numCardsPlayed;
-    }
+        private EventsController eventsController;
 
-    public bool IsCardPlayable()
-    {
-        return instance.canCardBePlayed;
-    }
-
-    public void IncrementNumCardsPlayed()
-    {
-        instance.numCardsPlayed += 1;
-    }
-
-    public void ResetNumCardsPlayed()
-    {
-        instance.numCardsPlayed = 0;
-    }
-
-    public void SetCardPlayable(bool state)
-    {
-        instance.canCardBePlayed = state;
-    }
-
-    public string GetStartingSuit()
-    {
-        return instance.startingSuit;
-    }
-
-    public void SetStartingSuit(string suit)
-    {
-        instance.startingSuit = suit;
-    }
-
-    public void SetPlayerMustPlayStartingSuit(bool isStartingPlayer, Hand hand)
-    {
-        instance.playerCardMustBeStartingSuit = !isStartingPlayer && hand.CardsInSuit(instance.startingSuit).Count > 0;
-    }
-
-    public bool MustPlayCardInStartingSuit()
-    {
-        return instance.playerCardMustBeStartingSuit;
-    }
-
-    public bool IsMenuOpen()
-    {
-        return instance.menuOpen;
-    }
-
-    public void SetMenuOpen(bool isOpen)
-    {
-        instance.menuOpen = isOpen;
-
-        if (isOpen)
+        public StateMachine()
         {
-            this.eventsController.Pause();
+            this.eventsController = EventsController.GetInstance();
         }
-        else
+
+        public void SetIsSettingUp(bool isSetup)
         {
-            this.eventsController.Resume();
+            instance.isSettingUp = isSetup;
         }
-    }
 
-    public int GetHighestRankedCard()
-    {
-        return instance.highestRank;
-    }
+        public bool IsSettingUp()
+        {
+            return instance.isSettingUp;
+        }
 
-    public void SetHighestRank(int rank)
-    {
-        instance.highestRank = rank;
+        public int NumCardsPlayed()
+        {
+            return instance.numCardsPlayed;
+        }
+
+        public bool IsCardPlayable()
+        {
+            return instance.canCardBePlayed;
+        }
+
+        public void IncrementNumCardsPlayed()
+        {
+            instance.numCardsPlayed += 1;
+        }
+
+        public void ResetNumCardsPlayed()
+        {
+            instance.numCardsPlayed = 0;
+        }
+
+        public void SetCardPlayable(bool state)
+        {
+            instance.canCardBePlayed = state;
+        }
+
+        public string GetStartingSuit()
+        {
+            return instance.startingSuit;
+        }
+
+        public void SetStartingSuit(string suit)
+        {
+            instance.startingSuit = suit;
+        }
+
+        public void SetPlayerMustPlayStartingSuit(bool isStartingPlayer, Hand hand)
+        {
+            instance.playerCardMustBeStartingSuit = !isStartingPlayer && hand.CardsInSuit(instance.startingSuit).Count > 0;
+        }
+
+        public bool MustPlayCardInStartingSuit()
+        {
+            return instance.playerCardMustBeStartingSuit;
+        }
+
+        public bool IsMenuOpen()
+        {
+            return instance.menuOpen;
+        }
+
+        public void SetMenuOpen(bool isOpen)
+        {
+            instance.menuOpen = isOpen;
+
+            if (isOpen)
+            {
+                this.eventsController.Pause();
+            }
+            else
+            {
+                this.eventsController.Resume();
+            }
+        }
+
+        public int GetHighestRankedCard()
+        {
+            return instance.highestRank;
+        }
+
+        public void SetHighestRank(int rank)
+        {
+            instance.highestRank = rank;
+        }
     }
 }

@@ -1,5 +1,8 @@
-public interface IEventListener
+namespace Barbu.Interfaces
 {
-    void Setup();
-    void Destroy();
+    public interface IEventListener
+    {
+        void Setup();
+        void Destroy();
+    }
 }

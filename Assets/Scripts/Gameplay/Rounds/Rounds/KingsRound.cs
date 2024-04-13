@@ -1,27 +1,29 @@
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-
-public class KingsRound : Round
+namespace Barbu.Gameplay.Rounds.Rounds
 {
-    public override Dictionary<string, int> PointMapping => new Dictionary<string, int>
+    using System.Collections.Generic;
+    using Barbu.Gameplay.Rounds;
+
+    public class KingsRound : Round
+    {
+        public override Dictionary<string, int> PointMapping => new Dictionary<string, int>
     {
         { "Heart13", 10 },
         { "Diamond13", 10 },
         { "Spade13", 10 },
         { "Club13", 10 },
     };
-    public override int PointsPerPile => 0;
-    public override int TotalPoints => 40;
-    public override string Name => Constants.RoundNames.KingsRound;
+        public override int PointsPerPile => 0;
+        public override int TotalPoints => 40;
+        public override string Name => Constants.RoundNames.KingsRound;
 
-    public KingsRound(RoundContext context)
-    : base(context)
-    {
-    }
+        public KingsRound(RoundContext context)
+        : base(context)
+        {
+        }
 
-    public KingsRound(RoundContext context, Round next)
-    : base(context, next)
-    {
+        public KingsRound(RoundContext context, Round next)
+        : base(context, next)
+        {
+        }
     }
 }

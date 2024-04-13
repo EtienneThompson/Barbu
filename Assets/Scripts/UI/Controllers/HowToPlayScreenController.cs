@@ -1,30 +1,33 @@
-using UnityEngine;
-using UnityEngine.UIElements;
-
-public class HowToPlayScreenController : MonoBehaviour
+namespace Barbu.UI.Controllers
 {
-    private GameObject howToPlayScreen;
-    private Button closeBtn;
+    using UnityEngine;
+    using UnityEngine.UIElements;
 
-    public void OnEnable()
+    public class HowToPlayScreenController : MonoBehaviour
     {
-        this.howToPlayScreen = GameObject.Find(Constants.GameObjects.HowToPlayScreen);
-        var document = this.howToPlayScreen.GetComponent<UIDocument>();
-        var root = document.rootVisualElement;
+        private GameObject howToPlayScreen;
+        private Button closeBtn;
 
-        this.closeBtn = root.Q<Button>("close");
+        public void OnEnable()
+        {
+            this.howToPlayScreen = GameObject.Find(Constants.GameObjects.HowToPlayScreen);
+            var document = this.howToPlayScreen.GetComponent<UIDocument>();
+            var root = document.rootVisualElement;
 
-        this.closeBtn.RegisterCallback<ClickEvent>(HandleCloseButtonClick);
-    }
+            this.closeBtn = root.Q<Button>("close");
 
-    public void OnDisable()
-    {
-        this.closeBtn.UnregisterCallback<ClickEvent>(HandleCloseButtonClick);
-    }
+            this.closeBtn.RegisterCallback<ClickEvent>(HandleCloseButtonClick);
+        }
 
-    private void HandleCloseButtonClick(ClickEvent evt)
-    {
-        Debug.Log("Closing how to play screen");
-        this.howToPlayScreen.SetActive(false);
+        public void OnDisable()
+        {
+            this.closeBtn.UnregisterCallback<ClickEvent>(HandleCloseButtonClick);
+        }
+
+        private void HandleCloseButtonClick(ClickEvent evt)
+        {
+            Debug.Log("Closing how to play screen");
+            this.howToPlayScreen.SetActive(false);
+        }
     }
 }

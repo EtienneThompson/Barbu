@@ -1,101 +1,104 @@
-using System;
-using UnityEngine;
-
-public class Settings
+namespace Barbu
 {
-    public enum SortingOptions
+    using System;
+    using UnityEngine;
+
+    public class Settings
     {
-        /// <summary>
-        /// Cards are presented in whatever order they are dealt.
-        /// </summary>
-        None = 0,
-
-        /// <summary>
-        /// Cards are ordered from smallest to largest, regardless of suit.
-        /// </summary>
-        LowToHigh = 1,
-
-        /// <summary>
-        /// Cards are ordered from largest to smallest, regardless of suit.
-        /// </summary>
-        HighToLow = 2,
-
-        /// <summary>
-        /// Cards are ordered from smallest to largest within their suit.
-        /// </summary>
-        SuitLowToHigh = 3,
-
-        /// <summary>
-        /// Cards are ordered from largest to smallest within their suit.
-        /// </summary>
-        SuitHighToLow = 4,
-
-        /// <summary>
-        /// Cards are ordered from smallest to largest within their suit, with the suit colors alternating.
-        /// </summary>
-        SuitLowToHighAlternating = 5,
-
-        /// <summary>
-        /// Cards are ordered from largest to smallest within their suit, with the suit colors alternating.
-        /// </summary>
-        SuitHighToLowAlternating = 6,
-    }
-
-    public enum ComputerDifficulty
-    {
-        /// <summary>
-        /// The computers should be relatively easy to beat.
-        /// </summary>
-        Easy,
-
-        /// <summary>
-        /// The computers should be more difficult than in easy mode.
-        /// </summary>
-        Normal,
-
-        /// <summary>
-        /// The computers should be the most difficult.
-        /// </summary>
-        Hard,
-    }
-
-    public static SortingOptions[] HandSortingOptions => (SortingOptions[])Enum.GetValues(typeof(SortingOptions));
-
-    public static SortingOptions SortingPreference
-    {
-        get
+        public enum SortingOptions
         {
-            return (SortingOptions)PlayerPrefs.GetInt(Constants.PlayerPrefsKeys.SortingOptions);
+            /// <summary>
+            /// Cards are presented in whatever order they are dealt.
+            /// </summary>
+            None = 0,
+
+            /// <summary>
+            /// Cards are ordered from smallest to largest, regardless of suit.
+            /// </summary>
+            LowToHigh = 1,
+
+            /// <summary>
+            /// Cards are ordered from largest to smallest, regardless of suit.
+            /// </summary>
+            HighToLow = 2,
+
+            /// <summary>
+            /// Cards are ordered from smallest to largest within their suit.
+            /// </summary>
+            SuitLowToHigh = 3,
+
+            /// <summary>
+            /// Cards are ordered from largest to smallest within their suit.
+            /// </summary>
+            SuitHighToLow = 4,
+
+            /// <summary>
+            /// Cards are ordered from smallest to largest within their suit, with the suit colors alternating.
+            /// </summary>
+            SuitLowToHighAlternating = 5,
+
+            /// <summary>
+            /// Cards are ordered from largest to smallest within their suit, with the suit colors alternating.
+            /// </summary>
+            SuitHighToLowAlternating = 6,
         }
 
-        set
+        public enum ComputerDifficulty
         {
-            PlayerPrefs.SetInt(Constants.PlayerPrefsKeys.SortingOptions, (int)value);
+            /// <summary>
+            /// The computers should be relatively easy to beat.
+            /// </summary>
+            Easy,
+
+            /// <summary>
+            /// The computers should be more difficult than in easy mode.
+            /// </summary>
+            Normal,
+
+            /// <summary>
+            /// The computers should be the most difficult.
+            /// </summary>
+            Hard,
         }
-    }
 
-    public static ComputerDifficulty[] ComputerDifficulties => (ComputerDifficulty[])Enum.GetValues(typeof(ComputerDifficulty));
+        public static SortingOptions[] HandSortingOptions => (SortingOptions[])Enum.GetValues(typeof(SortingOptions));
 
-    public static ComputerDifficulty ComputerDifficultyPreference
-    {
-        get
+        public static SortingOptions SortingPreference
         {
-            return (ComputerDifficulty)PlayerPrefs.GetInt(Constants.PlayerPrefsKeys.ComputerDifficulty);
+            get
+            {
+                return (SortingOptions)PlayerPrefs.GetInt(Constants.PlayerPrefsKeys.SortingOptions);
+            }
+
+            set
+            {
+                PlayerPrefs.SetInt(Constants.PlayerPrefsKeys.SortingOptions, (int)value);
+            }
         }
 
-        set
+        public static ComputerDifficulty[] ComputerDifficulties => (ComputerDifficulty[])Enum.GetValues(typeof(ComputerDifficulty));
+
+        public static ComputerDifficulty ComputerDifficultyPreference
         {
-            PlayerPrefs.SetInt(Constants.PlayerPrefsKeys.ComputerDifficulty, (int)value);
+            get
+            {
+                return (ComputerDifficulty)PlayerPrefs.GetInt(Constants.PlayerPrefsKeys.ComputerDifficulty);
+            }
+
+            set
+            {
+                PlayerPrefs.SetInt(Constants.PlayerPrefsKeys.ComputerDifficulty, (int)value);
+            }
         }
-    }
 
-    public static bool HasSeenHowToPlayByDefault()
-    {
-        return PlayerPrefs.GetInt(Constants.PlayerPrefsKeys.SeenHowToPlayInstructions) == 1;
-    }
+        public static bool HasSeenHowToPlayByDefault()
+        {
+            return PlayerPrefs.GetInt(Constants.PlayerPrefsKeys.SeenHowToPlayInstructions) == 1;
+        }
 
-    public static void SetSeenHowToPlayByDefault()
-    {
-        PlayerPrefs.SetInt(Constants.PlayerPrefsKeys.SeenHowToPlayInstructions, 1);
+        public static void SetSeenHowToPlayByDefault()
+        {
+            PlayerPrefs.SetInt(Constants.PlayerPrefsKeys.SeenHowToPlayInstructions, 1);
+        }
     }
 }
