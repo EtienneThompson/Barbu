@@ -12,12 +12,12 @@ public class Statistics
 
     public static void GetGamesFinished()
     {
-        Debug.Log(PlayerPrefs.GetInt(Constants.PlayerPrefsKeys.SingleGamesFinished));
+        Debug.Log("Finished games: " + PlayerPrefs.GetInt(Constants.PlayerPrefsKeys.SingleGamesFinished));
     }
 
     public static void GetGamesWon()
     {
-        Debug.Log(PlayerPrefs.GetInt(Constants.PlayerPrefsKeys.SingleGamesWon));
+        Debug.Log("Won games: " + PlayerPrefs.GetInt(Constants.PlayerPrefsKeys.SingleGamesWon));
     }
 
     public static void IncrementGamesPlayed(GameTypes type)
