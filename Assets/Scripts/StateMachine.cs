@@ -1,6 +1,7 @@
 namespace Barbu
 {
     using Barbu.Gameplay;
+    using Barbu.Models;
 
     public class StateMachine
     {
@@ -88,11 +89,11 @@ namespace Barbu
 
             if (isOpen)
             {
-                this.eventsController.Pause();
+                this.eventsController.Fire(EventNames.PauseGame);
             }
             else
             {
-                this.eventsController.Resume();
+                this.eventsController.Fire(EventNames.ResumeGame);
             }
         }
 

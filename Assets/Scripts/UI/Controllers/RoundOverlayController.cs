@@ -4,6 +4,7 @@ namespace Barbu.UI.Controllers
     using System.Collections;
     using System.Linq;
     using Barbu;
+    using Barbu.Models;
     using UnityEngine;
     using UnityEngine.UIElements;
 
@@ -24,7 +25,10 @@ namespace Barbu.UI.Controllers
 
         public void DisplayRound(string roundName)
         {
-            StartCoroutine(DisplayRoutine(roundName, 1.5f, this.eventsController.FinishRoundAnimation));
+            StartCoroutine(DisplayRoutine(
+                roundName,
+                1.5f,
+                () => this.eventsController.Fire(EventNames.RoundAnimationFinished)));
         }
 
         public void DisplayWinner(string[] winningPlayers)
@@ -41,9 +45,18 @@ namespace Barbu.UI.Controllers
                 }
                 winningLabel += playerLabel + ", ";
             }
-            winningLabel = winningLabel.Substring(0, winningLabel.Length - 2) + " win" + (playerLabels.Count() > 1 ? "!" : "s!");
+            winningLabel = winningLabel.Substring(0, winningLabel.Length - 2) + " win";
+            winningLabel += (
+                playerLabels.Count() > 1 || (
+                    playerLabels.Count() == 1 && 
+                    playerLabels.ElementAt(0).Equals(Constants.PlayerIds.Player1)))
+                ? "!"
+                : "s!";
             Debug.Log(winningLabel);
-            StartCoroutine(DisplayRoutine(winningLabel, 2.5f, this.eventsController.FinishWinnerAnimation));
+            StartCoroutine(DisplayRoutine(
+                winningLabel,
+                2.5f,
+                () => this.eventsController.Fire(EventNames.WinnerAnimationFinished)));
         }
 
         IEnumerator DisplayRoutine(string roundName, float delay, Action action)

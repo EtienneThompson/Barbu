@@ -3,10 +3,12 @@ namespace Barbu.Gameplay.BoardState
     using Barbu.Gameplay.Rounds;
     using Barbu.Interfaces;
     using Barbu.Interfaces.BoardState;
+    using Barbu.Models;
 
     public class GameStateContext : IEventListener
     {
         private readonly StateMachine stateMachine;
+        private readonly EventsController eventsController;
         private readonly RoundContext roundContext;
         private IGameState current;
         private bool isPaused;
@@ -14,6 +16,7 @@ namespace Barbu.Gameplay.BoardState
         public GameStateContext(RoundContext roundContext)
         {
             this.stateMachine = new StateMachine();
+            this.eventsController = EventsController.GetInstance();
             this.roundContext = roundContext;
             this.Setup();
         }
@@ -95,15 +98,15 @@ namespace Barbu.Gameplay.BoardState
         public void Setup()
         {
             // Listen to global pause/resume events.
-            EventsController.pauseGame += this.Pause;
-            EventsController.resumeGame += this.Resume;
+            this.eventsController.Subscribe(EventNames.PauseGame, this.Pause);
+            this.eventsController.Subscribe(EventNames.ResumeGame, this.Resume);
         }
 
         public void Destroy()
         {
             // Stop listening.
-            EventsController.pauseGame -= this.Pause;
-            EventsController.resumeGame -= this.Resume;
+            this.eventsController.Unsubscribe(EventNames.PauseGame, this.Pause);
+            this.eventsController.Unsubscribe(EventNames.ResumeGame, this.Resume);
         }
     }
 }

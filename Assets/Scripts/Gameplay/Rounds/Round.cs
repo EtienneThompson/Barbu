@@ -39,10 +39,10 @@ namespace Barbu.Gameplay.Rounds
             this.nextState = next;
         }
 
-        public int CalculatePointsInPile(Card[] pile)
+        public int CalculatePointsInPile(Pile pile)
         {
             int points = 0;
-            foreach (var card in pile)
+            foreach (var card in pile.GetCards())
             {
                 if (this.PointMapping.TryGetValue(card.GetName(), out var cardValue))
                 {
@@ -52,7 +52,7 @@ namespace Barbu.Gameplay.Rounds
 
             return points + this.PointsPerPile;
         }
-        public int CalculatePointsInAllPiles(List<Card[]> piles)
+        public int CalculatePointsInAllPiles(List<Pile> piles)
         {
             int points = 0;
             foreach (var pile in piles)

@@ -2,6 +2,7 @@ namespace Barbu.Gameplay
 {
     using System;
     using System.Collections;
+    using Barbu.Models;
     using UnityEngine;
 
     public class Card : MonoBehaviour
@@ -180,7 +181,7 @@ namespace Barbu.Gameplay
                 yield return null;
             }
             yield return new WaitForSeconds(0.5f);
-            eventsController.Play(this);
+            eventsController.Fire(EventNames.PlayCard, this);
         }
 
         private IEnumerator MoveTowardsPlayer(string player)
@@ -213,7 +214,7 @@ namespace Barbu.Gameplay
             yield return new WaitForSeconds(0.1f);
             this.gameObject.SetActive(false);
             this.meshRenderer.enabled = false;
-            this.eventsController.MarkCardAsFinishedResolving();
+            this.eventsController.Fire(EventNames.CardInPileResolved);
         }
 
         private IEnumerator AdjustPositionInHand(float index, float cardsInHand)
