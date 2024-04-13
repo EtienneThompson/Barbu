@@ -1,7 +1,9 @@
 namespace Barbu.Gameplay.Rounds.Rounds
 {
     using System.Collections.Generic;
+    using Barbu.Core;
     using Barbu.Gameplay.Rounds;
+    using Barbu.Interfaces.Core;
     using UnityEngine;
 
     public class ChaosRound : Round
@@ -38,6 +40,8 @@ namespace Barbu.Gameplay.Rounds.Rounds
                 return nameBuilder.Trim();
             }
         }
+
+        private readonly ITelemetryService telemetryService;
         private Dictionary<string, int> ComputedPointMapping;
         private int ComputedPointsPerPile;
         private List<Round> mergedRounds;
@@ -45,6 +49,7 @@ namespace Barbu.Gameplay.Rounds.Rounds
         public ChaosRound(RoundContext context)
         : base(context)
         {
+            this.telemetryService = TelemetryService.GetInstance();
             this.ComputedPointMapping = new Dictionary<string, int>();
             this.ComputedPointsPerPile = 0;
             this.mergedRounds = new List<Round>();
@@ -68,7 +73,7 @@ namespace Barbu.Gameplay.Rounds.Rounds
 
         public void MergeRound(Round round)
         {
-            Debug.Log("Merging round " + round.Name);
+            this.telemetryService.LogInfo("Merging round " + round.Name);
             this.mergedRounds.Add(round);
             foreach (var points in round.PointMapping)
             {

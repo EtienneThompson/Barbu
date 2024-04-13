@@ -10,6 +10,7 @@ namespace Barbu.Gameplay.Rounds.Managers
     using Barbu.Models;
     using Barbu.UI.Controllers;
     using UnityEngine;
+    using Barbu.Interfaces.Core;
 
     public class BaseRoundManager : IRoundManager, IEventListener
     {
@@ -25,6 +26,7 @@ namespace Barbu.Gameplay.Rounds.Managers
         protected GameState[] players;
         protected StateMachine stateMachine;
         protected EventsController eventsController;
+        protected ITelemetryService telemetryService;
         protected ScoreMenu scoreMenu;
         protected GameBoard gameBoard;
         protected AdvertisementController advertisementController;
@@ -45,6 +47,7 @@ namespace Barbu.Gameplay.Rounds.Managers
             this.stateMachine = new StateMachine();
             this.eventsController = EventsController.GetInstance();
             this.stateMachine.SetStartingSuit(string.Empty);
+            this.telemetryService = TelemetryService.GetInstance();
             this.currentPile = new Pile();
             this.scoreMenu = scoreMenu;
             this.gameBoard = gameBoard;
@@ -92,7 +95,7 @@ namespace Barbu.Gameplay.Rounds.Managers
         /// </summary>
         public void PreRound()
         {
-            Debug.Log("PreRound");
+            this.telemetryService.LogInfo("PreRound");
             GameObject roundOverlay = GameObject.Find(Constants.GameObjects.RoundOverlay);
             var controller = roundOverlay.GetComponent<RoundOverlayController>();
             controller.DisplayRound(this.roundContext.CurrentName());
@@ -104,7 +107,7 @@ namespace Barbu.Gameplay.Rounds.Managers
         /// </summary>
         public void StartRound()
         {
-            Debug.Log("StartRound");
+            this.telemetryService.LogInfo("StartRound");
             this.stateMachine.ResetNumCardsPlayed();
             this.stateMachine.SetCardPlayable(true);
             this.gameStateContext.Start();
@@ -116,18 +119,18 @@ namespace Barbu.Gameplay.Rounds.Managers
         /// </summary>
         public void CleanupRound()
         {
-            Debug.Log("CleanupRound");
+            this.telemetryService.LogInfo("CleanupRound");
             this.stateMachine.SetCardPlayable(false);
             this.gameBoard.CleanupRound();
             this.inGamePointsController.ResetRoundName();
             if (this.currentRound + 1 == this.totalRounds)
             {
-                Debug.Log("Marking game as finished");
+                this.telemetryService.LogInfo("Marking game as finished");
                 this.CompleteGame();
             }
             else
             {
-                Debug.Log("ROUND OVER!!!");
+                this.telemetryService.LogInfo("ROUND OVER!!!");
                 this.gameBoard.SetupRound();
                 this.inGamePointsController.ResetPoints();
             }
@@ -138,7 +141,7 @@ namespace Barbu.Gameplay.Rounds.Managers
         /// </summary>
         public void NextRound(Hand[] hands)
         {
-            Debug.Log("NextRound");
+            this.telemetryService.LogInfo("NextRound");
             this.players[0].SetHand(hands[0]);
             this.players[1].SetHand(hands[1]);
             this.players[2].SetHand(hands[2]);
@@ -146,12 +149,12 @@ namespace Barbu.Gameplay.Rounds.Managers
             this.currentRound++;
             this.roundContext.Next();
             var currentStartingPlayer = Int32.Parse(this.roundStartingPlayerId);
-            Debug.Log("Last round starting player: " + this.roundStartingPlayerId);
+            this.telemetryService.LogInfo("Last round starting player: " + this.roundStartingPlayerId);
             var newStartingPlayer = (currentStartingPlayer % 4) + 1;
-            Debug.Log("New starting player id: " + newStartingPlayer);
+            this.telemetryService.LogInfo("New starting player id: " + newStartingPlayer);
             this.roundStartingPlayerId = newStartingPlayer.ToString();
             var player = this.GetPlayerFromId(this.roundStartingPlayerId);
-            Debug.Log("Next round starting player: " + player);
+            this.telemetryService.LogInfo("Next round starting player: " + player);
             this.gameStateContext.SetState(player);
             this.PreRound();
         }
@@ -159,15 +162,15 @@ namespace Barbu.Gameplay.Rounds.Managers
         public void CompleteGame()
         {
             this.MarkGameAsFinished();
-            Statistics.GetGamesFinished();
+            this.telemetryService.LogInfo("Games finished: " + Statistics.GetGamesFinished());
 
             var winningPlayers = this.GetWinningPlayerIds();
-            Debug.Log("Winning players: " + winningPlayers.Length);
+            this.telemetryService.LogInfo("Winning players: " + winningPlayers.Length);
             if (winningPlayers.Where(id => id == Constants.PlayerIds.Player1).Any())
             {
-                Debug.Log("Marking game as won");
+                this.telemetryService.LogInfo("Marking game as won");
                 this.MarkGameAsWon();
-                Statistics.GetGamesWon();
+                this.telemetryService.LogInfo("Games won: " + Statistics.GetGamesWon());
             }
 
             GameObject roundOverlay = GameObject.Find(Constants.GameObjects.RoundOverlay);

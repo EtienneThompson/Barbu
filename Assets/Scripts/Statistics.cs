@@ -1,10 +1,14 @@
 namespace Barbu
 {
+    using Barbu.Core;
+    using Barbu.Interfaces.Core;
     using System;
     using UnityEngine;
 
     public class Statistics
     {
+        public static ITelemetryService telemetryService = TelemetryService.GetInstance();
+
         public enum GameTypes
         {
             Traditional,
@@ -12,14 +16,14 @@ namespace Barbu
             Chaos,
         }
 
-        public static void GetGamesFinished()
+        public static int GetGamesFinished()
         {
-            Debug.Log("Finished games: " + PlayerPrefs.GetInt(Constants.PlayerPrefsKeys.SingleGamesFinished));
+            return PlayerPrefs.GetInt(Constants.PlayerPrefsKeys.SingleGamesFinished);
         }
 
-        public static void GetGamesWon()
+        public static int GetGamesWon()
         {
-            Debug.Log("Won games: " + PlayerPrefs.GetInt(Constants.PlayerPrefsKeys.SingleGamesWon));
+            return PlayerPrefs.GetInt(Constants.PlayerPrefsKeys.SingleGamesWon);
         }
 
         public static void IncrementGamesPlayed(GameTypes type)

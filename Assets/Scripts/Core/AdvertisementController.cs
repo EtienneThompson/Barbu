@@ -1,5 +1,6 @@
 namespace Barbu.Core
 {
+    using Barbu.Interfaces.Core;
     using UnityEngine;
     using UnityEngine.Advertisements;
 
@@ -8,15 +9,17 @@ namespace Barbu.Core
         [SerializeField] private string adId;
         [SerializeField] private bool initialized;
         [SerializeField] private bool adLoaded;
+        private ITelemetryService telemetryService;
 
         public void Awake()
         {
+            this.telemetryService = TelemetryService.GetInstance();
             this.InitializeAds();
         }
 
         public void InitializeAds()
         {
-            Debug.Log("Initializing ads");
+            this.telemetryService.LogInfo("Initializing ads");
             if (Application.platform == RuntimePlatform.IPhonePlayer)
             {
                 this.adId = Constants.AdGameIds.AppleGameId;
@@ -41,17 +44,17 @@ namespace Barbu.Core
             // Don't double load ads.
             if (!this.initialized)
             {
-                Debug.Log("Ads are not yet initialized");
+                this.telemetryService.LogInfo("Ads are not yet initialized");
                 return;
             }
 
             if (this.adLoaded)
             {
-                Debug.Log("Already requested an interstitial");
+                this.telemetryService.LogInfo("Already requested an interstitial");
                 return;
             }
 
-            Debug.Log("Requesting to show interstitial ad to user");
+            this.telemetryService.LogInfo("Requesting to show interstitial ad to user");
             if (Application.platform == RuntimePlatform.IPhonePlayer)
             {
                 Advertisement.Load(Constants.AdGameIds.AppleInterstitialId, this);
@@ -67,13 +70,13 @@ namespace Barbu.Core
             // Don't show if nothing was loaded.
             if (!this.initialized)
             {
-                Debug.Log("Ads are not yet initialized");
+                this.telemetryService.LogInfo("Ads are not yet initialized");
                 return;
             }
 
             if (!this.adLoaded)
             {
-                Debug.Log("No interstitial ad loaded");
+                this.telemetryService.LogInfo("No interstitial ad loaded");
                 return;
             }
 
@@ -87,7 +90,7 @@ namespace Barbu.Core
                 placementId = Constants.AdGameIds.AndroidInterstitialId;
             }
 
-            Debug.Log("Showing ad");
+            this.telemetryService.LogInfo("Showing ad");
             Advertisement.Show(placementId, null, this);
             this.adLoaded = false;
         }
@@ -99,45 +102,45 @@ namespace Barbu.Core
             // initialized, request one because we might have requested an ad via the
             // round manager before we actually were initialized.
             this.RequestToShowInterstitial();
-            Debug.Log("Unity Ads initialization complete.");
+            this.telemetryService.LogInfo("Unity Ads initialization complete.");
         }
 
         public void OnInitializationFailed(UnityAdsInitializationError error, string message)
         {
             this.initialized = false;
-            Debug.Log($"Unity Ads Initialization Failed: {error.ToString()} - {message}");
+            this.telemetryService.LogError($"Unity Ads Initialization Failed: {error.ToString()} - {message}");
         }
 
         public void OnUnityAdsAdLoaded(string placementId)
         {
             this.adLoaded = true;
-            Debug.Log($"Unity Ads Ad Loaded complete - {placementId}");
+            this.telemetryService.LogInfo($"Unity Ads Ad Loaded complete - {placementId}");
         }
 
         public void OnUnityAdsFailedToLoad(string placementId, UnityAdsLoadError error, string message)
         {
             this.adLoaded = false;
-            Debug.Log($"Unity Ads Ad failed to load: {error.ToString()} - {message}");
+            this.telemetryService.LogError($"Unity Ads Ad failed to load: {error.ToString()} - {message}");
         }
 
         public void OnUnityAdsShowClick(string placementId)
         {
-            Debug.Log($"Unity Ads ad was clicked on");
+            this.telemetryService.LogInfo($"Unity Ads ad was clicked on");
         }
 
         public void OnUnityAdsShowComplete(string placementId, UnityAdsShowCompletionState showCompletionState)
         {
-            Debug.Log($"Unity Ads ad was completed");
+            this.telemetryService.LogInfo($"Unity Ads ad was completed");
         }
 
         public void OnUnityAdsShowFailure(string placementId, UnityAdsShowError error, string message)
         {
-            Debug.Log($"Unity Ads as failed to show: {error.ToString()} - {message}");
+            this.telemetryService.LogError($"Unity Ads as failed to show: {error.ToString()} - {message}");
         }
 
         public void OnUnityAdsShowStart(string placementId)
         {
-            Debug.Log($"Unity Ads ad has started showing");
+            this.telemetryService.LogInfo($"Unity Ads ad has started showing");
         }
     }
 }

@@ -3,6 +3,7 @@ namespace Barbu.UI.Controllers
     using System;
     using System.Collections.Generic;
     using Barbu.Core;
+    using Barbu.Interfaces.Core;
     using UnityEngine;
     using UnityEngine.UIElements;
 
@@ -20,6 +21,7 @@ namespace Barbu.UI.Controllers
         };
 
         private StateMachine stateMachine;
+        private ITelemetryService telemetryService;
         private GameObject settingsMenu;
         private Button sortingPreviousBtn;
         private Button sortingNextBtn;
@@ -34,6 +36,7 @@ namespace Barbu.UI.Controllers
         public void OnEnable()
         {
             this.stateMachine = new StateMachine();
+            this.telemetryService = TelemetryService.GetInstance();
             this.stateMachine.SetMenuOpen(true);
             this.settingsMenu = GameObject.Find(Constants.GameObjects.SettingsMenu);
             var document = this.settingsMenu.GetComponent<UIDocument>();
@@ -73,7 +76,7 @@ namespace Barbu.UI.Controllers
 
         private void HandleSortingPreviousButtonClick(ClickEvent evt)
         {
-            Debug.Log("Sorting Previous button clicked");
+            this.telemetryService.LogInfo("Sorting Previous button clicked");
             this.currentSortingOption = this.SafeMod(this.currentSortingOption - 1, Settings.HandSortingOptions.Length);
             _ = HandSortingStrings.TryGetValue(Settings.HandSortingOptions[this.currentSortingOption].ToString(), out var sortingOptionText);
             this.currentlySelectedSortingOption.text = sortingOptionText;
@@ -82,7 +85,7 @@ namespace Barbu.UI.Controllers
 
         private void HandleSortingNextButtonClick(ClickEvent evt)
         {
-            Debug.Log("Sorting Next button clicked");
+            this.telemetryService.LogInfo("Sorting Next button clicked");
             this.currentSortingOption = this.SafeMod(this.currentSortingOption + 1, Settings.HandSortingOptions.Length);
             _ = HandSortingStrings.TryGetValue(Settings.HandSortingOptions[this.currentSortingOption].ToString(), out var sortingOptionText);
             this.currentlySelectedSortingOption.text = sortingOptionText;
@@ -91,7 +94,7 @@ namespace Barbu.UI.Controllers
 
         private void HandleDifficultyPreviousButtonClick(ClickEvent evt)
         {
-            Debug.Log("Difficulty Previous button clicked");
+            this.telemetryService.LogInfo("Difficulty Previous button clicked");
             this.currentDifficultyOption = this.SafeMod(this.currentDifficultyOption - 1, Settings.ComputerDifficulties.Length);
             this.currentlySelectedDifficulty.text = Settings.ComputerDifficulties[this.currentDifficultyOption].ToString();
             Settings.ComputerDifficultyPreference = Settings.ComputerDifficulties[this.currentDifficultyOption];
@@ -99,7 +102,7 @@ namespace Barbu.UI.Controllers
 
         private void HandleDifficultyNextButtonClick(ClickEvent evt)
         {
-            Debug.Log("Difficulty Next Button clicked");
+            this.telemetryService.LogInfo("Difficulty Next Button clicked");
             this.currentDifficultyOption = this.SafeMod(this.currentDifficultyOption + 1, Settings.ComputerDifficulties.Length);
             this.currentlySelectedDifficulty.text = Settings.ComputerDifficulties[this.currentDifficultyOption].ToString();
             Settings.ComputerDifficultyPreference = Settings.ComputerDifficulties[this.currentDifficultyOption];
