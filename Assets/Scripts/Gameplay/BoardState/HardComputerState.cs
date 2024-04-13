@@ -28,17 +28,17 @@ namespace Barbu.Gameplay.BoardState
             var cardsInSuit = this.hand.CardsInSuit(this.stateMachine.GetStartingSuit());
             var playableCards = cardsInSuit.Count > 0 ? cardsInSuit : this.hand.GetAvailableCards();
 
-            Debug.Log("Player " + this.PlayerId + " cards");
+            this.telemetryService.LogInfo("Player " + this.PlayerId + " cards");
 
             if (cardsInSuit.Count == 0)
             {
-                Debug.Log("Computer has no cards in suit");
+                this.telemetryService.LogInfo("Computer has no cards in suit");
                 // Play the highest point-earning card.
                 var pointEarningCards = this.hand.GetCardsWithPoints(this.context);
 
                 if (pointEarningCards.Count > 0)
                 {
-                    Debug.Log("Computer has point earning cards, picking max value.");
+                    this.telemetryService.LogInfo("Computer has point earning cards, picking max value.");
                     var maxPoints = isPositiveRound ? int.MaxValue : int.MinValue;
                     Card maxCard = null;
                     foreach (var card in pointEarningCards)
@@ -56,61 +56,61 @@ namespace Barbu.Gameplay.BoardState
                         }
                     }
 
-                    Debug.Log("Computer playing " + maxCard.GetName());
+                    this.telemetryService.LogInfo("Computer playing " + maxCard.GetName());
                     maxCard.PlayCard();
                     return;
                 }
                 else
                 {
-                    Debug.Log("Computer has no point earning cards, playing highest card.");
+                    this.telemetryService.LogInfo("Computer has no point earning cards, playing highest card.");
                     // If no cards earn points in the hand, then just play any card.
                     var highestCard = isPositiveRound ? this.hand.GetLowestCard() : this.hand.GetHighestCard();
-                    Debug.Log("Computer playing " + highestCard.GetName());
+                    this.telemetryService.LogInfo("Computer playing " + highestCard.GetName());
                     highestCard.PlayCard();
                     return;
                 }
             }
             else
             {
-                Debug.Log("Computer has cards in starting suit");
+                this.telemetryService.LogInfo("Computer has cards in starting suit");
                 if (playableCards.Count == 1)
                 {
-                    Debug.Log("Computer has only one card in starting suit, playing it");
-                    Debug.Log("Computer playing " + playableCards[0].GetName());
+                    this.telemetryService.LogInfo("Computer has only one card in starting suit, playing it");
+                    this.telemetryService.LogInfo("Computer playing " + playableCards[0].GetName());
                     // If there's only one available card to play, play it.
                     playableCards[0].PlayCard();
                     return;
                 }
                 else
                 {
-                    Debug.Log("Computer playing based on turn order");
-                    Debug.Log("Computer is player " + this.stateMachine.NumCardsPlayed());
+                    this.telemetryService.LogInfo("Computer playing based on turn order");
+                    this.telemetryService.LogInfo("Computer is player " + this.stateMachine.NumCardsPlayed());
                     if (this.stateMachine.NumCardsPlayed() == 0)
                     {
-                        Debug.Log("Computer playing first, using lowest card");
-                        Debug.Log("Number of cards to choose from: " + playableCards.Count);
+                        this.telemetryService.LogInfo("Computer playing first, using lowest card");
+                        this.telemetryService.LogInfo("Number of cards to choose from: " + playableCards.Count);
                         var lowestCard = isPositiveRound ? this.hand.GetHighestCard(playableCards) : this.hand.GetLowestCard(playableCards);
-                        Debug.Log("Computer playing " + lowestCard.GetName());
+                        this.telemetryService.LogInfo("Computer playing " + lowestCard.GetName());
                         lowestCard.PlayCard();
                         return;
                     }
                     else if (this.stateMachine.NumCardsPlayed() == 1 || this.stateMachine.NumCardsPlayed() == 2)
                     {
-                        Debug.Log("Computer playing 2nd or 3rd");
+                        this.telemetryService.LogInfo("Computer playing 2nd or 3rd");
                         var bestCard = isPositiveRound ?
                             this.hand.GetCardAboveRank(playableCards, this.stateMachine.GetHighestRankedCard()) :
                             this.hand.GetCardBelowRank(playableCards, this.stateMachine.GetHighestRankedCard(), useLowestFallback: true);
-                        Debug.Log("Computer playing " + bestCard.GetName());
+                        this.telemetryService.LogInfo("Computer playing " + bestCard.GetName());
                         bestCard.PlayCard();
                         return;
                     }
                     else
                     {
-                        Debug.Log("Computer going last");
+                        this.telemetryService.LogInfo("Computer going last");
                         var bestCard = isPositiveRound ?
                             this.hand.GetCardAboveRank(playableCards, this.stateMachine.GetHighestRankedCard()) :
                             this.hand.GetCardBelowRank(playableCards, this.stateMachine.GetHighestRankedCard(), useLowestFallback: false);
-                        Debug.Log("Computer playing " + bestCard.GetName());
+                        this.telemetryService.LogInfo("Computer playing " + bestCard.GetName());
                         bestCard.PlayCard();
                         return;
                     }

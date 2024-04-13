@@ -1,10 +1,13 @@
 namespace Barbu.UI.Controllers
 {
+    using Barbu.Core;
+    using Barbu.Interfaces.Core;
     using UnityEngine;
     using UnityEngine.UIElements;
 
     public class MenuButtonsController : MonoBehaviour
     {
+        private ITelemetryService telemetryService;
         private GameObject menuButtons;
         private GameObject gamesMenu;
         private GameObject settingsMenu;
@@ -15,6 +18,7 @@ namespace Barbu.UI.Controllers
 
         public void OnEnable()
         {
+            this.telemetryService = TelemetryService.GetInstance();
             this.gamesMenu = GameObject.Find(Constants.GameObjects.GamesMenu);
             this.settingsMenu = GameObject.Find(Constants.GameObjects.SettingsMenu);
             this.menuButtons = GameObject.Find(Constants.GameObjects.InGamePoints);
@@ -40,19 +44,19 @@ namespace Barbu.UI.Controllers
 
         private void HandleSettingsButtonClick(ClickEvent evt)
         {
-            Debug.Log("Settings button clicked");
+            this.telemetryService.LogInfo("Settings button clicked");
             this.settingsMenu.SetActive(true);
         }
 
         private void HandleGamesButtonClick(ClickEvent evt)
         {
-            Debug.Log("Handling games button click");
+            this.telemetryService.LogInfo("Handling games button click");
             this.gamesMenu.SetActive(true);
         }
 
         private void HandleHowToPlayButtonClick(ClickEvent evt)
         {
-            Debug.Log("Handling how to play button click");
+            this.telemetryService.LogInfo("Handling how to play button click");
             this.howToPlayScreen.SetActive(true);
         }
     }

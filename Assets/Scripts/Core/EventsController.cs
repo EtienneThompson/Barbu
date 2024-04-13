@@ -1,6 +1,7 @@
-namespace Barbu
+namespace Barbu.Core
 {
     using System;
+    using Barbu.Interfaces.Core;
     using Barbu.Models;
     using Newtonsoft.Json;
 
@@ -25,8 +26,11 @@ namespace Barbu
 
         private static EventsController singleton;
 
+        private ITelemetryService telemetryService;
+
         private EventsController()
         {
+            this.telemetryService = TelemetryService.GetInstance();
         }
 
         public static EventsController GetInstance()
@@ -41,7 +45,7 @@ namespace Barbu
 
         public void Subscribe(EventNames eventName, Action listener)
         {
-            UnityEngine.Debug.Log($"Subscribing to event {eventName}");
+            this.telemetryService.LogInfo($"Subscribing to event {eventName}");
             switch (eventName)
             {
                 case EventNames.PauseGame:
@@ -66,26 +70,30 @@ namespace Barbu
                     WinnerAnimationOver += listener;
                     return;
                 default:
-                    throw new ArgumentException($"The event {eventName} is not able to be subscribed to!");
+                    var errorMessage = $"The event {eventName} is not able to be subscribed to!";
+                    this.telemetryService.LogError(errorMessage);
+                    throw new ArgumentException(errorMessage);
             }
         }
 
         public void Subscribe(EventNames eventName, Action<object> listener)
         {
-            UnityEngine.Debug.Log($"Subscribing action {nameof(listener)} to event {eventName}");
+            this.telemetryService.LogInfo($"Subscribing action {nameof(listener)} to event {eventName}");
             switch (eventName)
             {
                 case EventNames.PlayCard:
                     PlayCard += listener;
                     return;
                 default:
-                    throw new ArgumentException($"The event {eventName} is not able to be subscribed to!");
+                    var errorMessage = $"The event {eventName} is not able to be subscribed to!";
+                    this.telemetryService.LogError(errorMessage);
+                    throw new ArgumentException(errorMessage);
             }
         }
 
         public void Unsubscribe(EventNames eventName, Action listener)
         {
-            UnityEngine.Debug.Log($"Unsubscribing action {nameof(listener)} from event {eventName}");
+            this.telemetryService.LogInfo($"Unsubscribing action {nameof(listener)} from event {eventName}");
             switch (eventName)
             {
                 case EventNames.PauseGame:
@@ -110,26 +118,30 @@ namespace Barbu
                     WinnerAnimationOver -= listener;
                     return;
                 default:
-                    throw new ArgumentException($"The event {eventName} is not able to be unsubscribed from!");
+                    var errorMessage = $"The event {eventName} is not able to be unsubscribed from!";
+                    this.telemetryService.LogError(errorMessage);
+                    throw new ArgumentException(errorMessage);
             }
         }
 
         public void Unsubscribe(EventNames eventName, Action<object> listener)
         {
-            UnityEngine.Debug.Log($"Unsubscribing action {nameof(listener)} from event {eventName}");
+            this.telemetryService.LogInfo($"Unsubscribing action {nameof(listener)} from event {eventName}");
             switch (eventName)
             {
                 case EventNames.PlayCard:
                     PlayCard -= listener;
                     return;
                 default:
-                    throw new ArgumentException($"The event {eventName} is not able to be unsubscribed from!");
+                    var errorMessage = $"The event {eventName} is not able to be unsubscribed from!";
+                    this.telemetryService.LogError(errorMessage);
+                    throw new ArgumentException(errorMessage);
             }
         }
 
         public void Fire(EventNames eventName)
         {
-            UnityEngine.Debug.Log($"Firing event {eventName}");
+            this.telemetryService.LogInfo($"Firing event {eventName}");
             switch (eventName)
             {
                 case EventNames.PauseGame:
@@ -154,20 +166,24 @@ namespace Barbu
                     WinnerAnimationOver.Invoke();
                     return;
                 default:
-                    throw new ArgumentException($"The event {eventName} is not able to be subscribed to!");
+                    var errorMessage = $"The event {eventName} is not able to be subscribed to!";
+                    this.telemetryService.LogError(errorMessage);
+                    throw new ArgumentException(errorMessage);
             }
         }
 
         public void Fire<T>(EventNames eventName, T data)
         {
-            UnityEngine.Debug.Log($"Firing event ${eventName} with data ${data}");
+            this.telemetryService.LogInfo($"Firing event {eventName} with data {data}");
             switch (eventName)
             {
                 case EventNames.PlayCard:
                     PlayCard.Invoke(data);
                     return;
                 default:
-                    throw new ArgumentException($"The event {eventName} is not able to be fired!");
+                    var errorMessage = $"The event {eventName} is not able to be fired!";
+                    this.telemetryService.LogError(errorMessage);
+                    throw new ArgumentException(errorMessage);
             }
         }
     }

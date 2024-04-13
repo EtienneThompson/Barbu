@@ -3,7 +3,8 @@ namespace Barbu.UI.Controllers
     using System;
     using System.Collections;
     using System.Linq;
-    using Barbu;
+    using Barbu.Core;
+    using Barbu.Interfaces.Core;
     using Barbu.Models;
     using UnityEngine;
     using UnityEngine.UIElements;
@@ -11,11 +12,13 @@ namespace Barbu.UI.Controllers
     public class RoundOverlayController : MonoBehaviour
     {
         private EventsController eventsController;
+        private ITelemetryService telemetryService;
         private Label roundLabel;
 
         public void OnEnable()
         {
             this.eventsController = EventsController.GetInstance();
+            this.telemetryService = TelemetryService.GetInstance();
             var roundOverlay = GameObject.Find(Constants.GameObjects.RoundOverlay);
             var document = roundOverlay.GetComponent<UIDocument>();
             var root = document.rootVisualElement;
@@ -33,7 +36,7 @@ namespace Barbu.UI.Controllers
 
         public void DisplayWinner(string[] winningPlayers)
         {
-            Debug.Log("Displaying winner");
+            this.telemetryService.LogInfo("Displaying winner");
             var playerLabels = winningPlayers.Select(playerId => playerId.Equals(Constants.PlayerIds.Player1) ? "You" : $"Player {playerId}");
             string winningLabel = string.Empty;
             foreach (var playerLabel in playerLabels)
@@ -52,7 +55,7 @@ namespace Barbu.UI.Controllers
                     playerLabels.ElementAt(0).Equals(Constants.PlayerIds.Player1)))
                 ? "!"
                 : "s!";
-            Debug.Log(winningLabel);
+            this.telemetryService.LogInfo(winningLabel);
             StartCoroutine(DisplayRoutine(
                 winningLabel,
                 2.5f,
@@ -61,7 +64,7 @@ namespace Barbu.UI.Controllers
 
         IEnumerator DisplayRoutine(string roundName, float delay, Action action)
         {
-            Debug.Log(roundName);
+            this.telemetryService.LogInfo(roundName);
             this.roundLabel.text = roundName;
             yield return new WaitForSeconds(delay);
             this.roundLabel.text = string.Empty;

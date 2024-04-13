@@ -1,5 +1,6 @@
 namespace Barbu.Gameplay.BoardState
 {
+    using Barbu.Core;
     using Barbu.Gameplay.Rounds;
     using Barbu.Interfaces;
     using Barbu.Interfaces.BoardState;

@@ -1,8 +1,10 @@
 namespace Barbu.Gameplay.BoardState
 {
     using System;
+    using Barbu.Core;
     using Barbu.Gameplay;
     using Barbu.Interfaces.BoardState;
+    using Barbu.Interfaces.Core;
 
     public class GameState : IGameState
     {
@@ -10,6 +12,8 @@ namespace Barbu.Gameplay.BoardState
         protected GameState nextState;
         protected Hand hand;
         protected StateMachine stateMachine;
+        protected ITelemetryService telemetryService;
+
         public string PlayerId { get; private set; }
 
         public GameState(GameStateContext context, Hand hand, string id)
@@ -18,6 +22,7 @@ namespace Barbu.Gameplay.BoardState
             this.hand = hand;
             this.PlayerId = id;
             this.stateMachine = new StateMachine();
+            this.telemetryService = TelemetryService.GetInstance();
         }
 
         public GameState(GameStateContext context, GameState next, Hand hand, string id)
