@@ -2,7 +2,7 @@ namespace Barbu.UI.Controllers
 {
     using System;
     using System.Collections.Generic;
-    using Barbu;
+    using Barbu.Core;
     using UnityEngine;
     using UnityEngine.UIElements;
 

@@ -1,6 +1,6 @@
 namespace Barbu.UI.Controllers
 {
-    using Barbu;
+    using Barbu.Core;
     using UnityEngine;
     using UnityEngine.UIElements;
 

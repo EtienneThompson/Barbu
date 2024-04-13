@@ -1,4 +1,4 @@
-namespace Barbu
+namespace Barbu.Core
 {
     using System;
     using Barbu.Models;

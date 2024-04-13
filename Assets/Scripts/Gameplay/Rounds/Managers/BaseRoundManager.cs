@@ -3,6 +3,7 @@ namespace Barbu.Gameplay.Rounds.Managers
     using System;
     using System.Linq;
     using System.Collections.Generic;
+    using Barbu.Core;
     using Barbu.Gameplay.BoardState;
     using Barbu.Interfaces;
     using Barbu.Interfaces.Rounds;
