@@ -1,11 +1,14 @@
-using System;
-using System.Runtime.Serialization;
-using UnityEngine;
-
-public class RoundRegistration
+namespace Barbu.Gameplay.Rounds
 {
-    public static Type[] registeredRounds = new Type[]
+    using System;
+    using System.Runtime.Serialization;
+    using Barbu.Gameplay.Rounds.Rounds;
+    using UnityEngine;
+
+    public class RoundRegistration
     {
+        public static Type[] registeredRounds = new Type[]
+        {
         typeof(HeartsRound),
         typeof(DiamondsRound),
         typeof(SpadesRound),
@@ -29,11 +32,12 @@ public class RoundRegistration
         typeof(FaceCardsRound),
         typeof(EvensRound),
         typeof(OddsRound),
-    };
+        };
 
-    public static Round GetRandomRound()
-    {
-        var index = (int)Mathf.Floor(UnityEngine.Random.value * registeredRounds.Length);
-        return (Round)FormatterServices.GetUninitializedObject(registeredRounds[index]);
+        public static Round GetRandomRound()
+        {
+            var index = (int)Mathf.Floor(UnityEngine.Random.value * registeredRounds.Length);
+            return (Round)FormatterServices.GetUninitializedObject(registeredRounds[index]);
+        }
     }
 }

@@ -1,45 +1,49 @@
-using System;
-
-public class EasyComputerState : GameState
+namespace Barbu.Gameplay.BoardState
 {
-    public EasyComputerState(GameStateContext context, string id, Hand hand)
-    : base(context, hand, id)
-    {
-    }
+    using System;
+    using Barbu.Gameplay;
 
-    public EasyComputerState(GameStateContext context, GameState next, string id, Hand hand)
-    : base(context, next, hand, id)
+    public class EasyComputerState : GameState
     {
-    }
-
-    public override void Start()
-    {
-        if (!this.stateMachine.IsCardPlayable())
+        public EasyComputerState(GameStateContext context, string id, Hand hand)
+        : base(context, hand, id)
         {
-            throw new Exception("Computer can't make a move right now.");
         }
 
-        this.stateMachine.SetCardPlayable(false);
-        var cardsInSuit = this.hand.CardsInSuit(this.stateMachine.GetStartingSuit());
-        if (cardsInSuit.Count > 0)
+        public EasyComputerState(GameStateContext context, GameState next, string id, Hand hand)
+        : base(context, next, hand, id)
         {
-            foreach (var card in cardsInSuit)
+        }
+
+        public override void Start()
+        {
+            if (!this.stateMachine.IsCardPlayable())
             {
-                if (card.state == Card.CardState.Waiting)
+                throw new Exception("Computer can't make a move right now.");
+            }
+
+            this.stateMachine.SetCardPlayable(false);
+            var cardsInSuit = this.hand.CardsInSuit(this.stateMachine.GetStartingSuit());
+            if (cardsInSuit.Count > 0)
+            {
+                foreach (var card in cardsInSuit)
                 {
-                    card.PlayCard();
-                    return;
+                    if (card.state == Card.CardState.Waiting)
+                    {
+                        card.PlayCard();
+                        return;
+                    }
                 }
             }
-        }
-        else
-        {
-            foreach (var card in this.hand.GetHand())
+            else
             {
-                if (card.state == Card.CardState.Waiting)
+                foreach (var card in this.hand.GetHand())
                 {
-                    card.PlayCard();
-                    return;
+                    if (card.state == Card.CardState.Waiting)
+                    {
+                        card.PlayCard();
+                        return;
+                    }
                 }
             }
         }

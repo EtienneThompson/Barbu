@@ -1,10 +1,11 @@
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-
-public class EvensRound : Round
+namespace Barbu.Gameplay.Rounds.Rounds
 {
-    public override Dictionary<string, int> PointMapping => new Dictionary<string, int>
+    using System.Collections.Generic;
+    using Barbu.Gameplay.Rounds;
+
+    public class EvensRound : Round
+    {
+        public override Dictionary<string, int> PointMapping => new Dictionary<string, int>
     {
         { "Heart2", 5 },
         { "Heart4", 5 },
@@ -35,17 +36,18 @@ public class EvensRound : Round
         { "Club12", 5 },
         { "Club14", 5 },
     };
-    public override int PointsPerPile => 0;
-    public override int TotalPoints => 140;
-    public override string Name => nameof(EvensRound);
+        public override int PointsPerPile => 0;
+        public override int TotalPoints => 140;
+        public override string Name => nameof(EvensRound);
 
-    public EvensRound(RoundContext context)
-    : base(context)
-    {
-    }
+        public EvensRound(RoundContext context)
+        : base(context)
+        {
+        }
 
-    public EvensRound(RoundContext context, Round next)
-    : base(context, next)
-    {
+        public EvensRound(RoundContext context, Round next)
+        : base(context, next)
+        {
+        }
     }
 }

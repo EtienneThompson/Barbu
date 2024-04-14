@@ -1,11 +1,11 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-
-public class HeartsRound : Round
+namespace Barbu.Gameplay.Rounds.Rounds
 {
-    public override Dictionary<string, int> PointMapping => new Dictionary<string, int>
+    using System.Collections.Generic;
+    using Barbu.Gameplay.Rounds;
+
+    public class HeartsRound : Round
+    {
+        public override Dictionary<string, int> PointMapping => new Dictionary<string, int>
     {
         {"Heart2", 5},
         {"Heart3", 5},
@@ -21,17 +21,18 @@ public class HeartsRound : Round
         {"Heart13", 5},
         {"Heart14", 5},
     };
-    public override int PointsPerPile => 0;
-    public override int TotalPoints => 65;
-    public override string Name => Constants.RoundNames.HeartsRound;
+        public override int PointsPerPile => 0;
+        public override int TotalPoints => 65;
+        public override string Name => Constants.RoundNames.HeartsRound;
 
-    public HeartsRound(RoundContext context)
-    : base(context)
-    {
-    }
+        public HeartsRound(RoundContext context)
+        : base(context)
+        {
+        }
 
-    public HeartsRound(RoundContext context, Round next)
-    : base(context, next)
-    {
+        public HeartsRound(RoundContext context, Round next)
+        : base(context, next)
+        {
+        }
     }
 }

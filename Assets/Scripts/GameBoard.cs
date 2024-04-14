@@ -1,211 +1,219 @@
-using System;
-using UnityEngine;
-
-public class GameBoard : MonoBehaviour
+namespace Barbu
 {
-    private StateMachine stateMachine;
-    private string[] kCardSuits = new string[] { "Club", "Diamond", "Spade", "Heart" };
-    // Ranks must match the resources used, 01 is A and 11, 12, and 13 are J, Q, and K.
-    private string[] kCardRanks = new string[] { "01", "02", "03", "04", "05", "06", "07",
+    using System;
+    using Barbu.Core;
+    using Barbu.Gameplay;
+    using Barbu.Gameplay.Rounds.Managers;
+    using Barbu.Interfaces.Rounds;
+    using Barbu.UI.Controllers;
+    using UnityEngine;
+
+    public class GameBoard : MonoBehaviour
+    {
+        private StateMachine stateMachine;
+        private string[] kCardSuits = new string[] { "Club", "Diamond", "Spade", "Heart" };
+        // Ranks must match the resources used, 01 is A and 11, 12, and 13 are J, Q, and K.
+        private string[] kCardRanks = new string[] { "01", "02", "03", "04", "05", "06", "07",
                                                  "08", "09", "10", "11", "12", "13" };
-    private string[] cards = new string[52];
-    private Hand[] hands = new Hand[4];
-    private IRoundManager roundManager;
-    private ScoreMenu scoreMenu;
-    private InGamePointsController inGamePointsController;
+        private string[] cards = new string[52];
+        private Hand[] hands = new Hand[4];
+        private IRoundManager roundManager;
+        private ScoreMenu scoreMenu;
+        private InGamePointsController inGamePointsController;
 
-    public static GameBoard instance;
+        public static GameBoard instance;
 
-    // Start is called before the first frame update
-    void Start()
-    {
-        Application.targetFrameRate = 60;
-        instance = this;
-
-        this.stateMachine = new StateMachine();
-
-        // Create the deck of 52 cards.
-        for (int i = 0; i < kCardSuits.Length; i++)
+        // Start is called before the first frame update
+        void Start()
         {
-            for (int j = 0; j < kCardRanks.Length; j++)
+            Application.targetFrameRate = 60;
+            instance = this;
+
+            this.stateMachine = new StateMachine();
+
+            // Create the deck of 52 cards.
+            for (int i = 0; i < kCardSuits.Length; i++)
             {
-                var card = kCardSuits[i] + kCardRanks[j];
-                cards[i * 13 + j] = card;
-            }
-        }
-
-        // Hide any UI objects.
-        GameObject scoreBoard = GameObject.Find(Constants.GameObjects.ScoreMenuCanvas);
-        scoreBoard.SetActive(false);
-        GameObject gamesMenu = GameObject.Find(Constants.GameObjects.GamesMenu);
-        gamesMenu.SetActive(false);
-        GameObject settingsMenu = GameObject.Find(Constants.GameObjects.SettingsMenu);
-        settingsMenu.SetActive(false);
-        GameObject singleRoundMenu = GameObject.Find(Constants.GameObjects.SingleRoundMenu);
-        singleRoundMenu.SetActive(false);
-
-        if (Settings.HasSeenHowToPlayByDefault())
-        {
-            GameObject howToPlayScreen = GameObject.Find(Constants.GameObjects.HowToPlayScreen);
-            howToPlayScreen.SetActive(false);
-        }
-        else
-        {
-            Settings.SetSeenHowToPlayByDefault();
-        }
-
-        this.stateMachine.SetIsSettingUp(true);
-        this.scoreMenu = scoreBoard.GetComponent<ScoreMenu>();
-        GameObject inGamePoints = GameObject.Find(Constants.GameObjects.InGamePoints);
-        this.inGamePointsController = inGamePoints.GetComponent<InGamePointsController>();
-
-        this.DealHand();
-        this.roundManager = new TraditionalRoundManager(this, this.scoreMenu, this.inGamePointsController, this.hands);
-        Statistics.IncrementGamesPlayed(Statistics.GameTypes.Traditional);
-        this.stateMachine.SetIsSettingUp(false);
-        this.roundManager.PreRound();
-    }
-
-    public void CreateNewGame(string gameName, string subType)
-    {
-        this.stateMachine.SetIsSettingUp(true);
-        this.stateMachine.SetCardPlayable(false);
-        this.stateMachine.ResetNumCardsPlayed();
-        this.inGamePointsController.ResetPoints();
-        this.roundManager.Destroy();
-        this.CleanupRound();
-        this.DealHand();
-        switch (gameName)
-        {
-            case Constants.TraditionalRoundManager.GameName:
-                this.roundManager = new TraditionalRoundManager(this, this.scoreMenu, this.inGamePointsController, this.hands);
-                Statistics.IncrementGamesPlayed(Statistics.GameTypes.Traditional);
-                break;
-            case Constants.SingleRoundManager.GameName:
-                this.roundManager = new SingleRoundManager(this, this.scoreMenu, this.inGamePointsController, this.hands, subType);
-                Statistics.IncrementGamesPlayed(Statistics.GameTypes.Single);
-                break;
-            case Constants.ChaosRoundManager.GameName:
-                this.roundManager = new ChaosRoundManager(this, this.scoreMenu, this.inGamePointsController, this.hands);
-                Statistics.IncrementGamesPlayed(Statistics.GameTypes.Chaos);
-                break;
-            default:
-                throw new Exception("Incorrect game name provided");
-        }
-        this.stateMachine.SetIsSettingUp(false);
-        this.roundManager.PreRound();
-    }
-
-    public void CleanupRound()
-    {
-        this.DestroyCards();
-    }
-
-    public void SetupRound()
-    {
-        this.DealHand();
-        this.stateMachine.SetCardPlayable(true);
-        this.stateMachine.SetStartingSuit("");
-        this.roundManager.NextRound(this.hands);
-    }
-
-    private void DealHand()
-    {
-        this.Shuffle(cards);
-        this.DealHand(cards);
-    }
-
-    private void DestroyCards()
-    {
-        foreach (var hand in this.hands)
-        {
-            if (hand == null)
-            {
-                continue;
-            }
-
-            foreach (var card in hand.GetHand())
-            {
-                if (card != null)
+                for (int j = 0; j < kCardRanks.Length; j++)
                 {
-                    Destroy(card.gameObject);
+                    var card = kCardSuits[i] + kCardRanks[j];
+                    cards[i * 13 + j] = card;
+                }
+            }
+
+            // Hide any UI objects.
+            GameObject scoreBoard = GameObject.Find(Constants.GameObjects.ScoreMenuCanvas);
+            scoreBoard.SetActive(false);
+            GameObject gamesMenu = GameObject.Find(Constants.GameObjects.GamesMenu);
+            gamesMenu.SetActive(false);
+            GameObject settingsMenu = GameObject.Find(Constants.GameObjects.SettingsMenu);
+            settingsMenu.SetActive(false);
+            GameObject singleRoundMenu = GameObject.Find(Constants.GameObjects.SingleRoundMenu);
+            singleRoundMenu.SetActive(false);
+
+            if (Settings.HasSeenHowToPlayByDefault())
+            {
+                GameObject howToPlayScreen = GameObject.Find(Constants.GameObjects.HowToPlayScreen);
+                howToPlayScreen.SetActive(false);
+            }
+            else
+            {
+                Settings.SetSeenHowToPlayByDefault();
+            }
+
+            this.stateMachine.SetIsSettingUp(true);
+            this.scoreMenu = scoreBoard.GetComponent<ScoreMenu>();
+            GameObject inGamePoints = GameObject.Find(Constants.GameObjects.InGamePoints);
+            this.inGamePointsController = inGamePoints.GetComponent<InGamePointsController>();
+
+            this.DealHand();
+            this.roundManager = new TraditionalRoundManager(this, this.scoreMenu, this.inGamePointsController, this.hands);
+            Statistics.IncrementGamesPlayed(Statistics.GameTypes.Traditional);
+            this.stateMachine.SetIsSettingUp(false);
+            this.roundManager.PreRound();
+        }
+
+        public void CreateNewGame(string gameName, string subType)
+        {
+            this.stateMachine.SetIsSettingUp(true);
+            this.stateMachine.SetCardPlayable(false);
+            this.stateMachine.ResetNumCardsPlayed();
+            this.inGamePointsController.ResetPoints();
+            this.roundManager.Destroy();
+            this.CleanupRound();
+            this.DealHand();
+            switch (gameName)
+            {
+                case Constants.TraditionalRoundManager.GameName:
+                    this.roundManager = new TraditionalRoundManager(this, this.scoreMenu, this.inGamePointsController, this.hands);
+                    Statistics.IncrementGamesPlayed(Statistics.GameTypes.Traditional);
+                    break;
+                case Constants.SingleRoundManager.GameName:
+                    this.roundManager = new SingleRoundManager(this, this.scoreMenu, this.inGamePointsController, this.hands, subType);
+                    Statistics.IncrementGamesPlayed(Statistics.GameTypes.Single);
+                    break;
+                case Constants.ChaosRoundManager.GameName:
+                    this.roundManager = new ChaosRoundManager(this, this.scoreMenu, this.inGamePointsController, this.hands);
+                    Statistics.IncrementGamesPlayed(Statistics.GameTypes.Chaos);
+                    break;
+                default:
+                    throw new Exception("Incorrect game name provided");
+            }
+            this.stateMachine.SetIsSettingUp(false);
+            this.roundManager.PreRound();
+        }
+
+        public void CleanupRound()
+        {
+            this.DestroyCards();
+        }
+
+        public void SetupRound()
+        {
+            this.DealHand();
+            this.stateMachine.SetCardPlayable(true);
+            this.stateMachine.SetStartingSuit("");
+            this.roundManager.NextRound(this.hands);
+        }
+
+        private void DealHand()
+        {
+            this.Shuffle(cards);
+            this.DealHand(cards);
+        }
+
+        private void DestroyCards()
+        {
+            foreach (var hand in this.hands)
+            {
+                if (hand == null)
+                {
+                    continue;
+                }
+
+                foreach (var card in hand.GetHand())
+                {
+                    if (card != null)
+                    {
+                        Destroy(card.gameObject);
+                    }
                 }
             }
         }
-    }
 
-    private void Shuffle<T>(T[] array)
-    {
-        for (int i = 0; i < 5; i++)
+        private void Shuffle<T>(T[] array)
         {
-            int n = array.Length;
-            while (n > 1)
+            for (int i = 0; i < 5; i++)
             {
-                int k = (int)Mathf.Floor(UnityEngine.Random.value * (n--));
-                T temp = array[n];
-                array[n] = array[k];
-                array[k] = temp;
-            }
-        }
-    }
-
-    private void DealHand(string[] deck)
-    {
-        for (int i = 0; i < 4; i++)
-        {
-            hands[i] = new Hand();
-        }
-
-        for (int i = 0; i < 13; i++)
-        {
-            for (int j = 0; j < 4; j++)
-            {
-                GameObject myCard = Instantiate(Resources.Load("BlankPlayingCard", typeof(GameObject)), new Vector3(0, 0, 0), Quaternion.identity) as GameObject;
-                Card card = myCard.GetComponent<Card>();
-                var index = i * 4 + j;
-                var suit = deck[index].Substring(0, deck[index].Length - 2);
-                var rank = deck[index].Substring(deck[index].Length - 2);
-                var playerId = (j + 1).ToString();
-                card.InitializeData(suit, rank, playerId);
-
-                hands[j].AddCard(card);
+                int n = array.Length;
+                while (n > 1)
+                {
+                    int k = (int)Mathf.Floor(UnityEngine.Random.value * (n--));
+                    T temp = array[n];
+                    array[n] = array[k];
+                    array[k] = temp;
+                }
             }
         }
 
-        hands[0].SortHand(Settings.SortingPreference);
-
-        for (int i = 0; i < 13; i++)
+        private void DealHand(string[] deck)
         {
-            for (int j = 0; j < 4; j++)
+            for (int i = 0; i < 4; i++)
             {
-                Vector3 position;
-                float rotateX = 0.0f;
-                float rotateY = 0.0f;
-                float rotateZ = 0.0f;
-                if (j == 0)
-                {
-                    position = new Vector3((i * 2) - 12, 0.5f + (0.01f * i), -12);
-                }
-                else if (j == 1)
-                {
-                    position = new Vector3(-22, 0.5f + (-0.01f * i), i - 6);
-                    rotateY = 90.0f;
-                    rotateZ = 180.0f;
-                }
-                else if (j == 2)
-                {
-                    position = new Vector3(i - 6, 0.5f + (-0.01f * i), 12);
-                    rotateZ = 180.0f;
-                }
-                else
-                {
-                    position = new Vector3(22, 0.5f + (0.01f * i), i - 6);
-                    rotateY = -90.0f;
-                    rotateZ = 180.0f;
-                }
+                hands[i] = new Hand();
+            }
 
-                var cardToInit = hands[j].GetCardAtPosition(i);
-                cardToInit.InitializeGameObject(position, rotateX, rotateY, rotateZ);
+            for (int i = 0; i < 13; i++)
+            {
+                for (int j = 0; j < 4; j++)
+                {
+                    GameObject myCard = Instantiate(Resources.Load("BlankPlayingCard", typeof(GameObject)), new Vector3(0, 0, 0), Quaternion.identity) as GameObject;
+                    Card card = myCard.GetComponent<Card>();
+                    var index = i * 4 + j;
+                    var suit = deck[index].Substring(0, deck[index].Length - 2);
+                    var rank = deck[index].Substring(deck[index].Length - 2);
+                    var playerId = (j + 1).ToString();
+                    card.InitializeData(suit, rank, playerId);
+
+                    hands[j].AddCard(card);
+                }
+            }
+
+            hands[0].SortHand(Settings.SortingPreference);
+
+            for (int i = 0; i < 13; i++)
+            {
+                for (int j = 0; j < 4; j++)
+                {
+                    Vector3 position;
+                    float rotateX = 0.0f;
+                    float rotateY = 0.0f;
+                    float rotateZ = 0.0f;
+                    if (j == 0)
+                    {
+                        position = new Vector3((i * 2) - 12, 0.5f + (0.01f * i), -12);
+                    }
+                    else if (j == 1)
+                    {
+                        position = new Vector3(-22, 0.5f + (-0.01f * i), i - 6);
+                        rotateY = 90.0f;
+                        rotateZ = 180.0f;
+                    }
+                    else if (j == 2)
+                    {
+                        position = new Vector3(i - 6, 0.5f + (-0.01f * i), 12);
+                        rotateZ = 180.0f;
+                    }
+                    else
+                    {
+                        position = new Vector3(22, 0.5f + (0.01f * i), i - 6);
+                        rotateY = -90.0f;
+                        rotateZ = 180.0f;
+                    }
+
+                    var cardToInit = hands[j].GetCardAtPosition(i);
+                    cardToInit.InitializeGameObject(position, rotateX, rotateY, rotateZ);
+                }
             }
         }
     }

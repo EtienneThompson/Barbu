@@ -1,10 +1,11 @@
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-
-public class SpadesRound : Round
+namespace Barbu.Gameplay.Rounds.Rounds
 {
-    public override Dictionary<string, int> PointMapping => new Dictionary<string, int>
+    using System.Collections.Generic;
+    using Barbu.Gameplay.Rounds;
+
+    public class SpadesRound : Round
+    {
+        public override Dictionary<string, int> PointMapping => new Dictionary<string, int>
     {
         { "Spade2", 5 },
         { "Spade3", 5 },
@@ -20,17 +21,18 @@ public class SpadesRound : Round
         { "Spade13", 5 },
         { "Spade14", 5 },
     };
-    public override int PointsPerPile => 0;
-    public override int TotalPoints => 65;
-    public override string Name => Constants.RoundNames.SpadesRound;
+        public override int PointsPerPile => 0;
+        public override int TotalPoints => 65;
+        public override string Name => Constants.RoundNames.SpadesRound;
 
-    public SpadesRound(RoundContext context)
-    : base(context)
-    {
-    }
+        public SpadesRound(RoundContext context)
+        : base(context)
+        {
+        }
 
-    public SpadesRound(RoundContext context, Round next)
-    : base(context, next)
-    {
+        public SpadesRound(RoundContext context, Round next)
+        : base(context, next)
+        {
+        }
     }
 }

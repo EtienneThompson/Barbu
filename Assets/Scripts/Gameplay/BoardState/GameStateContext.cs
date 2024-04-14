@@ -1,102 +1,113 @@
-public class GameStateContext : IEventListener
+namespace Barbu.Gameplay.BoardState
 {
-    private readonly StateMachine stateMachine;
-    private readonly RoundContext roundContext;
-    private IGameState current;
-    private bool isPaused;
+    using Barbu.Core;
+    using Barbu.Gameplay.Rounds;
+    using Barbu.Interfaces;
+    using Barbu.Interfaces.BoardState;
+    using Barbu.Models;
 
-    public GameStateContext(RoundContext roundContext)
+    public class GameStateContext : IEventListener
     {
-        this.stateMachine = new StateMachine();
-        this.roundContext = roundContext;
-        this.Setup();
-    }
+        private readonly StateMachine stateMachine;
+        private readonly EventsController eventsController;
+        private readonly RoundContext roundContext;
+        private IGameState current;
+        private bool isPaused;
 
-    public void Next()
-    {
-        // Don't move to the next state if gets called while setting up.
-        if (this.stateMachine.IsSettingUp())
+        public GameStateContext(RoundContext roundContext)
         {
-            return;
+            this.stateMachine = new StateMachine();
+            this.eventsController = EventsController.GetInstance();
+            this.roundContext = roundContext;
+            this.Setup();
         }
 
-        // If next is called, move to the next state, but only start if the machine
-        // isn't paused.
-        current.GoNext();
-
-        if (!this.isPaused)
+        public void Next()
         {
-            current.Start();
-        }
-    }
+            // Don't move to the next state if gets called while setting up.
+            if (this.stateMachine.IsSettingUp())
+            {
+                return;
+            }
 
-    public void Start()
-    {
-        if (this.stateMachine.IsSettingUp())
+            // If next is called, move to the next state, but only start if the machine
+            // isn't paused.
+            current.GoNext();
+
+            if (!this.isPaused)
+            {
+                current.Start();
+            }
+        }
+
+        public void Start()
         {
-            return;
+            if (this.stateMachine.IsSettingUp())
+            {
+                return;
+            }
+
+            if (!this.isPaused)
+            {
+                current.Start();
+            }
         }
 
-        if (!this.isPaused)
+        public void Pause()
         {
-            current.Start();
+            // Setting isPaused to true will break the computer states from running.
+            this.isPaused = true;
         }
-    }
 
-    public void Pause()
-    {
-        // Setting isPaused to true will break the computer states from running.
-        this.isPaused = true;
-    }
+        public void Resume()
+        {
+            // Need to start the state machine again, so will call start.
+            this.isPaused = false;
+            this.Start();
+        }
 
-    public void Resume()
-    {
-        // Need to start the state machine again, so will call start.
-        this.isPaused = false;
-        this.Start();
-    }
+        public void CleanUp()
+        {
+            current.CleanUp();
+        }
 
-    public void CleanUp()
-    {
-        current.CleanUp();
-    }
+        public void SetState(IGameState newState)
+        {
+            this.current = newState;
+        }
 
-    public void SetState(IGameState newState)
-    {
-        this.current = newState;
-    }
+        public IGameState GetCurrentState()
+        {
+            return this.current;
+        }
 
-    public IGameState GetCurrentState()
-    {
-        return this.current;
-    }
+        public bool IsCurrentRoundPositive()
+        {
+            return this.roundContext.IsRoundPositive();
+        }
 
-    public bool IsCurrentRoundPositive()
-    {
-        return this.roundContext.IsRoundPositive();
-    }
+        public bool IsPointEarningCard(string cardName)
+        {
+            return this.roundContext.IsPointEarningCard(cardName);
+        }
 
-    public bool IsPointEarningCard(string cardName)
-    {
-        return this.roundContext.IsPointEarningCard(cardName);
-    }
+        public int GetCardPointValue(string cardName)
+        {
+            return this.roundContext.GetCardPointValue(cardName);
+        }
 
-    public int GetCardPointValue(string cardName)
-    {
-        return this.roundContext.GetCardPointValue(cardName);
-    }
+        public void Setup()
+        {
+            // Listen to global pause/resume events.
+            this.eventsController.Subscribe(EventNames.PauseGame, this.Pause);
+            this.eventsController.Subscribe(EventNames.ResumeGame, this.Resume);
+        }
 
-    public void Setup()
-    {
-        // Listen to global pause/resume events.
-        EventsController.pauseGame += this.Pause;
-        EventsController.resumeGame += this.Resume;
-    }
-
-    public void Destroy()
-    {
-        // Stop listening.
-        EventsController.pauseGame -= this.Pause;
-        EventsController.resumeGame -= this.Resume;
+        public void Destroy()
+        {
+            // Stop listening.
+            this.eventsController.Unsubscribe(EventNames.PauseGame, this.Pause);
+            this.eventsController.Unsubscribe(EventNames.ResumeGame, this.Resume);
+        }
     }
 }
