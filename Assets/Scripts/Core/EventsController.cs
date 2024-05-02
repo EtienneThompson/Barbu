@@ -45,7 +45,7 @@ namespace Barbu.Core
 
         public void Subscribe(EventNames eventName, Action listener)
         {
-            this.telemetryService.LogInfo($"Subscribing to event {eventName}");
+            this.telemetryService.LogInfo($"Subscribing to event {eventName} with listener");
             switch (eventName)
             {
                 case EventNames.PauseGame:
@@ -78,7 +78,7 @@ namespace Barbu.Core
 
         public void Subscribe(EventNames eventName, Action<object> listener)
         {
-            this.telemetryService.LogInfo($"Subscribing action {nameof(listener)} to event {eventName}");
+            this.telemetryService.LogInfo($"Subscribing to event {eventName} with data listener");
             switch (eventName)
             {
                 case EventNames.PlayCard:
@@ -93,7 +93,7 @@ namespace Barbu.Core
 
         public void Unsubscribe(EventNames eventName, Action listener)
         {
-            this.telemetryService.LogInfo($"Unsubscribing action {nameof(listener)} from event {eventName}");
+            this.telemetryService.LogInfo($"Unsubscribing from event {eventName} with listener");
             switch (eventName)
             {
                 case EventNames.PauseGame:
@@ -126,7 +126,7 @@ namespace Barbu.Core
 
         public void Unsubscribe(EventNames eventName, Action<object> listener)
         {
-            this.telemetryService.LogInfo($"Unsubscribing action {nameof(listener)} from event {eventName}");
+            this.telemetryService.LogInfo($"Unsubscribing from event {eventName} with data listener");
             switch (eventName)
             {
                 case EventNames.PlayCard:

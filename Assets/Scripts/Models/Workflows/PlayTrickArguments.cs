@@ -1,6 +1,13 @@
-public class PlayTrickArguments
+namespace Barbu.Models.Workflows
 {
-    public GameState[] gameStates;
+    using Barbu.Gameplay.BoardState;
 
-    public int currentGameState;
+    public class PlayTrickArguments
+    {
+        public GameState[] gameStates { get; set; }
+        
+        public int currentGameStateIndex { get; set; }
+
+        public int cardsPlayed { get; set; } = 0;
+    }
 }

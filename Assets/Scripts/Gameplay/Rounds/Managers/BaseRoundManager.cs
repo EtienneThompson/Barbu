@@ -11,6 +11,7 @@ namespace Barbu.Gameplay.Rounds.Managers
     using Barbu.UI.Controllers;
     using UnityEngine;
     using Barbu.Interfaces.Core;
+    using Barbu.Core.Workflows.PlayTrickWorkflow;
 
     public class BaseRoundManager : IRoundManager, IEventListener
     {
@@ -23,7 +24,9 @@ namespace Barbu.Gameplay.Rounds.Managers
 
         protected RoundContext roundContext;
         protected GameStateContext gameStateContext;
+        protected PlayTrickWorkflow playTrickWorkflow;
         protected GameState[] players;
+        protected Hand[] hands;
         protected StateMachine stateMachine;
         protected EventsController eventsController;
         protected ITelemetryService telemetryService;
@@ -43,6 +46,7 @@ namespace Barbu.Gameplay.Rounds.Managers
         {
             this.roundContext = new RoundContext();
             this.gameStateContext = new GameStateContext(this.roundContext);
+            this.hands = hands;
             this.players = new GameState[4];
             this.stateMachine = new StateMachine();
             this.eventsController = EventsController.GetInstance();
@@ -110,6 +114,8 @@ namespace Barbu.Gameplay.Rounds.Managers
             this.telemetryService.LogInfo("StartRound");
             this.stateMachine.ResetNumCardsPlayed();
             this.stateMachine.SetCardPlayable(true);
+            this.playTrickWorkflow = new PlayTrickWorkflow(this.roundContext, this.hands, 0);
+            this.playTrickWorkflow.StartAsync();
             this.gameStateContext.Start();
             this.inGamePointsController.SetRoundName(this.roundContext.CurrentName());
         }

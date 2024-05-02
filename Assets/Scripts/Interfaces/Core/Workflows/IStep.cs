@@ -1,8 +1,12 @@
-using System.Threading.Tasks;
-
-public interface IStep
+namespace Barbu.Interfaces.Core.Workflows
 {
-    void Initialize(IWorkflow workflow);
+    using System.Threading.Tasks;
+    using Barbu.Models.Workflows;
 
-    Task InvokeAsync<T>(StepArguments<T> args);
+    public interface IStep<T>
+    {
+        void Initialize(IWorkflow workflow, ITelemetryService telemetryService);
+
+        Task InvokeAsync(StepArguments<T> args);
+    }
 }

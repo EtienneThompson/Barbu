@@ -1,10 +1,18 @@
-using System.Threading.Tasks;
-
-public interface IWorkflow
+namespace Barbu.Interfaces.Core.Workflows
 {
-    Task StartAsync();
+    using Barbu.Models;
+    using System.Threading.Tasks;
 
-    void Pause();
+    public interface IWorkflow
+    {
+        Task StartAsync();
 
-    void SetNextStep(string stepName);
+        void Pause();
+
+        void WaitForEvent(EventNames eventName);
+
+        void WaitForEventWithData(EventNames eventName);
+
+        void SetNextStep(string stepName);
+    }
 }

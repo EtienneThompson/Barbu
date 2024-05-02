@@ -1,4 +1,9 @@
-public class StepArguments<T>
+namespace Barbu.Models.Workflows
 {
-    public T Data { get; set; }
+    public class StepArguments<T>
+    {
+        public T Data { get; set; }
+
+        public object EventData { get; set; }
+    }
 }
