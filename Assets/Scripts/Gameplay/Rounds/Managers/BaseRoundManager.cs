@@ -121,10 +121,11 @@ namespace Barbu.Gameplay.Rounds.Managers
                 return;
             }
 
+            var startingPlayerId = this.roundStartingPlayerId;
             if (this.playTrickWorkflow != null)
             {
                 this.telemetryService.LogInfo($"[BaseRoundManager] Setting winning player: {this.playTrickWorkflow.GetWinningPlayerId()}");
-                this.roundStartingPlayerId = this.playTrickWorkflow.GetWinningPlayerId();
+                startingPlayerId = this.playTrickWorkflow.GetWinningPlayerId();
             }
 
             this.playTrickWorkflow = new PlayTrickWorkflow(
@@ -132,7 +133,7 @@ namespace Barbu.Gameplay.Rounds.Managers
                 this.inGamePointsController,
                 this.playerPoints,
                 this.hands,
-                Int32.Parse(this.roundStartingPlayerId) - 1,
+                Int32.Parse(startingPlayerId) - 1,
                 this.currentRound);
             this.playTrickWorkflow.StartAsync();
             this.pilesPlayed++;
@@ -168,6 +169,7 @@ namespace Barbu.Gameplay.Rounds.Managers
         public void NextRound(Hand[] hands)
         {
             this.telemetryService.LogInfo("NextRound");
+            this.playTrickWorkflow = null;
             this.players[0].SetHand(hands[0]);
             this.players[1].SetHand(hands[1]);
             this.players[2].SetHand(hands[2]);
