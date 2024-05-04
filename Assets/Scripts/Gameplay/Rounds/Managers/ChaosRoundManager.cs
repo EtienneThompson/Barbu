@@ -20,7 +20,6 @@ namespace Barbu.Gameplay.Rounds.Managers
             }
 
             this.roundContext.SetState(chaosRound);
-            this.gameStateContext.Start();
         }
 
         protected override void MarkGameAsFinished()
