@@ -13,6 +13,8 @@ namespace Barbu.Core.Workflows.PlayTrickWorkflow
     {
         private RoundContext roundContext;
         private InGamePointsController inGamePointsController;
+        private Dictionary<string, int[]> playerPoints;
+        private int roundNumber;
 
         protected override Dictionary<string, IStep<PlayTrickArguments>> Steps => new Dictionary<string, IStep<PlayTrickArguments>>
         {
@@ -24,12 +26,17 @@ namespace Barbu.Core.Workflows.PlayTrickWorkflow
         public PlayTrickWorkflow(
             RoundContext roundContext,
             InGamePointsController inGamePointsController,
+            Dictionary<string, int[]> playerPoints,
             Hand[] playerHands,
-            int startingPlayer)
+            int startingPlayer,
+            int roundNumber)
             : base()
         {
             this.roundContext = roundContext;
             this.inGamePointsController = inGamePointsController;
+            this.playerPoints = playerPoints;
+            this.roundNumber = roundNumber;
+
             var gameStateContext = new GameStateContext(roundContext);
             var gameStates = new GameState[4];
             gameStates[0] = new PlayerState(gameStateContext, Constants.PlayerIds.Player1, playerHands[0]);
@@ -57,8 +64,12 @@ namespace Barbu.Core.Workflows.PlayTrickWorkflow
             this.telemetryService.LogInfo("[PlayTrickWorkflow] Handling end of workflow...");
             var pointsInPile = this.roundContext.CalculatePointsInPile(this.Arguments.Data.currentPile);
             var playerId = this.GetWinningPlayerId();
+
             this.telemetryService.LogInfo($"[PlayTrickWorkflow] Winning player: {playerId}");
             this.inGamePointsController.UpdatePlayerPoints(playerId, pointsInPile);
+
+            this.playerPoints[playerId][this.roundNumber] += pointsInPile;
+
             return Task.CompletedTask;
         }
 
