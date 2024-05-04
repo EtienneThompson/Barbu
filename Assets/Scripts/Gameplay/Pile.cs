@@ -26,6 +26,11 @@ namespace Barbu.Gameplay
 
         public Card GetHighestCard()
         {
+            if (this.cardsInPile.Count == 0)
+            {
+                return null;
+            }
+
             var highestCardIndex = 0;
             for (int i = 0; i < this.cardsInPile.Count; i++)
             {
@@ -52,6 +57,10 @@ namespace Barbu.Gameplay
         public void AddCardToPile(Card card)
         {
             this.cardsInPile.Add(card);
+            if (this.cardsInPile.Count == 1)
+            {
+                this.stateMachine.SetStartingSuit(card.suit);
+            }
         }
 
         public void StartPileResolution(string winningPlayer)

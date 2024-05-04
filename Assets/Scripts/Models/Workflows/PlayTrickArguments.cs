@@ -1,6 +1,8 @@
 namespace Barbu.Models.Workflows
 {
+    using Barbu.Gameplay;
     using Barbu.Gameplay.BoardState;
+    using System.Collections.Generic;
 
     public class PlayTrickArguments
     {
@@ -8,6 +10,6 @@ namespace Barbu.Models.Workflows
         
         public int currentGameStateIndex { get; set; }
 
-        public int cardsPlayed { get; set; } = 0;
+        public Pile currentPile { get; set; }
     }
 }

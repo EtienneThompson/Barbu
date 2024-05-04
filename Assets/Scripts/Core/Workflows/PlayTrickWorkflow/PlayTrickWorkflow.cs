@@ -1,14 +1,19 @@
 namespace Barbu.Core.Workflows.PlayTrickWorkflow
 {
     using System.Collections.Generic;
+    using System.Threading.Tasks;
     using Barbu.Gameplay;
     using Barbu.Gameplay.BoardState;
     using Barbu.Gameplay.Rounds;
     using Barbu.Interfaces.Core.Workflows;
     using Barbu.Models.Workflows;
+    using Barbu.UI.Controllers;
 
     public class PlayTrickWorkflow : BaseWorkflow<PlayTrickArguments>
     {
+        private RoundContext roundContext;
+        private InGamePointsController inGamePointsController;
+
         protected override Dictionary<string, IStep<PlayTrickArguments>> Steps => new Dictionary<string, IStep<PlayTrickArguments>>
         {
             [nameof(PlayCardStep)] = new PlayCardStep(),
@@ -16,9 +21,15 @@ namespace Barbu.Core.Workflows.PlayTrickWorkflow
             [nameof(ResolveTrickStep)] = new ResolveTrickStep(),
         };
 
-        public PlayTrickWorkflow(RoundContext roundContext, Hand[] playerHands, int startingPlayer)
+        public PlayTrickWorkflow(
+            RoundContext roundContext,
+            InGamePointsController inGamePointsController,
+            Hand[] playerHands,
+            int startingPlayer)
             : base()
         {
+            this.roundContext = roundContext;
+            this.inGamePointsController = inGamePointsController;
             var gameStateContext = new GameStateContext(roundContext);
             var gameStates = new GameState[4];
             gameStates[0] = new PlayerState(gameStateContext, Constants.PlayerIds.Player1, playerHands[0]);
@@ -34,8 +45,27 @@ namespace Barbu.Core.Workflows.PlayTrickWorkflow
                 {
                     gameStates = gameStates,
                     currentGameStateIndex = startingPlayer,
+                    currentPile = new Pile(),
                 },
             };
+
+            this.stateMachine.SetStartingSuit(string.Empty);
+        }
+
+        protected override Task OnWorkflowEnd()
+        {
+            this.telemetryService.LogInfo("[PlayTrickWorkflow] Handling end of workflow...");
+            var pointsInPile = this.roundContext.CalculatePointsInPile(this.Arguments.Data.currentPile);
+            var playerId = this.GetWinningPlayerId();
+            this.telemetryService.LogInfo($"[PlayTrickWorkflow] Winning player: {playerId}");
+            this.inGamePointsController.UpdatePlayerPoints(playerId, pointsInPile);
+            return Task.CompletedTask;
+        }
+
+        public string GetWinningPlayerId()
+        {
+            this.telemetryService.LogInfo("[PlayTrickWorkflow] Getting winning player...");
+            return this.Arguments.Data.currentPile.GetHighestCard().playerId;
         }
     }
 }

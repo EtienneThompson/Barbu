@@ -9,31 +9,25 @@ namespace Barbu.Core.Workflows.PlayTrickWorkflow
     public class PlayCardStep : IStep<PlayTrickArguments>
     {
         private IWorkflow parentWorkflow;
+        private StateMachine stateMachine;
         private ITelemetryService telemetryService;
 
-        public void Initialize(IWorkflow workflow, ITelemetryService telemetryService)
+        public void Initialize(IWorkflow workflow, StateMachine stateMachine, ITelemetryService telemetryService)
         {
             this.parentWorkflow = workflow;
+            this.stateMachine = stateMachine;
             this.telemetryService = telemetryService;
         }
 
         public Task InvokeAsync(StepArguments<PlayTrickArguments> args)
         {
-            if (args.Data.cardsPlayed < 4)
-            {
-                this.telemetryService.LogInfo("[PlayTrickWorkflow] Playing card...");
-                args.Data.cardsPlayed++;
-                var gameState = args.Data.gameStates[args.Data.currentGameStateIndex++ % 4];
-                this.telemetryService.LogInfo($"[PlayTrickWorkflow] Player {gameState.PlayerId} playing...");
-                // gameState.Start();
-                this.parentWorkflow.SetNextStep(nameof(HandleCardPlayedStep));
-                this.parentWorkflow.WaitForEventWithData(EventNames.PlayCard);
-            }
-            else
-            {
-                this.telemetryService.LogInfo("[PlayTrickWorkflow] Moving to resolve trick step");
-                this.parentWorkflow.SetNextStep(nameof(ResolveTrickStep));
-            }
+            this.telemetryService.LogInfo("[PlayTrickWorkflow] Playing card...");
+            var gameState = args.Data.gameStates[args.Data.currentGameStateIndex % 4];
+            this.telemetryService.LogInfo($"[PlayTrickWorkflow] Player {gameState.PlayerId} playing...");
+            this.stateMachine.SetCardPlayable(true);
+            gameState.Start();
+            this.parentWorkflow.SetNextStep(nameof(HandleCardPlayedStep));
+            this.parentWorkflow.WaitForEventWithData(EventNames.PlayCard);
 
             return Task.CompletedTask;
         }

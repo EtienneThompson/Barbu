@@ -8,17 +8,22 @@ namespace Barbu.Core.Workflows.PlayTrickWorkflow
     public class ResolveTrickStep : IStep<PlayTrickArguments>
     {
         private IWorkflow parentWorkflow;
+        private StateMachine stateMachine;
         private ITelemetryService telemetryService;
 
-        public void Initialize(IWorkflow workflow, ITelemetryService telemetryService)
+        public void Initialize(IWorkflow workflow, StateMachine stateMachine, ITelemetryService telemetryService)
         {
             this.parentWorkflow = workflow;
+            this.stateMachine = stateMachine;
             this.telemetryService = telemetryService;
         }
 
         public Task InvokeAsync(StepArguments<PlayTrickArguments> args)
         {
             this.telemetryService.LogInfo("[PlayTrickWorkflow] Resolving Pile...");
+            var highestCard = args.Data.currentPile.GetHighestCard();
+            args.Data.currentPile.StartPileResolution(highestCard.playerId);
+            this.stateMachine.SetHighestRank(0);
             this.parentWorkflow.SetNextStep(null);
             return Task.CompletedTask;
         }

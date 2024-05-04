@@ -19,6 +19,7 @@ namespace Barbu.Core.Workflows
         protected StepArguments<T> Arguments { get; set; }
 
         protected EventsController eventsController;
+        protected StateMachine stateMachine;
         protected ITelemetryService telemetryService;
 
         private EventNames waitingEventName;
@@ -28,6 +29,7 @@ namespace Barbu.Core.Workflows
         protected BaseWorkflow()
         {
             this.eventsController = EventsController.GetInstance();
+            this.stateMachine = new StateMachine();
             this.telemetryService = TelemetryService.GetInstance();
         }
 
@@ -51,7 +53,7 @@ namespace Barbu.Core.Workflows
 
                 var step = this.Steps[this.currentStepName];
                 this.telemetryService.LogInfo("[BaseWorkflow] Initializing step");
-                step.Initialize(this, this.telemetryService);
+                step.Initialize(this, this.stateMachine, this.telemetryService);
                 this.telemetryService.LogInfo("[BaseWorkflow] Starting step");
                 await step.InvokeAsync(this.Arguments);
 
@@ -62,7 +64,16 @@ namespace Barbu.Core.Workflows
                 }
             }
 
-            this.telemetryService.LogInfo("[BaseWorkflow] Workflow has completed");
+            if (!this.IsPaused)
+            {
+                this.telemetryService.LogInfo("[BaseWorkflow] Workflow has completed");
+                await this.OnWorkflowEnd();
+            }
+        }
+
+        protected virtual Task OnWorkflowEnd()
+        {
+            return Task.CompletedTask;
         }
 
         public void Pause()

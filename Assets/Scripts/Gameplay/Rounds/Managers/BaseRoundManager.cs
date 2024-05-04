@@ -113,10 +113,20 @@ namespace Barbu.Gameplay.Rounds.Managers
         {
             this.telemetryService.LogInfo("StartRound");
             this.stateMachine.ResetNumCardsPlayed();
-            this.stateMachine.SetCardPlayable(true);
-            this.playTrickWorkflow = new PlayTrickWorkflow(this.roundContext, this.hands, 0);
+
+            if (this.playTrickWorkflow != null)
+            {
+                this.telemetryService.LogInfo($"[BaseRoundManager] Setting winning player: {this.playTrickWorkflow.GetWinningPlayerId()}");
+                this.roundStartingPlayerId = this.playTrickWorkflow.GetWinningPlayerId();
+            }
+
+            this.playTrickWorkflow = new PlayTrickWorkflow(
+                this.roundContext,
+                this.inGamePointsController,
+                this.hands,
+                Int32.Parse(this.roundStartingPlayerId) - 1);
             this.playTrickWorkflow.StartAsync();
-            this.gameStateContext.Start();
+            // this.gameStateContext.Start();
             this.inGamePointsController.SetRoundName(this.roundContext.CurrentName());
         }
 
@@ -187,26 +197,27 @@ namespace Barbu.Gameplay.Rounds.Managers
         public void Setup()
         {
             // Listen for events when cards are being played.
-            this.eventsController.Subscribe(EventNames.PlayCard, this.OnCardPlayed);
+            // this.eventsController.Subscribe(EventNames.PlayCard, this.OnCardPlayed);
             this.eventsController.Subscribe(EventNames.RoundOver, this.CleanupRound);
             this.eventsController.Subscribe(EventNames.RoundAnimationFinished, this.StartRound);
-            this.eventsController.Subscribe(EventNames.PileResolved, this.OnPileResolved);
+            this.eventsController.Subscribe(EventNames.PileResolved, this.StartRound);
             this.eventsController.Subscribe(EventNames.WinnerAnimationFinished, this.OnWinnerDisplayed);
         }
 
         public void Destroy()
         {
             // Deregister event listeners when this round is no longer applicable.
-            this.eventsController.Unsubscribe(EventNames.PlayCard, this.OnCardPlayed);
+            // this.eventsController.Unsubscribe(EventNames.PlayCard, this.OnCardPlayed);
             this.eventsController.Unsubscribe(EventNames.RoundOver, this.CleanupRound);
             this.eventsController.Unsubscribe(EventNames.RoundAnimationFinished, this.StartRound);
-            this.eventsController.Unsubscribe(EventNames.PileResolved, this.OnPileResolved);
+            this.eventsController.Unsubscribe(EventNames.PileResolved, this.StartRound);
             this.eventsController.Unsubscribe(EventNames.WinnerAnimationFinished, this.OnWinnerDisplayed);
 
             // Clean up any dependency listeners.
             this.gameStateContext.Destroy();
         }
 
+        /*
         protected void OnCardPlayed(object payload)
         {
             var card = (Card)payload;
@@ -238,6 +249,7 @@ namespace Barbu.Gameplay.Rounds.Managers
             this.stateMachine.SetCardPlayable(true);
             this.gameStateContext.Next();
         }
+        */
 
         protected void OnPileResolved()
         {
@@ -261,6 +273,7 @@ namespace Barbu.Gameplay.Rounds.Managers
             throw new Exception("This method must be overridden.");
         }
 
+        /*
         private void ResolvePile()
         {
             this.pilesPlayed++;
@@ -291,6 +304,7 @@ namespace Barbu.Gameplay.Rounds.Managers
                 this.scoreMenu.UpdateScores(this.currentRound, this.playerPoints);
             }
         }
+        */
 
         private string[] GetWinningPlayerIds()
         {
