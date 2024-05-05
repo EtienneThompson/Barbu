@@ -1,22 +1,23 @@
 namespace Barbu.Gameplay.BoardState
 {
+    using Barbu.Interfaces.Rounds;
+
     public class ComputerStateFactory
     {
         public static GameState GetComputerStateFromSettings(
-            GameStateContext context,
+            IRound round,
             string id,
-            Hand hand,
-            GameState next = null)
+            Hand hand)
         {
             switch (Settings.ComputerDifficultyPreference)
             {
                 case Settings.ComputerDifficulty.Hard:
-                    return new HardComputerState(context, next, id, hand);
+                    return new HardComputerState(round, id, hand);
                 case Settings.ComputerDifficulty.Normal:
-                    return new NormalComputerState(context, next, id, hand);
+                    return new NormalComputerState(round, id, hand);
                 case Settings.ComputerDifficulty.Easy:
                 default:
-                    return new EasyComputerState(context, next, id, hand);
+                    return new EasyComputerState(round, id, hand);
             }
         }
     }

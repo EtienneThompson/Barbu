@@ -1,34 +1,27 @@
 namespace Barbu.Gameplay.BoardState
 {
-    using System;
     using Barbu.Core;
     using Barbu.Gameplay;
     using Barbu.Interfaces.BoardState;
     using Barbu.Interfaces.Core;
+    using Barbu.Interfaces.Rounds;
 
     public class GameState : IGameState
     {
-        protected GameStateContext context;
-        protected GameState nextState;
+        protected IRound round;
         protected Hand hand;
         protected StateMachine stateMachine;
         protected ITelemetryService telemetryService;
 
         public string PlayerId { get; private set; }
 
-        public GameState(GameStateContext context, Hand hand, string id)
+        public GameState(IRound round, Hand hand, string id)
         {
-            this.context = context;
+            this.round = round;
             this.hand = hand;
             this.PlayerId = id;
             this.stateMachine = new StateMachine();
             this.telemetryService = TelemetryService.GetInstance();
-        }
-
-        public GameState(GameStateContext context, GameState next, Hand hand, string id)
-        : this(context, hand, id)
-        {
-            this.nextState = next;
         }
 
         public virtual void Start()
@@ -47,26 +40,6 @@ namespace Barbu.Gameplay.BoardState
                 card.StartPositionAdjustment(index, cardsInHand);
                 index++;
             }
-        }
-
-        public virtual void GoNext()
-        {
-            if (this.nextState == null)
-            {
-                throw new Exception("No next state set.");
-            }
-
-            this.context.SetState(this.nextState);
-        }
-
-        public void SetNextState(GameState next)
-        {
-            this.nextState = next;
-        }
-
-        public void SetHand(Hand newHand)
-        {
-            this.hand = newHand;
         }
     }
 }

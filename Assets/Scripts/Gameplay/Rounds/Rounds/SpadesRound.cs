@@ -25,13 +25,7 @@ namespace Barbu.Gameplay.Rounds.Rounds
         public override int TotalPoints => 65;
         public override string Name => Constants.RoundNames.SpadesRound;
 
-        public SpadesRound(RoundContext context)
-        : base(context)
-        {
-        }
-
-        public SpadesRound(RoundContext context, Round next)
-        : base(context, next)
+        public SpadesRound()
         {
         }
     }

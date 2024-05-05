@@ -1,17 +1,13 @@
 namespace Barbu.Gameplay.BoardState
 {
     using Barbu.Gameplay;
+    using Barbu.Interfaces.Rounds;
     using UnityEngine;
 
     public class PlayerState : GameState
     {
-        public PlayerState(GameStateContext context, string id, Hand hand)
-        : base(context, hand, id)
-        {
-        }
-
-        public PlayerState(GameStateContext context, GameState next, string id, Hand hand)
-        : base(context, next, hand, id)
+        public PlayerState(IRound round, string id, Hand hand)
+        : base(round, hand, id)
         {
         }
 

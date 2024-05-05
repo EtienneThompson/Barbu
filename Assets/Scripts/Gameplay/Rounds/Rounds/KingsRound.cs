@@ -16,13 +16,7 @@ namespace Barbu.Gameplay.Rounds.Rounds
         public override int TotalPoints => 40;
         public override string Name => Constants.RoundNames.KingsRound;
 
-        public KingsRound(RoundContext context)
-        : base(context)
-        {
-        }
-
-        public KingsRound(RoundContext context, Round next)
-        : base(context, next)
+        public KingsRound()
         {
         }
     }

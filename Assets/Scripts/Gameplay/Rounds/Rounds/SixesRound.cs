@@ -16,13 +16,7 @@ namespace Barbu.Gameplay.Rounds.Rounds
         public override int TotalPoints => 65;
         public override string Name => Constants.RoundNames.SixesRound;
 
-        public SixesRound(RoundContext context)
-        : base(context)
-        {
-        }
-
-        public SixesRound(RoundContext context, Round next)
-        : base(context, next)
+        public SixesRound()
         {
         }
     }

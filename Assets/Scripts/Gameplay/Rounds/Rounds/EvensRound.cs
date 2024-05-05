@@ -40,13 +40,7 @@ namespace Barbu.Gameplay.Rounds.Rounds
         public override int TotalPoints => 140;
         public override string Name => nameof(EvensRound);
 
-        public EvensRound(RoundContext context)
-        : base(context)
-        {
-        }
-
-        public EvensRound(RoundContext context, Round next)
-        : base(context, next)
+        public EvensRound()
         {
         }
     }
