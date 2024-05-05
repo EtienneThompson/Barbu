@@ -34,7 +34,6 @@ namespace Barbu.Gameplay.Rounds.Managers
             }
 
             this.roundContext.SetState(round);
-            this.gameStateContext.Start();
         }
 
         protected override void MarkGameAsFinished()

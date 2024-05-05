@@ -15,8 +15,6 @@ namespace Barbu.Gameplay.Rounds.Managers
             var queensRound = new QueensRound(this.roundContext, kingOfHeartsRound);
             var heartsRound = new HeartsRound(this.roundContext, queensRound);
             this.roundContext.SetState(heartsRound);
-
-            this.gameStateContext.Start();
         }
 
         protected override void MarkGameAsFinished()

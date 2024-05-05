@@ -1,0 +1,159 @@
+namespace Barbu.Core.Workflows
+{
+    using System;
+    using System.Collections.Generic;
+    using System.Threading.Tasks;
+    using Barbu.Interfaces.Core;
+    using Barbu.Interfaces.Core.Workflows;
+    using Barbu.Models;
+    using Barbu.Models.Workflows;
+
+    public abstract class BaseWorkflow<T> : IWorkflow, IDisposable
+    {
+        protected abstract Dictionary<string, IStep<T>> Steps { get; }
+
+        protected bool IsPaused { get; set; }
+
+        protected string currentStepName { get; set; }
+
+        protected StepArguments<T> Arguments { get; set; }
+
+        protected EventsController eventsController;
+        protected StateMachine stateMachine;
+        protected ITelemetryService telemetryService;
+
+        private EventNames waitingEventName;
+        private Action waitingHandler;
+        private Action<object> waitingHandlerWithData;
+
+        protected BaseWorkflow()
+        {
+            this.eventsController = EventsController.GetInstance();
+            this.stateMachine = new StateMachine();
+            this.telemetryService = TelemetryService.GetInstance();
+
+            this.eventsController.Subscribe(EventNames.PauseGame, this.Pause);
+            this.eventsController.Subscribe(EventNames.ResumeGame, this.ResumeEntireGame);
+        }
+
+        public async Task StartAsync()
+        {
+            this.telemetryService.LogInfo("[BaseWorkflow] Start Executing workflow");
+            if (this.currentStepName == null)
+            {
+                this.telemetryService.LogError("[BaseWorkflow] No step name was initialized!");
+                throw new InvalidOperationException("A valid step must be set as the starting step name.");
+            }
+
+            this.IsPaused = false;
+            while (this.currentStepName != null)
+            {
+                if (!this.Steps.ContainsKey(this.currentStepName))
+                {
+                    this.telemetryService.LogError($"[BaseWorkflow] Step {this.currentStepName} is not registered for this workflow!");
+                    throw new InvalidOperationException($"Step {this.currentStepName} is not registered for this workflow!");
+                }
+
+                var step = this.Steps[this.currentStepName];
+                this.telemetryService.LogInfo("[BaseWorkflow] Initializing step");
+                step.Initialize(this, this.stateMachine, this.telemetryService);
+                this.telemetryService.LogInfo("[BaseWorkflow] Starting step");
+                await step.InvokeAsync(this.Arguments);
+
+                if (this.stateMachine.IsGamePaused() || this.IsPaused)
+                {
+                    this.telemetryService.LogInfo("[BaseWorkflow] Pausing workflow");
+                    break;
+                }
+            }
+
+            if (!this.IsPaused)
+            {
+                this.telemetryService.LogInfo("[BaseWorkflow] Workflow has completed");
+                await this.OnWorkflowEnd();
+            }
+        }
+
+        protected virtual Task OnWorkflowEnd()
+        {
+            return Task.CompletedTask;
+        }
+
+        public void Pause()
+        {
+            this.IsPaused = true;
+        }
+
+        public void WaitForEvent(EventNames eventName)
+        {
+            this.telemetryService.LogInfo("[BaseWorkflow] Waiting for event without data");
+            this.Pause();
+            this.waitingEventName = eventName;
+            this.waitingHandler = async () => await this.ReceiveEvent();
+            this.eventsController.Subscribe(eventName, this.waitingHandler);
+        }
+
+        public void WaitForEventWithData(EventNames eventName)
+        {
+            this.telemetryService.LogInfo("[BaseWorkflow] Waiting for event with data");
+            this.Pause();
+            this.waitingEventName = eventName;
+            this.waitingHandlerWithData = async (object data) => await this.ReceiveEvent(data);
+            this.eventsController.Subscribe(eventName, this.waitingHandlerWithData);
+        }
+
+        public void SetNextStep(string stepName)
+        {
+            if (!string.IsNullOrEmpty(stepName) && !this.Steps.ContainsKey(stepName))
+            {
+                throw new ArgumentException($"The step name ${stepName} does not exist in this workflow.");
+            }
+
+            this.currentStepName = stepName;
+        }
+
+        public void Dispose()
+        {
+            this.eventsController.Unsubscribe(EventNames.PauseGame, this.Pause);
+            this.eventsController.Unsubscribe(EventNames.ResumeGame, this.ResumeEntireGame);
+        }
+
+        private async Task ReceiveEvent()
+        {
+            this.telemetryService.LogInfo("[BaseWorkflow] Received event without data");
+            if (this.waitingHandlerWithData != null)
+            {
+                this.eventsController.Unsubscribe(this.waitingEventName, this.waitingHandler);
+                this.waitingHandler = null;
+            }
+
+            // Only resume the workflow when the event is received if the entire game is not paused.
+            this.IsPaused = false;
+            if (!this.stateMachine.IsGamePaused())
+            {
+                await this.StartAsync();
+            }
+        }
+
+        private async Task ReceiveEvent(object data)
+        {
+            this.telemetryService.LogInfo("[BaseWorkflow] Received event");
+            this.Arguments.EventData = data;
+            this.eventsController.Unsubscribe(this.waitingEventName, this.waitingHandlerWithData);
+            this.waitingHandlerWithData = null;
+            await this.ReceiveEvent();
+        }
+
+        private void ResumeEntireGame()
+        {
+            // When the game is resumed, only start the workflow if not paused for some
+            // other reason.
+            this.telemetryService.LogInfo("[BaseWorkflow] Received resume event...");
+            this.telemetryService.LogInfo($"[BaseWorkflow] IsPaused: {this.IsPaused}");
+            if (!this.IsPaused)
+            {
+                Task _ = this.StartAsync();
+            }
+        }
+    }
+}
