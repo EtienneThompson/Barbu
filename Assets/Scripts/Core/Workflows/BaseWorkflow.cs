@@ -78,6 +78,7 @@ namespace Barbu.Core.Workflows
 
         protected virtual Task OnWorkflowEnd()
         {
+            this.Dispose();
             return Task.CompletedTask;
         }
 
@@ -108,7 +109,7 @@ namespace Barbu.Core.Workflows
         {
             if (!string.IsNullOrEmpty(stepName) && !this.Steps.ContainsKey(stepName))
             {
-                throw new ArgumentException($"The step name ${stepName} does not exist in this workflow.");
+                throw new ArgumentException($"The step name {stepName} does not exist in this workflow.");
             }
 
             this.currentStepName = stepName;

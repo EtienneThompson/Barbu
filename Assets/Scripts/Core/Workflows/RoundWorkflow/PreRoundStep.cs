@@ -1,4 +1,4 @@
-namespace Barbu
+namespace Barbu.Core.Workflows.RoundWorkflow
 {
     using System.Threading.Tasks;
     using Barbu.Core;

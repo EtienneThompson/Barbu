@@ -59,50 +59,50 @@ namespace Barbu.UI.Controllers
 
         private void HandleHeartsButtonClick(ClickEvent evt)
         {
+            this.singleRoundMenu.SetActive(false);
             this.gameBoard.CreateNewGame(
                 Constants.SingleRoundManager.GameName,
                 Constants.SingleRoundManager.Hearts);
-            this.singleRoundMenu.SetActive(false);
         }
 
         private void HandleQueensButtonClick(ClickEvent evt)
         {
+            this.singleRoundMenu.SetActive(false);
             this.gameBoard.CreateNewGame(
                 Constants.SingleRoundManager.GameName,
                 Constants.SingleRoundManager.Queens);
-            this.singleRoundMenu.SetActive(false);
         }
 
         private void HandleKingOfHeartsButtonClick(ClickEvent evt)
         {
+            this.singleRoundMenu.SetActive(false);
             this.gameBoard.CreateNewGame(
                 Constants.SingleRoundManager.GameName,
                 Constants.SingleRoundManager.KingOfHearts);
-            this.singleRoundMenu.SetActive(false);
         }
 
         private void HandlePilesButtonClick(ClickEvent evt)
         {
+            this.singleRoundMenu.SetActive(false);
             this.gameBoard.CreateNewGame(
                 Constants.SingleRoundManager.GameName,
                 Constants.SingleRoundManager.Piles);
-            this.singleRoundMenu.SetActive(false);
         }
 
         private void HandleNothingButtonClick(ClickEvent evt)
         {
+            this.singleRoundMenu.SetActive(false);
             this.gameBoard.CreateNewGame(
                 Constants.SingleRoundManager.GameName,
                 Constants.SingleRoundManager.Nothing);
-            this.singleRoundMenu.SetActive(false);
         }
 
         private void HandleEverythingButtonClick(ClickEvent evt)
         {
+            this.singleRoundMenu.SetActive(false);
             this.gameBoard.CreateNewGame(
                 Constants.SingleRoundManager.GameName,
                 Constants.SingleRoundManager.Everything);
-            this.singleRoundMenu.SetActive(false);
         }
 
         private void HandleCloseButtonClick(ClickEvent evt)

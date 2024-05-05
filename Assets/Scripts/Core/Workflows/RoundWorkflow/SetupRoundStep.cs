@@ -1,4 +1,4 @@
-namespace Barbu
+namespace Barbu.Core.Workflows.RoundWorkflow
 {
     using Barbu.Core;
     using Barbu.Interfaces.Core;

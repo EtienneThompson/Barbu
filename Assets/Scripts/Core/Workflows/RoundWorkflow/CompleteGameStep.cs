@@ -1,10 +1,11 @@
-namespace Barbu
+namespace Barbu.Core.Workflows.RoundWorkflow
 {
     using System.Linq;
     using System.Threading.Tasks;
     using Barbu.Core;
     using Barbu.Interfaces.Core;
     using Barbu.Interfaces.Core.Workflows;
+    using Barbu.Models;
     using Barbu.Models.Workflows;
     using Barbu.UI.Controllers;
     using UnityEngine;
@@ -38,7 +39,8 @@ namespace Barbu
                 Statistics.IncrementGamesWon(args.Data.GameType);
             }
 
-            this.workflow.SetNextStep(null);
+            this.workflow.SetNextStep(nameof(ShowAdvertisementStep));
+            this.workflow.WaitForEvent(EventNames.WinnerAnimationFinished);
             return Task.CompletedTask;
         }
     }

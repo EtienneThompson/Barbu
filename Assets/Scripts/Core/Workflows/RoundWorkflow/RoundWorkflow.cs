@@ -1,9 +1,11 @@
-namespace Barbu
+namespace Barbu.Core.Workflows.RoundWorkflow
 {
     using Barbu.Core.Workflows;
     using Barbu.Interfaces.Core.Workflows;
     using Barbu.Interfaces.Rounds;
+    using Barbu.Models.Workflows;
     using System.Collections.Generic;
+    using UnityEngine;
 
     public class RoundWorkflow : BaseWorkflow<RoundArguments>
     {
@@ -15,6 +17,7 @@ namespace Barbu
             [nameof(CleanupRoundStep)] = new CleanupRoundStep(),
             [nameof(NextRoundStep)] = new NextRoundStep(),
             [nameof(CompleteGameStep)] = new CompleteGameStep(),
+            [nameof(ShowAdvertisementStep)] = new ShowAdvertisementStep(),
         };
 
         public RoundWorkflow(Statistics.GameTypes gameType, List<IRound> rounds)
@@ -37,6 +40,10 @@ namespace Barbu
                     TricksPlayed = 0,
                 }
             };
+
+            var gameBoard = GameObject.Find(Constants.GameObjects.GameBoard);
+            var advertisementController = gameBoard.GetComponent<AdvertisementController>();
+            advertisementController.RequestToShowInterstitial();
         }
     }
 }

@@ -1,11 +1,11 @@
-using Barbu.Core.Workflows.PlayTrickWorkflow;
-using Barbu.Gameplay;
-using Barbu.Interfaces.Rounds;
-using System.Collections.Generic;
-using System.Linq;
-
-namespace Barbu
+namespace Barbu.Models.Workflows
 {
+    using System.Collections.Generic;
+    using System.Linq;
+    using Barbu.Core.Workflows.PlayTrickWorkflow;
+    using Barbu.Gameplay;
+    using Barbu.Interfaces.Rounds;
+
     public class RoundArguments
     {
         public Statistics.GameTypes GameType { get; set; }

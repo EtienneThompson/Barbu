@@ -3,14 +3,16 @@ namespace Barbu
     using System;
     using System.Threading.Tasks;
     using Barbu.Core;
+    using Barbu.Core.Workflows.RoundWorkflow;
     using Barbu.Gameplay;
     using Barbu.Gameplay.Rounds;
-    using Barbu.UI.Controllers;
+    using Barbu.Interfaces.Core;
     using UnityEngine;
 
     public class GameBoard : MonoBehaviour
     {
         private StateMachine stateMachine;
+        private ITelemetryService telemetryService;
         private string[] kCardSuits = new string[] { "Club", "Diamond", "Spade", "Heart" };
         // Ranks must match the resources used, 01 is A and 11, 12, and 13 are J, Q, and K.
         private string[] kCardRanks = new string[] { "01", "02", "03", "04", "05", "06", "07",
@@ -18,12 +20,15 @@ namespace Barbu
         private string[] cards = new string[52];
         private Hand[] hands = new Hand[4];
 
+        private RoundWorkflow currentGame;
+
         // Start is called before the first frame update
         void Start()
         {
             Application.targetFrameRate = 60;
 
             this.stateMachine = new StateMachine();
+            this.telemetryService = TelemetryService.GetInstance();
 
             // Create the deck of 52 cards.
             for (int i = 0; i < kCardSuits.Length; i++)
@@ -60,30 +65,31 @@ namespace Barbu
 
         public void CreateNewGame(string gameName, string subType)
         {
+            this.telemetryService.LogInfo("Creating new game...");
             this.stateMachine.SetIsSettingUp(true);
             this.stateMachine.SetCardPlayable(false);
             this.stateMachine.ResetNumCardsPlayed();
+            this.currentGame?.Dispose();
             this.CleanupRound();
-            RoundWorkflow roundWorkflow;
             switch (gameName)
             {
                 case Constants.TraditionalRoundManager.GameName:
-                    roundWorkflow = RoundFactory.CreateTraditionalRoundWorkflow();
+                    this.currentGame = RoundFactory.CreateTraditionalRoundWorkflow();
                     Statistics.IncrementGamesPlayed(Statistics.GameTypes.Traditional);
                     break;
                 case Constants.SingleRoundManager.GameName:
-                    roundWorkflow = RoundFactory.CreateSingleRoundWorkflow(subType);
+                    this.currentGame = RoundFactory.CreateSingleRoundWorkflow(subType);
                     Statistics.IncrementGamesPlayed(Statistics.GameTypes.Single);
                     break;
                 case Constants.ChaosRoundManager.GameName:
-                    roundWorkflow = RoundFactory.CreateChaosRoundWorkflow();
+                    this.currentGame = RoundFactory.CreateChaosRoundWorkflow();
                     Statistics.IncrementGamesPlayed(Statistics.GameTypes.Chaos);
                     break;
                 default:
                     throw new Exception("Incorrect game name provided");
             }
             this.stateMachine.SetIsSettingUp(false);
-            Task _ = roundWorkflow.StartAsync();
+            Task _ = this.currentGame.StartAsync();
         }
 
         public void CleanupRound()
