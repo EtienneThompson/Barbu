@@ -8,7 +8,7 @@ namespace Barbu.Core.Workflows
     using Barbu.Models;
     using Barbu.Models.Workflows;
 
-    public abstract class BaseWorkflow<T> : IWorkflow
+    public abstract class BaseWorkflow<T> : IWorkflow, IDisposable
     {
         protected abstract Dictionary<string, IStep<T>> Steps { get; }
 
@@ -31,6 +31,9 @@ namespace Barbu.Core.Workflows
             this.eventsController = EventsController.GetInstance();
             this.stateMachine = new StateMachine();
             this.telemetryService = TelemetryService.GetInstance();
+
+            this.eventsController.Subscribe(EventNames.PauseGame, this.Pause);
+            this.eventsController.Subscribe(EventNames.ResumeGame, this.ResumeEntireGame);
         }
 
         public async Task StartAsync()
@@ -48,7 +51,7 @@ namespace Barbu.Core.Workflows
                 if (!this.Steps.ContainsKey(this.currentStepName))
                 {
                     this.telemetryService.LogError($"[BaseWorkflow] Step {this.currentStepName} is not registered for this workflow!");
-                    throw new InvalidOperationException("The current step name is not registered for this workflow.");
+                    throw new InvalidOperationException($"Step {this.currentStepName} is not registered for this workflow!");
                 }
 
                 var step = this.Steps[this.currentStepName];
@@ -57,7 +60,7 @@ namespace Barbu.Core.Workflows
                 this.telemetryService.LogInfo("[BaseWorkflow] Starting step");
                 await step.InvokeAsync(this.Arguments);
 
-                if (this.IsPaused)
+                if (this.stateMachine.IsGamePaused() || this.IsPaused)
                 {
                     this.telemetryService.LogInfo("[BaseWorkflow] Pausing workflow");
                     break;
@@ -109,6 +112,12 @@ namespace Barbu.Core.Workflows
             this.currentStepName = stepName;
         }
 
+        public void Dispose()
+        {
+            this.eventsController.Unsubscribe(EventNames.PauseGame, this.Pause);
+            this.eventsController.Unsubscribe(EventNames.ResumeGame, this.ResumeEntireGame);
+        }
+
         private async Task ReceiveEvent()
         {
             this.telemetryService.LogInfo("[BaseWorkflow] Received event without data");
@@ -118,8 +127,12 @@ namespace Barbu.Core.Workflows
                 this.waitingHandler = null;
             }
 
+            // Only resume the workflow when the event is received if the entire game is not paused.
             this.IsPaused = false;
-            await this.StartAsync();
+            if (!this.stateMachine.IsGamePaused())
+            {
+                await this.StartAsync();
+            }
         }
 
         private async Task ReceiveEvent(object data)
@@ -129,6 +142,18 @@ namespace Barbu.Core.Workflows
             this.eventsController.Unsubscribe(this.waitingEventName, this.waitingHandlerWithData);
             this.waitingHandlerWithData = null;
             await this.ReceiveEvent();
+        }
+
+        private void ResumeEntireGame()
+        {
+            // When the game is resumed, only start the workflow if not paused for some
+            // other reason.
+            this.telemetryService.LogInfo("[BaseWorkflow] Received resume event...");
+            this.telemetryService.LogInfo($"[BaseWorkflow] IsPaused: {this.IsPaused}");
+            if (!this.IsPaused)
+            {
+                Task _ = this.StartAsync();
+            }
         }
     }
 }

@@ -6,6 +6,7 @@ namespace Barbu.Core.Workflows.PlayTrickWorkflow
     using Barbu.Gameplay.BoardState;
     using Barbu.Gameplay.Rounds;
     using Barbu.Interfaces.Core.Workflows;
+    using Barbu.Models;
     using Barbu.Models.Workflows;
     using Barbu.UI.Controllers;
 

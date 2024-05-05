@@ -3,8 +3,6 @@ namespace Barbu.Core
     using System;
     using Barbu.Interfaces.Core;
     using Barbu.Models;
-    using Newtonsoft.Json;
-
 
     /// <summary>
     /// EventsController is the main hub at which different systems in the game can

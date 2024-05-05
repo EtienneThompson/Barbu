@@ -13,6 +13,7 @@ namespace Barbu.Core
         private string startingSuit = string.Empty;
         private bool menuOpen = false;
         private int highestRank = 0;
+        private bool isGamePaused = false;
 
         private bool playerCardMustBeStartingSuit;
 
@@ -89,10 +90,12 @@ namespace Barbu.Core
 
             if (isOpen)
             {
+                instance.isGamePaused = true;
                 this.eventsController.Fire(EventNames.PauseGame);
             }
             else
             {
+                instance.isGamePaused = false;
                 this.eventsController.Fire(EventNames.ResumeGame);
             }
         }
@@ -105,6 +108,11 @@ namespace Barbu.Core
         public void SetHighestRank(int rank)
         {
             instance.highestRank = rank;
+        }
+
+        public bool IsGamePaused()
+        {
+            return instance.isGamePaused;
         }
     }
 }

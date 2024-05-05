@@ -99,15 +99,15 @@ namespace Barbu.Gameplay.BoardState
         public void Setup()
         {
             // Listen to global pause/resume events.
-            this.eventsController.Subscribe(EventNames.PauseGame, this.Pause);
-            this.eventsController.Subscribe(EventNames.ResumeGame, this.Resume);
+            // this.eventsController.Subscribe(EventNames.PauseGame, this.Pause);
+            // this.eventsController.Subscribe(EventNames.ResumeGame, this.Resume);
         }
 
         public void Destroy()
         {
             // Stop listening.
-            this.eventsController.Unsubscribe(EventNames.PauseGame, this.Pause);
-            this.eventsController.Unsubscribe(EventNames.ResumeGame, this.Resume);
+            // this.eventsController.Unsubscribe(EventNames.PauseGame, this.Pause);
+            // this.eventsController.Unsubscribe(EventNames.ResumeGame, this.Resume);
         }
     }
 }

@@ -146,6 +146,7 @@ namespace Barbu.Gameplay.Rounds.Managers
         public void NextRound(Hand[] hands)
         {
             this.telemetryService.LogInfo("NextRound");
+            this.playTrickWorkflow.Dispose();
             this.playTrickWorkflow = null;
             this.hands = hands;
             this.currentRound++;
