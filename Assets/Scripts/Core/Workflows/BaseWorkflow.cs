@@ -119,6 +119,22 @@ namespace Barbu.Core.Workflows
         {
             this.eventsController.Unsubscribe(EventNames.PauseGame, this.Pause);
             this.eventsController.Unsubscribe(EventNames.ResumeGame, this.ResumeEntireGame);
+
+            foreach (var key in this.waitingHandlers.Keys)
+            {
+                if (this.waitingHandlers.TryGetValue(key, out var handler))
+                {
+                    this.eventsController.Unsubscribe(key, handler);
+                }
+            }
+
+            foreach (var key in this.waitingHandlersWithData.Keys)
+            {
+                if (this.waitingHandlersWithData.TryGetValue(key, out var handler))
+                {
+                    this.eventsController.Unsubscribe(key, handler);
+                }
+            }
         }
 
         private async Task ReceiveEvent(EventNames eventName)
