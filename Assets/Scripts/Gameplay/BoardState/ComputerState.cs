@@ -2,16 +2,12 @@ namespace Barbu.Gameplay.BoardState
 {
     using System;
     using Barbu.Gameplay;
+    using Barbu.Interfaces.Rounds;
 
     public class ComputerState : GameState
     {
-        public ComputerState(GameStateContext context, string id, Hand hand)
-        : base(context, hand, id)
-        {
-        }
-
-        public ComputerState(GameStateContext context, GameState next, string id, Hand hand)
-        : base(context, next, hand, id)
+        public ComputerState(IRound round, string id, Hand hand)
+        : base(round, hand, id)
         {
         }
 

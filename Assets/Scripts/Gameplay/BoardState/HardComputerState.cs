@@ -2,17 +2,12 @@ namespace Barbu.Gameplay.BoardState
 {
     using System;
     using Barbu.Gameplay;
-    using UnityEngine;
+    using Barbu.Interfaces.Rounds;
 
     public class HardComputerState : GameState
     {
-        public HardComputerState(GameStateContext context, string id, Hand hand)
-        : base(context, hand, id)
-        {
-        }
-
-        public HardComputerState(GameStateContext context, GameState next, string id, Hand hand)
-        : base(context, next, hand, id)
+        public HardComputerState(IRound round, string id, Hand hand)
+        : base(round, hand, id)
         {
         }
 
@@ -24,7 +19,7 @@ namespace Barbu.Gameplay.BoardState
             }
 
             this.stateMachine.SetCardPlayable(false);
-            var isPositiveRound = this.context.IsCurrentRoundPositive();
+            var isPositiveRound = this.round.IsRoundPositive();
             var cardsInSuit = this.hand.CardsInSuit(this.stateMachine.GetStartingSuit());
             var playableCards = cardsInSuit.Count > 0 ? cardsInSuit : this.hand.GetAvailableCards();
 
@@ -34,7 +29,7 @@ namespace Barbu.Gameplay.BoardState
             {
                 this.telemetryService.LogInfo("Computer has no cards in suit");
                 // Play the highest point-earning card.
-                var pointEarningCards = this.hand.GetCardsWithPoints(this.context);
+                var pointEarningCards = this.hand.GetCardsWithPoints(this.round);
 
                 if (pointEarningCards.Count > 0)
                 {
@@ -43,7 +38,7 @@ namespace Barbu.Gameplay.BoardState
                     Card maxCard = null;
                     foreach (var card in pointEarningCards)
                     {
-                        var cardPointValue = this.context.GetCardPointValue(card.GetName());
+                        var cardPointValue = this.round.GetCardPointValue(card.GetName());
                         if (!isPositiveRound && cardPointValue >= maxPoints && (maxCard == null || card.rank > maxCard.rank))
                         {
                             maxPoints = cardPointValue;

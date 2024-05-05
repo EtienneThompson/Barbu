@@ -72,13 +72,13 @@ namespace Barbu.Gameplay
             }
         }
 
-        private void OnCardInPileResolved()
+        private void OnCardInPileResolved(EventNames _)
         {
             this.cardsResolved++;
             if (this.cardsResolved == 4)
             {
-                this.eventsController.Fire(EventNames.PileResolved);
                 this.eventsController.Unsubscribe(EventNames.CardInPileResolved, this.OnCardInPileResolved);
+                this.eventsController.Fire(EventNames.PileResolved);
             }
         }
     }

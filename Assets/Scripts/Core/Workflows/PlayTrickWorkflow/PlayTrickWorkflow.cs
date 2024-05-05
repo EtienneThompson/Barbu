@@ -6,14 +6,15 @@ namespace Barbu.Core.Workflows.PlayTrickWorkflow
     using Barbu.Gameplay.BoardState;
     using Barbu.Gameplay.Rounds;
     using Barbu.Interfaces.Core.Workflows;
+    using Barbu.Interfaces.Rounds;
     using Barbu.Models;
     using Barbu.Models.Workflows;
     using Barbu.UI.Controllers;
+    using UnityEngine;
 
     public class PlayTrickWorkflow : BaseWorkflow<PlayTrickArguments>
     {
-        private RoundContext roundContext;
-        private InGamePointsController inGamePointsController;
+        private IRound round;
         private Dictionary<string, int[]> playerPoints;
         private int roundNumber;
 
@@ -25,25 +26,22 @@ namespace Barbu.Core.Workflows.PlayTrickWorkflow
         };
 
         public PlayTrickWorkflow(
-            RoundContext roundContext,
-            InGamePointsController inGamePointsController,
+            IRound round,
             Dictionary<string, int[]> playerPoints,
             Hand[] playerHands,
             int startingPlayer,
             int roundNumber)
             : base()
         {
-            this.roundContext = roundContext;
-            this.inGamePointsController = inGamePointsController;
+            this.round = round;
             this.playerPoints = playerPoints;
             this.roundNumber = roundNumber;
 
-            var gameStateContext = new GameStateContext(roundContext);
             var gameStates = new GameState[4];
-            gameStates[0] = new PlayerState(gameStateContext, Constants.PlayerIds.Player1, playerHands[0]);
-            gameStates[1] = ComputerStateFactory.GetComputerStateFromSettings(gameStateContext, Constants.PlayerIds.Player2, playerHands[1]);
-            gameStates[2] = ComputerStateFactory.GetComputerStateFromSettings(gameStateContext, Constants.PlayerIds.Player3, playerHands[2]);
-            gameStates[3] = ComputerStateFactory.GetComputerStateFromSettings(gameStateContext, Constants.PlayerIds.Player4, playerHands[3]);
+            gameStates[0] = new PlayerState(round, Constants.PlayerIds.Player1, playerHands[0]);
+            gameStates[1] = ComputerStateFactory.GetComputerStateFromSettings(round, Constants.PlayerIds.Player2, playerHands[1]);
+            gameStates[2] = ComputerStateFactory.GetComputerStateFromSettings(round, Constants.PlayerIds.Player3, playerHands[2]);
+            gameStates[3] = ComputerStateFactory.GetComputerStateFromSettings(round, Constants.PlayerIds.Player4, playerHands[3]);
 
             this.currentStepName = nameof(PlayCardStep);
 
@@ -54,24 +52,13 @@ namespace Barbu.Core.Workflows.PlayTrickWorkflow
                     gameStates = gameStates,
                     currentGameStateIndex = startingPlayer,
                     currentPile = new Pile(),
+                    Round = round,
+                    RoundNumber = roundNumber,
+                    PlayerPoints = playerPoints,
                 },
             };
 
             this.stateMachine.SetStartingSuit(string.Empty);
-        }
-
-        protected override Task OnWorkflowEnd()
-        {
-            this.telemetryService.LogInfo("[PlayTrickWorkflow] Handling end of workflow...");
-            var pointsInPile = this.roundContext.CalculatePointsInPile(this.Arguments.Data.currentPile);
-            var playerId = this.GetWinningPlayerId();
-
-            this.telemetryService.LogInfo($"[PlayTrickWorkflow] Winning player: {playerId}");
-            this.inGamePointsController.UpdatePlayerPoints(playerId, pointsInPile);
-
-            this.playerPoints[playerId][this.roundNumber] += pointsInPile;
-
-            return Task.CompletedTask;
         }
 
         public string GetWinningPlayerId()

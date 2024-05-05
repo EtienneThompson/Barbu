@@ -22,15 +22,17 @@ namespace Barbu.Core.Workflows
         protected StateMachine stateMachine;
         protected ITelemetryService telemetryService;
 
-        private EventNames waitingEventName;
-        private Action waitingHandler;
-        private Action<object> waitingHandlerWithData;
+        private Dictionary<EventNames, Action<EventNames>> waitingHandlers;
+        private Dictionary<EventNames, Action<EventNames, object>> waitingHandlersWithData;
 
         protected BaseWorkflow()
         {
             this.eventsController = EventsController.GetInstance();
             this.stateMachine = new StateMachine();
             this.telemetryService = TelemetryService.GetInstance();
+
+            this.waitingHandlers = new Dictionary<EventNames, Action<EventNames>>();
+            this.waitingHandlersWithData = new Dictionary<EventNames, Action<EventNames, object>>();
 
             this.eventsController.Subscribe(EventNames.PauseGame, this.Pause);
             this.eventsController.Subscribe(EventNames.ResumeGame, this.ResumeEntireGame);
@@ -79,27 +81,27 @@ namespace Barbu.Core.Workflows
             return Task.CompletedTask;
         }
 
-        public void Pause()
+        public void Pause(EventNames eventName = EventNames.PauseGame)
         {
             this.IsPaused = true;
         }
 
         public void WaitForEvent(EventNames eventName)
         {
-            this.telemetryService.LogInfo("[BaseWorkflow] Waiting for event without data");
+            this.telemetryService.LogInfo($"[BaseWorkflow] Waiting for event {eventName} without data");
             this.Pause();
-            this.waitingEventName = eventName;
-            this.waitingHandler = async () => await this.ReceiveEvent();
-            this.eventsController.Subscribe(eventName, this.waitingHandler);
+            Action<EventNames> waitingHandler = async (EventNames name) => await this.ReceiveEvent(name);
+            this.waitingHandlers.Add(eventName, waitingHandler);
+            this.eventsController.Subscribe(eventName, waitingHandler);
         }
 
         public void WaitForEventWithData(EventNames eventName)
         {
-            this.telemetryService.LogInfo("[BaseWorkflow] Waiting for event with data");
+            this.telemetryService.LogInfo($"[BaseWorkflow] Waiting for event {eventName} with data");
             this.Pause();
-            this.waitingEventName = eventName;
-            this.waitingHandlerWithData = async (object data) => await this.ReceiveEvent(data);
-            this.eventsController.Subscribe(eventName, this.waitingHandlerWithData);
+            Action<EventNames, object> waitingHandlerWithData = async (EventNames name, object data) => await this.ReceiveEvent(name, data);
+            this.waitingHandlersWithData.Add(eventName, waitingHandlerWithData);
+            this.eventsController.Subscribe(eventName, waitingHandlerWithData);
         }
 
         public void SetNextStep(string stepName)
@@ -118,13 +120,13 @@ namespace Barbu.Core.Workflows
             this.eventsController.Unsubscribe(EventNames.ResumeGame, this.ResumeEntireGame);
         }
 
-        private async Task ReceiveEvent()
+        private async Task ReceiveEvent(EventNames eventName)
         {
             this.telemetryService.LogInfo("[BaseWorkflow] Received event without data");
-            if (this.waitingHandlerWithData != null)
+            if (this.waitingHandlers.TryGetValue(eventName, out var handler))
             {
-                this.eventsController.Unsubscribe(this.waitingEventName, this.waitingHandler);
-                this.waitingHandler = null;
+                this.eventsController.Unsubscribe(eventName, handler);
+                this.waitingHandlers.Remove(eventName);
             }
 
             // Only resume the workflow when the event is received if the entire game is not paused.
@@ -135,16 +137,19 @@ namespace Barbu.Core.Workflows
             }
         }
 
-        private async Task ReceiveEvent(object data)
+        private async Task ReceiveEvent(EventNames eventName, object data)
         {
             this.telemetryService.LogInfo("[BaseWorkflow] Received event");
             this.Arguments.EventData = data;
-            this.eventsController.Unsubscribe(this.waitingEventName, this.waitingHandlerWithData);
-            this.waitingHandlerWithData = null;
-            await this.ReceiveEvent();
+            if (this.waitingHandlersWithData.TryGetValue(eventName, out var handler))
+            {
+                this.eventsController.Unsubscribe(eventName, handler);
+                this.waitingHandlersWithData.Remove(eventName);
+            }
+            await this.ReceiveEvent(eventName);
         }
 
-        private void ResumeEntireGame()
+        private void ResumeEntireGame(EventNames eventName = EventNames.ResumeGame)
         {
             // When the game is resumed, only start the workflow if not paused for some
             // other reason.

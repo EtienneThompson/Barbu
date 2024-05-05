@@ -21,7 +21,21 @@ namespace Barbu
 
         public Task InvokeAsync(StepArguments<RoundArguments> args)
         {
-            throw new System.NotImplementedException();
+            if (args.Data.CurrentRoundIndex + 1 == args.Data.Rounds.Count)
+            {
+                this.telemetryService.LogInfo("[RoundWorkflow] [NextRound] Rounds are complete, moving to complete game step...");
+                this.workflow.SetNextStep(nameof(CompleteGameStep));
+            }
+            else
+            {
+                this.telemetryService.LogInfo("[RoundWorkflow] [NextRound] Configuring next round...");
+                args.Data.PlayTrickWorkflow.Dispose();
+                args.Data.PlayTrickWorkflow = null;
+                args.Data.CurrentRoundIndex++;
+                this.workflow.SetNextStep(nameof(SetupRoundStep));
+            }
+
+            return Task.CompletedTask;
         }
     }
 }

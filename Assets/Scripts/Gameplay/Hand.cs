@@ -4,6 +4,7 @@ namespace Barbu.Gameplay
     using System.Collections.Generic;
     using System.Linq;
     using Barbu.Gameplay.BoardState;
+    using Barbu.Interfaces.Rounds;
 
     public class Hand
     {
@@ -52,7 +53,7 @@ namespace Barbu.Gameplay
             return suitCards;
         }
 
-        public List<Card> GetCardsWithPoints(GameStateContext context, bool includePlayed = false)
+        public List<Card> GetCardsWithPoints(IRound round, bool includePlayed = false)
         {
             var pointCards = new List<Card>();
             foreach (var card in this.cards)
@@ -62,7 +63,7 @@ namespace Barbu.Gameplay
                     continue;
                 }
 
-                if (context.IsPointEarningCard(card.GetName()))
+                if (round.IsPointEarningCard(card.GetName()))
                 {
                     pointCards.Add(card);
                 }

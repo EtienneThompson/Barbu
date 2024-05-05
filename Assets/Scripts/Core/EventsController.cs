@@ -13,14 +13,14 @@ namespace Barbu.Core
     /// </summary>
     public class EventsController
     {
-        public static event Action PauseGame;
-        public static event Action ResumeGame;
-        public static event Action<object> PlayCard;
-        public static event Action EndRound;
-        public static event Action CardInPileResolved;
-        public static event Action PileResolved;
-        public static event Action RoundAnimationOver;
-        public static event Action WinnerAnimationOver;
+        public static event Action<EventNames> PauseGame;
+        public static event Action<EventNames> ResumeGame;
+        public static event Action<EventNames, object> PlayCard;
+        public static event Action<EventNames> EndRound;
+        public static event Action<EventNames> CardInPileResolved;
+        public static event Action<EventNames> PileResolved;
+        public static event Action<EventNames> RoundAnimationOver;
+        public static event Action<EventNames> WinnerAnimationOver;
 
         private static EventsController singleton;
 
@@ -41,7 +41,7 @@ namespace Barbu.Core
             return singleton;
         }
 
-        public void Subscribe(EventNames eventName, Action listener)
+        public void Subscribe(EventNames eventName, Action<EventNames> listener)
         {
             this.telemetryService.LogInfo($"Subscribing to event {eventName} with listener");
             switch (eventName)
@@ -74,7 +74,7 @@ namespace Barbu.Core
             }
         }
 
-        public void Subscribe(EventNames eventName, Action<object> listener)
+        public void Subscribe(EventNames eventName, Action<EventNames, object> listener)
         {
             this.telemetryService.LogInfo($"Subscribing to event {eventName} with data listener");
             switch (eventName)
@@ -89,7 +89,7 @@ namespace Barbu.Core
             }
         }
 
-        public void Unsubscribe(EventNames eventName, Action listener)
+        public void Unsubscribe(EventNames eventName, Action<EventNames> listener)
         {
             this.telemetryService.LogInfo($"Unsubscribing from event {eventName} with listener");
             switch (eventName)
@@ -122,7 +122,7 @@ namespace Barbu.Core
             }
         }
 
-        public void Unsubscribe(EventNames eventName, Action<object> listener)
+        public void Unsubscribe(EventNames eventName, Action<EventNames, object> listener)
         {
             this.telemetryService.LogInfo($"Unsubscribing from event {eventName} with data listener");
             switch (eventName)
@@ -143,25 +143,25 @@ namespace Barbu.Core
             switch (eventName)
             {
                 case EventNames.PauseGame:
-                    PauseGame.Invoke();
+                    PauseGame.Invoke(EventNames.PauseGame);
                     return;
                 case EventNames.ResumeGame:
-                    ResumeGame.Invoke();
+                    ResumeGame.Invoke(EventNames.ResumeGame);
                     return;
                 case EventNames.RoundOver:
-                    EndRound.Invoke();
+                    EndRound.Invoke(EventNames.RoundOver);
                     return;
                 case EventNames.CardInPileResolved:
-                    CardInPileResolved.Invoke();
+                    CardInPileResolved.Invoke(EventNames.CardInPileResolved);
                     return;
                 case EventNames.PileResolved:
-                    PileResolved.Invoke();
+                    PileResolved.Invoke(EventNames.PileResolved);
                     return;
                 case EventNames.RoundAnimationFinished:
-                    RoundAnimationOver.Invoke();
+                    RoundAnimationOver.Invoke(EventNames.RoundAnimationFinished);
                     return;
                 case EventNames.WinnerAnimationFinished:
-                    WinnerAnimationOver.Invoke();
+                    WinnerAnimationOver.Invoke(EventNames.WinnerAnimationFinished);
                     return;
                 default:
                     var errorMessage = $"The event {eventName} is not able to be subscribed to!";
@@ -176,7 +176,7 @@ namespace Barbu.Core
             switch (eventName)
             {
                 case EventNames.PlayCard:
-                    PlayCard.Invoke(data);
+                    PlayCard.Invoke(EventNames.PlayCard, data);
                     return;
                 default:
                     var errorMessage = $"The event {eventName} is not able to be fired!";

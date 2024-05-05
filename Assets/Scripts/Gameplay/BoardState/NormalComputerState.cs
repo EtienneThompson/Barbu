@@ -2,16 +2,12 @@ namespace Barbu.Gameplay.BoardState
 {
     using System;
     using Barbu.Gameplay;
+    using Barbu.Interfaces.Rounds;
 
     public class NormalComputerState : GameState
     {
-        public NormalComputerState(GameStateContext context, string id, Hand hand)
-        : base(context, hand, id)
-        {
-        }
-
-        public NormalComputerState(GameStateContext context, GameState next, string id, Hand hand)
-        : base(context, next, hand, id)
+        public NormalComputerState(IRound round, string id, Hand hand)
+        : base(round, hand, id)
         {
         }
 
@@ -41,7 +37,7 @@ namespace Barbu.Gameplay.BoardState
                 }
             }
 
-            if (this.context.IsCurrentRoundPositive())
+            if (this.round.IsRoundPositive())
             {
                 highestCard.PlayCard();
             }

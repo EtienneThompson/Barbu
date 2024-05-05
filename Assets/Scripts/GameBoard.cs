@@ -1,10 +1,10 @@
 namespace Barbu
 {
     using System;
+    using System.Threading.Tasks;
     using Barbu.Core;
     using Barbu.Gameplay;
-    using Barbu.Gameplay.Rounds.Managers;
-    using Barbu.Interfaces.Rounds;
+    using Barbu.Gameplay.Rounds;
     using Barbu.UI.Controllers;
     using UnityEngine;
 
@@ -17,17 +17,11 @@ namespace Barbu
                                                  "08", "09", "10", "11", "12", "13" };
         private string[] cards = new string[52];
         private Hand[] hands = new Hand[4];
-        private IRoundManager roundManager;
-        private ScoreMenu scoreMenu;
-        private InGamePointsController inGamePointsController;
-
-        public static GameBoard instance;
 
         // Start is called before the first frame update
         void Start()
         {
             Application.targetFrameRate = 60;
-            instance = this;
 
             this.stateMachine = new StateMachine();
 
@@ -61,16 +55,7 @@ namespace Barbu
                 Settings.SetSeenHowToPlayByDefault();
             }
 
-            this.stateMachine.SetIsSettingUp(true);
-            this.scoreMenu = scoreBoard.GetComponent<ScoreMenu>();
-            GameObject inGamePoints = GameObject.Find(Constants.GameObjects.InGamePoints);
-            this.inGamePointsController = inGamePoints.GetComponent<InGamePointsController>();
-
-            this.DealHand();
-            this.roundManager = new TraditionalRoundManager(this, this.scoreMenu, this.inGamePointsController, this.hands);
-            Statistics.IncrementGamesPlayed(Statistics.GameTypes.Traditional);
-            this.stateMachine.SetIsSettingUp(false);
-            this.roundManager.PreRound();
+            this.CreateNewGame(Constants.TraditionalRoundManager.GameName, string.Empty);
         }
 
         public void CreateNewGame(string gameName, string subType)
@@ -78,29 +63,27 @@ namespace Barbu
             this.stateMachine.SetIsSettingUp(true);
             this.stateMachine.SetCardPlayable(false);
             this.stateMachine.ResetNumCardsPlayed();
-            this.inGamePointsController.ResetPoints();
-            this.roundManager.Destroy();
             this.CleanupRound();
-            this.DealHand();
+            RoundWorkflow roundWorkflow;
             switch (gameName)
             {
                 case Constants.TraditionalRoundManager.GameName:
-                    this.roundManager = new TraditionalRoundManager(this, this.scoreMenu, this.inGamePointsController, this.hands);
+                    roundWorkflow = RoundFactory.CreateTraditionalRoundWorkflow();
                     Statistics.IncrementGamesPlayed(Statistics.GameTypes.Traditional);
                     break;
                 case Constants.SingleRoundManager.GameName:
-                    this.roundManager = new SingleRoundManager(this, this.scoreMenu, this.inGamePointsController, this.hands, subType);
+                    roundWorkflow = RoundFactory.CreateSingleRoundWorkflow(subType);
                     Statistics.IncrementGamesPlayed(Statistics.GameTypes.Single);
                     break;
                 case Constants.ChaosRoundManager.GameName:
-                    this.roundManager = new ChaosRoundManager(this, this.scoreMenu, this.inGamePointsController, this.hands);
+                    roundWorkflow = RoundFactory.CreateChaosRoundWorkflow();
                     Statistics.IncrementGamesPlayed(Statistics.GameTypes.Chaos);
                     break;
                 default:
                     throw new Exception("Incorrect game name provided");
             }
             this.stateMachine.SetIsSettingUp(false);
-            this.roundManager.PreRound();
+            Task _ = roundWorkflow.StartAsync();
         }
 
         public void CleanupRound()
@@ -108,12 +91,10 @@ namespace Barbu
             this.DestroyCards();
         }
 
-        public void SetupRound()
+        public Hand[] SetupRound()
         {
             this.DealHand();
-            this.stateMachine.SetCardPlayable(true);
-            this.stateMachine.SetStartingSuit("");
-            this.roundManager.NextRound(this.hands);
+            return this.hands;
         }
 
         private void DealHand()

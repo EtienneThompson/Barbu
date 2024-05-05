@@ -7,7 +7,7 @@ namespace Barbu.Interfaces.Core.Workflows
     {
         Task StartAsync();
 
-        void Pause();
+        void Pause(EventNames eventName = EventNames.PauseGame);
 
         void WaitForEvent(EventNames eventName);
 

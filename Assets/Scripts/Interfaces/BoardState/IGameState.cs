@@ -8,7 +8,5 @@ namespace Barbu.Interfaces.BoardState
 
         void Start();
         void CleanUp();
-        void GoNext();
-        void SetNextState(GameState next);
     }
 }
