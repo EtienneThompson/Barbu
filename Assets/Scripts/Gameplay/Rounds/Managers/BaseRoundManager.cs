@@ -3,14 +3,15 @@ namespace Barbu.Gameplay.Rounds.Managers
     using System;
     using System.Linq;
     using System.Collections.Generic;
+    using System.Threading.Tasks;
     using Barbu.Core;
+    using Barbu.Core.Workflows.PlayTrickWorkflow;
     using Barbu.Interfaces;
+    using Barbu.Interfaces.Core;
     using Barbu.Interfaces.Rounds;
     using Barbu.Models;
     using Barbu.UI.Controllers;
     using UnityEngine;
-    using Barbu.Interfaces.Core;
-    using Barbu.Core.Workflows.PlayTrickWorkflow;
 
     public class BaseRoundManager : IRoundManager, IEventListener
     {
@@ -112,7 +113,7 @@ namespace Barbu.Gameplay.Rounds.Managers
                 this.hands,
                 Int32.Parse(startingPlayerId) - 1,
                 this.currentRound);
-            this.playTrickWorkflow.StartAsync();
+            Task _ = this.playTrickWorkflow.StartAsync();
 
             this.pilesPlayed++;
             this.inGamePointsController.SetRoundName(this.roundContext.CurrentName());
