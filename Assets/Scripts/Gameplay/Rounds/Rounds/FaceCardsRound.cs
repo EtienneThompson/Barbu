@@ -28,13 +28,7 @@ namespace Barbu.Gameplay.Rounds.Rounds
         public override int TotalPoints => 80;
         public override string Name => Constants.RoundNames.FaceCardsRound;
 
-        public FaceCardsRound(RoundContext context)
-        : base(context)
-        {
-        }
-
-        public FaceCardsRound(RoundContext context, Round next)
-        : base(context, next)
+        public FaceCardsRound()
         {
         }
     }

@@ -10,33 +10,9 @@ namespace Barbu.Gameplay.Rounds
         public virtual int PointsPerPile => 0;
         public virtual int TotalPoints => 0;
         public virtual string Name => throw new NotImplementedException("Name needs to be overridden");
-        protected RoundContext context;
-        protected Round nextState;
 
-        public Round(RoundContext context)
+        public Round()
         {
-            this.context = context;
-        }
-
-        public Round(RoundContext context, Round next)
-        : this(context)
-        {
-            this.nextState = next;
-        }
-
-        public void GoNext()
-        {
-            if (this.nextState == null)
-            {
-                throw new Exception("No next state set.");
-            }
-
-            this.context.SetState(this.nextState);
-        }
-
-        public void SetNextState(Round next)
-        {
-            this.nextState = next;
         }
 
         public int CalculatePointsInPile(Pile pile)
@@ -52,6 +28,7 @@ namespace Barbu.Gameplay.Rounds
 
             return points + this.PointsPerPile;
         }
+
         public int CalculatePointsInAllPiles(List<Pile> piles)
         {
             int points = 0;

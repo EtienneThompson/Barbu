@@ -15,12 +15,12 @@ namespace Barbu.Gameplay.Rounds
 
         public static RoundWorkflow CreateTraditionalRoundWorkflow()
         {
-            var heartsRound = new HeartsRound(null);
-            var queensRound = new QueensRound(null);
-            var kohRound = new KingOfHeartsRound(null);
-            var pilesRound = new PilesRound(null);
-            var nothingRound = new NothingRound(null);
-            var everythingRound = new EverythingRound(null);
+            var heartsRound = new HeartsRound();
+            var queensRound = new QueensRound();
+            var kohRound = new KingOfHeartsRound();
+            var pilesRound = new PilesRound();
+            var nothingRound = new NothingRound();
+            var everythingRound = new EverythingRound();
             var roundList = new List<IRound>()
             {
                 heartsRound,
@@ -41,22 +41,22 @@ namespace Barbu.Gameplay.Rounds
             switch (roundType)
             {
                 case Constants.SingleRoundManager.Hearts:
-                    round = new HeartsRound(null);
+                    round = new HeartsRound();
                     break;
                 case Constants.SingleRoundManager.Queens:
-                    round = new QueensRound(null);
+                    round = new QueensRound();
                     break;
                 case Constants.SingleRoundManager.KingOfHearts:
-                    round = new KingOfHeartsRound(null);
+                    round = new KingOfHeartsRound();
                     break;
                 case Constants.SingleRoundManager.Piles:
-                    round = new PilesRound(null);
+                    round = new PilesRound();
                     break;
                 case Constants.SingleRoundManager.Nothing:
-                    round = new NothingRound(null);
+                    round = new NothingRound();
                     break;
                 case Constants.SingleRoundManager.Everything:
-                    round = new EverythingRound(null);
+                    round = new EverythingRound();
                     break;
                 default:
                     throw new ArgumentException($"Unknown single round: {roundType}");
@@ -72,7 +72,7 @@ namespace Barbu.Gameplay.Rounds
 
         public static RoundWorkflow CreateChaosRoundWorkflow()
         {
-            var chaosRound = new ChaosRound(null);
+            var chaosRound = new ChaosRound();
 
             var roundsToMerge = (int)Mathf.Floor(UnityEngine.Random.Range(2.0f, 4.0f));
             for (int i = 0; i < roundsToMerge; i++)

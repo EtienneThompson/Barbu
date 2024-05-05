@@ -10,13 +10,7 @@ namespace Barbu.Gameplay.Rounds.Rounds
         public override int TotalPoints => 65;
         public override string Name => Constants.RoundNames.PilesRound;
 
-        public PilesRound(RoundContext context)
-        : base(context)
-        {
-        }
-
-        public PilesRound(RoundContext context, Round next)
-        : base(context, next)
+        public PilesRound()
         {
         }
     }

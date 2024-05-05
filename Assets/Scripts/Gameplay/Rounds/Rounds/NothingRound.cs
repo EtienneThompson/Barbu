@@ -28,13 +28,7 @@ namespace Barbu.Gameplay.Rounds.Rounds
         public override int TotalPoints => 210;
         public override string Name => Constants.RoundNames.NothingRound;
 
-        public NothingRound(RoundContext context)
-        : base(context)
-        {
-        }
-
-        public NothingRound(RoundContext context, Round next)
-        : base(context, next)
+        public NothingRound()
         {
         }
     }
