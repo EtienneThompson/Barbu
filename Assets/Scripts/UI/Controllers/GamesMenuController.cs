@@ -48,9 +48,9 @@ namespace Barbu.UI.Controllers
 
         private void HandleTraditionalButtonClick(ClickEvent evt)
         {
-            this.gameBoard.CreateNewGame(Constants.TraditionalRoundManager.GameName, null);
             this.gamesMenu.SetActive(false);
             this.stateMachine.SetMenuOpen(false);
+            this.gameBoard.CreateNewGame(Constants.TraditionalRoundManager.GameName, null);
         }
 
         private void HandleSingleButtonClick(ClickEvent evt)
@@ -61,9 +61,9 @@ namespace Barbu.UI.Controllers
 
         private void HandleChaosButtonClick(ClickEvent evt)
         {
-            this.gameBoard.CreateNewGame(Constants.ChaosRoundManager.GameName, null);
             this.gamesMenu.SetActive(false);
             this.stateMachine.SetMenuOpen(false);
+            this.gameBoard.CreateNewGame(Constants.ChaosRoundManager.GameName, null);
         }
 
         private void HandleCloseButtonClick(ClickEvent evt)
