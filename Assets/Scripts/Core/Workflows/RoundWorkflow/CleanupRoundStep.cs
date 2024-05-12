@@ -39,6 +39,9 @@ namespace Barbu.Core.Workflows.RoundWorkflow
             this.telemetryService.LogInfo(scoreMenuController?.ToString());
             scoreMenuController.UpdateScores(args.Data.CurrentRoundIndex, args.Data.PlayerPoints);
 
+            this.stateMachine.SetAutoPlayMode(false);
+            args.Data.TricksPlayed = 0;
+
             this.workflow.SetNextStep(nameof(NextRoundStep));
             this.workflow.WaitForEvent(Models.EventNames.RoundOver);
 

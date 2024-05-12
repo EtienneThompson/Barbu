@@ -14,6 +14,7 @@ namespace Barbu.Core
         private bool menuOpen = false;
         private int highestRank = 0;
         private bool isGamePaused = false;
+        private bool AutoPlayCards = false;
 
         private bool playerCardMustBeStartingSuit;
 
@@ -113,6 +114,16 @@ namespace Barbu.Core
         public bool IsGamePaused()
         {
             return instance.isGamePaused;
+        }
+
+        public void SetAutoPlayMode(bool autoPlayMode)
+        {
+            instance.AutoPlayCards = autoPlayMode;
+        }
+
+        public bool IsAutoPlayMode()
+        {
+            return instance.AutoPlayCards;
         }
     }
 }

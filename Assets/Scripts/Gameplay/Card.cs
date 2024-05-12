@@ -14,11 +14,14 @@ namespace Barbu.Gameplay
             Played,
         }
 
+        public const float baseSpeed = 30.0f;
+        public const float MoveToPlayerMultiplier = 2.0f;
+        public const float AdjustPositionInHandMultiplier = 0.75f;
+
         public string suit;
         public int rank;
         public string playerId;
         public CardState state;
-        public const float speed = 30.0f;
         private StateMachine stateMachine;
         private EventsController eventsController;
         private Renderer meshRenderer;
@@ -151,6 +154,16 @@ namespace Barbu.Gameplay
             return this.rank;
         }
 
+        private float GetMovingSpeed()
+        {
+            return baseSpeed * (this.stateMachine.IsAutoPlayMode() ? 10.0f : 1.0f) * Time.deltaTime;
+        }
+
+        private float GetPlayCardDelay()
+        {
+            return 0.5f * (this.stateMachine.IsAutoPlayMode() ? 0.1f : 1.0f);
+        }
+
         private IEnumerator MoveToCenterRoutine()
         {
             transform.localScale = new Vector3(0.7f, 0.7f, 0.7f);
@@ -177,11 +190,11 @@ namespace Barbu.Gameplay
             var rotate = new Vector3(0.0f, UnityEngine.Random.Range(-5.0f, 5.0f), 0.0f);
             while (transform.position != center)
             {
-                transform.position = Vector3.MoveTowards(transform.position, center, speed * Time.deltaTime);
-                transform.Rotate(rotate * speed * Time.deltaTime);
+                transform.position = Vector3.MoveTowards(transform.position, center, this.GetMovingSpeed());
+                transform.Rotate(rotate * this.GetMovingSpeed());
                 yield return null;
             }
-            yield return new WaitForSeconds(0.5f);
+            yield return new WaitForSeconds(this.GetPlayCardDelay());
             eventsController.Fire(EventNames.PlayCard, this);
         }
 
@@ -208,7 +221,10 @@ namespace Barbu.Gameplay
 
             while (transform.position != finalPosition)
             {
-                transform.position = Vector3.MoveTowards(transform.position, finalPosition, speed * 2 * Time.deltaTime);
+                transform.position = Vector3.MoveTowards(
+                    transform.position,
+                    finalPosition,
+                    this.GetMovingSpeed() * MoveToPlayerMultiplier);
                 yield return null;
             }
 
@@ -241,7 +257,10 @@ namespace Barbu.Gameplay
 
             while (transform.position != finalPosition)
             {
-                transform.position = Vector3.MoveTowards(transform.position, finalPosition, speed * 0.75f * Time.deltaTime);
+                transform.position = Vector3.MoveTowards(
+                    transform.position,
+                    finalPosition,
+                    this.GetMovingSpeed() * AdjustPositionInHandMultiplier);
                 yield return null;
             }
         }

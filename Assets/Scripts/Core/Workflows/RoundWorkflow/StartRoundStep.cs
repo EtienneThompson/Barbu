@@ -28,9 +28,9 @@ namespace Barbu.Core.Workflows.RoundWorkflow
             this.telemetryService.LogInfo("[RoundWorkflow] [StartRoundStep] Executing StartRound step...");
             this.stateMachine.ResetNumCardsPlayed();
 
-            if (args.Data.GetCurrentRound().IsRoundOver(args.Data.CurrentRoundIndex, args.Data.PlayerPoints, args.Data.TricksPlayed))
+            if (args.Data.TricksPlayed == Constants.NumPilesPerRound)
             {
-                this.telemetryService.LogInfo("[Round Workflow] [StartRound] Round is over, moving to cleanup step...");
+                this.telemetryService.LogInfo("[Round Workflow] [StartRound] All piles played, moving to cleanup step...");
                 this.workflow.SetNextStep(nameof(CleanupRoundStep));
                 return Task.CompletedTask;
             }
@@ -41,6 +41,11 @@ namespace Barbu.Core.Workflows.RoundWorkflow
                 startingPlayerId = Int32.Parse(args.Data.PlayTrickWorkflow.GetWinningPlayerId()) - 1;
                 args.Data.PlayTrickWorkflow.Dispose();
                 args.Data.PlayTrickWorkflow = null;
+            }
+
+            if (args.Data.GetCurrentRound().IsRoundOver(args.Data.CurrentRoundIndex, args.Data.PlayerPoints, args.Data.TricksPlayed))
+            {
+                this.stateMachine.SetAutoPlayMode(true);
             }
 
             this.telemetryService.LogInfo($"[Round Workflow] [StartRound] Setting starting player: {startingPlayerId}");

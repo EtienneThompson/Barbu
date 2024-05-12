@@ -32,8 +32,16 @@ namespace Barbu.Core.Workflows.PlayTrickWorkflow
             this.playerPoints = playerPoints;
             this.roundNumber = roundNumber;
 
-            var gameStates = new GameState[4];
-            gameStates[0] = new PlayerState(round, Constants.PlayerIds.Player1, playerHands[0]);
+            var gameStates = new GameState[4]; 
+            if (!this.stateMachine.IsAutoPlayMode())
+            {
+                gameStates[0] = new PlayerState(round, Constants.PlayerIds.Player1, playerHands[0]);
+            }
+            else
+            {
+                gameStates[0] = ComputerStateFactory.GetComputerStateFromSettings(round, Constants.PlayerIds.Player1, playerHands[0]);
+            }
+
             gameStates[1] = ComputerStateFactory.GetComputerStateFromSettings(round, Constants.PlayerIds.Player2, playerHands[1]);
             gameStates[2] = ComputerStateFactory.GetComputerStateFromSettings(round, Constants.PlayerIds.Player3, playerHands[2]);
             gameStates[3] = ComputerStateFactory.GetComputerStateFromSettings(round, Constants.PlayerIds.Player4, playerHands[3]);
