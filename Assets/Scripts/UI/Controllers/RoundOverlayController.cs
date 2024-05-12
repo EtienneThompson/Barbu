@@ -65,18 +65,33 @@ namespace Barbu.UI.Controllers
                 callback: () => this.eventsController.Fire(EventNames.WinnerAnimationFinished)));
         }
 
-        IEnumerator DisplayRoutine(string mainText, string subText = null, float delay = 1.5f, Action callback = null)
+        public void ShowRoundOverMessage()
         {
-            this.telemetryService.LogInfo(mainText);
-            this.roundLabel.text = mainText;
-            this.subtitleLabel.text = subText;
-            yield return new WaitForSeconds(delay);
+            this.ShowText("Round Over! All points earned.", subText: "Automatically playing remaining cards.");
+        }
+
+        public void HideText()
+        {
             this.roundLabel.text = string.Empty;
             this.subtitleLabel.text = string.Empty;
+        }
+
+        private IEnumerator DisplayRoutine(string mainText, string subText = null, float delay = 1.5f, Action callback = null)
+        {
+            this.telemetryService.LogInfo(mainText);
+            this.ShowText(mainText, subText);
+            yield return new WaitForSeconds(delay);
+            this.HideText();
             if (callback != null)
             {
                 callback();
             }
+        }
+
+        private void ShowText(string mainText, string subText = null)
+        {
+            this.roundLabel.text = mainText;
+            this.subtitleLabel.text = subText;
         }
     }
 }

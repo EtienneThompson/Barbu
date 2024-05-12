@@ -34,10 +34,17 @@ namespace Barbu.Core.Workflows.RoundWorkflow
             inGamePointsController.ResetRoundName();
             inGamePointsController.ResetPoints();
 
+            var roundOverlay = GameObject.Find(Constants.GameObjects.RoundOverlay);
+            var roundOverlayController = roundOverlay.GetComponent<RoundOverlayController>();
+            roundOverlayController.HideText();
+
             var scoreMenu = GameObjectExtensions.FindGameObjectByName(Constants.GameObjects.ScoreMenuCanvas, findInactive: true);
             var scoreMenuController = scoreMenu.GetComponent<ScoreMenu>();
             this.telemetryService.LogInfo(scoreMenuController?.ToString());
             scoreMenuController.UpdateScores(args.Data.CurrentRoundIndex, args.Data.PlayerPoints);
+
+            this.stateMachine.SetAutoPlayMode(false);
+            args.Data.TricksPlayed = 0;
 
             this.workflow.SetNextStep(nameof(NextRoundStep));
             this.workflow.WaitForEvent(Models.EventNames.RoundOver);
