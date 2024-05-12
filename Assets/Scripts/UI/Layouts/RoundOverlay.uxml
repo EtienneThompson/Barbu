@@ -8,5 +8,6 @@
     <Style src="RoundOverlay.uss" />
     <ui:VisualElement name="container">
         <ui:Label name="round" class="round-header" />
+        <ui:Label name="subtitle" class="subtitle" />
     </ui:VisualElement>
 </ui:UXML>

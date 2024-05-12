@@ -9,3 +9,8 @@
     -unity-font-style: bold;
     font-size: 20px;
 }
+
+.subtitle {
+    -unity-font-style: bold;
+    font-size: 14px;
+}

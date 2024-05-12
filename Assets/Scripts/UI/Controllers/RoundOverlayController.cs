@@ -14,6 +14,7 @@ namespace Barbu.UI.Controllers
         private EventsController eventsController;
         private ITelemetryService telemetryService;
         private Label roundLabel;
+        private Label subtitleLabel;
 
         public void OnEnable()
         {
@@ -24,14 +25,16 @@ namespace Barbu.UI.Controllers
             var root = document.rootVisualElement;
 
             this.roundLabel = root.Q<Label>("round");
+            this.subtitleLabel = root.Q<Label>("subtitle");
         }
 
-        public void DisplayRound(string roundName)
+        public void DisplayRound(string roundName, Statistics.GameTypes gameType)
         {
             StartCoroutine(DisplayRoutine(
                 roundName,
-                1.5f,
-                () => this.eventsController.Fire(EventNames.RoundAnimationFinished)));
+                subText: gameType.ToString(),
+                delay: 1.5f,
+                callback: () => this.eventsController.Fire(EventNames.RoundAnimationFinished)));
         }
 
         public void DisplayWinner(string[] winningPlayers)
@@ -58,17 +61,22 @@ namespace Barbu.UI.Controllers
             this.telemetryService.LogInfo(winningLabel);
             StartCoroutine(DisplayRoutine(
                 winningLabel,
-                2.5f,
-                () => this.eventsController.Fire(EventNames.WinnerAnimationFinished)));
+                delay: 2.5f,
+                callback: () => this.eventsController.Fire(EventNames.WinnerAnimationFinished)));
         }
 
-        IEnumerator DisplayRoutine(string roundName, float delay, Action action)
+        IEnumerator DisplayRoutine(string mainText, string subText = null, float delay = 1.5f, Action callback = null)
         {
-            this.telemetryService.LogInfo(roundName);
-            this.roundLabel.text = roundName;
+            this.telemetryService.LogInfo(mainText);
+            this.roundLabel.text = mainText;
+            this.subtitleLabel.text = subText;
             yield return new WaitForSeconds(delay);
             this.roundLabel.text = string.Empty;
-            action();
+            this.subtitleLabel.text = string.Empty;
+            if (callback != null)
+            {
+                callback();
+            }
         }
     }
 }

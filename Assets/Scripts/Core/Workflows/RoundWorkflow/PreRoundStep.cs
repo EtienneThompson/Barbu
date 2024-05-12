@@ -27,7 +27,7 @@ namespace Barbu.Core.Workflows.RoundWorkflow
             this.telemetryService.LogInfo("[RoundWorkflow] Executing PreRound step...");
             GameObject roundOverlay = GameObject.Find(Constants.GameObjects.RoundOverlay);
             var controller = roundOverlay.GetComponent<RoundOverlayController>();
-            controller.DisplayRound(args.Data.GetCurrentRound().Name);
+            controller.DisplayRound(args.Data.GetCurrentRound().Name, args.Data.GameType);
 
             GameObject inGamePointsOverlay = GameObject.Find(Constants.GameObjects.InGamePoints);
             var inGamePointsController = inGamePointsOverlay.GetComponent<InGamePointsController>();
