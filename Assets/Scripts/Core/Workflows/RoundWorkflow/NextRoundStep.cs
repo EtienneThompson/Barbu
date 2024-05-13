@@ -21,6 +21,10 @@ namespace Barbu.Core.Workflows.RoundWorkflow
 
         public Task InvokeAsync(StepArguments<RoundArguments> args)
         {
+            this.telemetryService.LogInfo("[RoundWorkflow] [NextRound] Executing next round step...");
+            var inGamePointsOverlay = GameObjectExtensions.FindGameObjectByName(Constants.GameObjects.InGamePoints, findInactive: true);
+            inGamePointsOverlay.SetActive(true);
+
             if (args.Data.CurrentRoundIndex + 1 == args.Data.Rounds.Count)
             {
                 this.telemetryService.LogInfo("[RoundWorkflow] [NextRound] Rounds are complete, moving to complete game step...");
