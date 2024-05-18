@@ -51,7 +51,7 @@ namespace Barbu.Core.Workflows.RoundWorkflow
             args.Data.TricksPlayed = 0;
 
             this.workflow.SetNextStep(nameof(NextRoundStep));
-            this.workflow.WaitForEvent(Models.EventNames.RoundOver);
+            this.workflow.WaitForEvent(Models.EventNames.ScoreMenuDismissed);
 
             return Task.CompletedTask;
         }

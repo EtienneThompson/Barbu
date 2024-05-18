@@ -16,7 +16,7 @@ namespace Barbu.Core
         public static event Action<EventNames> PauseGame;
         public static event Action<EventNames> ResumeGame;
         public static event Action<EventNames, object> PlayCard;
-        public static event Action<EventNames> EndRound;
+        public static event Action<EventNames> ScoreMenuDismissed;
         public static event Action<EventNames> CardInPileResolved;
         public static event Action<EventNames> PileResolved;
         public static event Action<EventNames> RoundAnimationOver;
@@ -52,8 +52,8 @@ namespace Barbu.Core
                 case EventNames.ResumeGame:
                     ResumeGame += listener;
                     return;
-                case EventNames.RoundOver:
-                    EndRound += listener;
+                case EventNames.ScoreMenuDismissed:
+                    ScoreMenuDismissed += listener;
                     return;
                 case EventNames.CardInPileResolved:
                     CardInPileResolved += listener;
@@ -100,8 +100,8 @@ namespace Barbu.Core
                 case EventNames.ResumeGame:
                     ResumeGame -= listener;
                     return;
-                case EventNames.RoundOver:
-                    EndRound -= listener;
+                case EventNames.ScoreMenuDismissed:
+                    ScoreMenuDismissed -= listener;
                     return;
                 case EventNames.CardInPileResolved:
                     CardInPileResolved -= listener;
@@ -148,8 +148,8 @@ namespace Barbu.Core
                 case EventNames.ResumeGame:
                     ResumeGame.Invoke(EventNames.ResumeGame);
                     return;
-                case EventNames.RoundOver:
-                    EndRound.Invoke(EventNames.RoundOver);
+                case EventNames.ScoreMenuDismissed:
+                    ScoreMenuDismissed.Invoke(EventNames.ScoreMenuDismissed);
                     return;
                 case EventNames.CardInPileResolved:
                     CardInPileResolved.Invoke(EventNames.CardInPileResolved);
