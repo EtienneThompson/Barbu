@@ -2,12 +2,15 @@ namespace Barbu.UI.Controllers
 {
     using Barbu.Core;
     using Barbu.Models;
+    using System;
     using System.Collections.Generic;
     using TMPro;
     using UnityEngine;
 
     public class ScoreMenuController : MonoBehaviour
     {
+        private const float BaseAnimationTime = 1.0f;
+
         private Transform ScoreContainer;
         private Transform ScoreRowTemplate;
         private Transform TotalRow;
@@ -46,7 +49,7 @@ namespace Barbu.UI.Controllers
             }
         }
 
-        public void DisplayScores(Dictionary<string, int[]> scores)
+        public void DisplayScores(Dictionary<string, int[]> scores, int currentRoundIndex, bool isPositiveRound = false)
         {
             gameObject.SetActive(true);
 
@@ -71,16 +74,74 @@ namespace Barbu.UI.Controllers
                 player2Total += player2Score;
                 player3Total += player3Score;
                 player4Total += player4Score;
-                scoreRow.Find("Player1Label").GetComponent<TMP_Text>().text = player1Score.ToString();
-                scoreRow.Find("Player2Label").GetComponent<TMP_Text>().text = player2Score.ToString();
-                scoreRow.Find("Player3Label").GetComponent<TMP_Text>().text = player3Score.ToString();
-                scoreRow.Find("Player4Label").GetComponent<TMP_Text>().text = player4Score.ToString();
+                this.SetScore(scoreRow, "Player1Label", player1Score, playAnimation: i == currentRoundIndex, isPositiveRound: isPositiveRound);
+                this.SetScore(scoreRow, "Player2Label", player2Score, playAnimation: i == currentRoundIndex, isPositiveRound: isPositiveRound);
+                this.SetScore(scoreRow, "Player3Label", player3Score, playAnimation: i == currentRoundIndex, isPositiveRound: isPositiveRound);
+                this.SetScore(scoreRow, "Player4Label", player4Score, playAnimation: i == currentRoundIndex, isPositiveRound: isPositiveRound);
             }
 
-            this.TotalRow.Find("Player1Label").GetComponent<TMP_Text>().text = player1Total.ToString();
-            this.TotalRow.Find("Player2Label").GetComponent<TMP_Text>().text = player2Total.ToString();
-            this.TotalRow.Find("Player3Label").GetComponent<TMP_Text>().text = player3Total.ToString();
-            this.TotalRow.Find("Player4Label").GetComponent<TMP_Text>().text = player4Total.ToString();
+            var player1Previous = currentRoundIndex == 0 ? 0 : player1Total - scores[Constants.PlayerIds.Player1][currentRoundIndex];
+            var player2Previous = currentRoundIndex == 0 ? 0 : player2Total - scores[Constants.PlayerIds.Player2][currentRoundIndex];
+            var player3Previous = currentRoundIndex == 0 ? 0 : player3Total - scores[Constants.PlayerIds.Player3][currentRoundIndex];
+            var player4Previous = currentRoundIndex == 0 ? 0 : player4Total - scores[Constants.PlayerIds.Player4][currentRoundIndex];
+
+            this.SetScore(this.TotalRow, "Player1Label", player1Total, baseScore: player1Previous, playAnimation: true, isPositiveRound: isPositiveRound);
+            this.SetScore(this.TotalRow, "Player2Label", player2Total, baseScore: player2Previous, playAnimation: true, isPositiveRound: isPositiveRound);
+            this.SetScore(this.TotalRow, "Player3Label", player3Total, baseScore: player3Previous, playAnimation: true, isPositiveRound: isPositiveRound);
+            this.SetScore(this.TotalRow, "Player4Label", player4Total, baseScore: player4Previous, playAnimation: true, isPositiveRound: isPositiveRound);
+        }
+
+        private void SetScore(
+            Transform parent,
+            string componentLabel,
+            int score,
+            int baseScore = 0,
+            bool playAnimation = false,
+            bool isPositiveRound = false)
+        {
+            var textComponent = parent.Find(componentLabel).GetComponent<TMP_Text>();
+            if (playAnimation)
+            {
+                StartCoroutine(IncreaseScore(
+                    textComponent, score, baseScore: baseScore, isPositiveRound: isPositiveRound));
+            }
+            else
+            {
+                textComponent.text = score.ToString();
+            }
+        }
+
+        private System.Collections.IEnumerator IncreaseScore(
+            TMP_Text component,
+            int score,
+            int baseScore = 0,
+            bool isPositiveRound = false)
+        {
+            component.text = baseScore.ToString();
+
+            if (!isPositiveRound)
+            {
+                var remainingScore = score - baseScore;
+                var waitPerIncrement = BaseAnimationTime / remainingScore;
+                int i = baseScore;
+                while (i <= score)
+                {
+                    component.text = i.ToString();
+                    i++;
+                    yield return new WaitForSeconds(waitPerIncrement);
+                }
+            }
+            else
+            {
+                var waitPerIncrement = BaseAnimationTime / Math.Abs(score);
+                int i = baseScore;
+                while (i >= score)
+                {
+                    component.text = i.ToString();
+                    i--;
+                    yield return new WaitForSeconds(waitPerIncrement);
+                }
+            }
         }
     }
 }

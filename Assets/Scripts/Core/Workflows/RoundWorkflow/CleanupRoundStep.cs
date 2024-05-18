@@ -42,7 +42,10 @@ namespace Barbu.Core.Workflows.RoundWorkflow
             var scoreMenu = GameObjectExtensions.FindGameObjectByName(Constants.GameObjects.ScoreMenuCanvas, findInactive: true);
             var scoreMenuController = scoreMenu.GetComponent<ScoreMenuController>();
             this.telemetryService.LogInfo(scoreMenuController?.ToString());
-            scoreMenuController.DisplayScores(args.Data.PlayerPoints);
+            scoreMenuController.DisplayScores(
+                args.Data.PlayerPoints,
+                args.Data.CurrentRoundIndex,
+                args.Data.GetCurrentRound().IsRoundPositive());
 
             this.stateMachine.SetAutoPlayMode(false);
             args.Data.TricksPlayed = 0;

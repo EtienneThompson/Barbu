@@ -14,7 +14,7 @@ namespace Barbu.UI.Controllers
         public void OnEnable()
         {
             this.telemetryService = TelemetryService.GetInstance();
-            this.howToPlayScreen = GameObject.Find(Constants.GameObjects.HowToPlayScreen);
+            this.howToPlayScreen = GameObjectExtensions.FindGameObjectByName(Constants.GameObjects.HowToPlayScreen, findInactive: true);
             var document = this.howToPlayScreen.GetComponent<UIDocument>();
             var root = document.rootVisualElement;
 
