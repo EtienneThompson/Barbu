@@ -20,7 +20,7 @@ namespace Barbu.Models
         /// <summary>
         /// Event fired when the round is over.
         /// </summary>
-        RoundOver,
+        ScoreMenuDismissed,
 
         /// <summary>
         /// Event fired when an individual card in a pile has completely resolved.

@@ -76,7 +76,7 @@ namespace Barbu.UI.Controllers
             if (gameObject.activeSelf && Input.GetMouseButtonDown(0))
             {
                 gameObject.SetActive(false);
-                this.eventsController.Fire(EventNames.RoundOver);
+                this.eventsController.Fire(EventNames.ScoreMenuDismissed);
             }
         }
 

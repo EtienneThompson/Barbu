@@ -23,7 +23,7 @@ namespace Barbu.Core.Workflows.RoundWorkflow
         public RoundWorkflow(Statistics.GameTypes gameType, List<IRound> rounds)
         {
             this.currentStepName = nameof(SetupRoundStep);
-            this.Arguments = new Models.Workflows.StepArguments<RoundArguments>
+            this.Arguments = new StepArguments<RoundArguments>
             {
                 Data = new RoundArguments
                 {
@@ -44,6 +44,16 @@ namespace Barbu.Core.Workflows.RoundWorkflow
             var gameBoard = GameObject.Find(Constants.GameObjects.GameBoard);
             var advertisementController = gameBoard.GetComponent<AdvertisementController>();
             advertisementController.RequestToShowInterstitial();
+        }
+
+        public Dictionary<string, int[]> GetPlayerPoints()
+        {
+            return this.Arguments.Data.PlayerPoints;
+        }
+
+        public int GetCurrentRoundIndex()
+        {
+            return this.Arguments.Data.CurrentRoundIndex;
         }
     }
 }

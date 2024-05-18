@@ -14,15 +14,22 @@ namespace Barbu.UI.Controllers
         private Transform ScoreContainer;
         private Transform ScoreRowTemplate;
         private Transform TotalRow;
-
-        private EventsController eventsController;
         private List<Transform> ScoreRows;
+
+        private StateMachine stateMachine;
+        private EventsController eventsController;
+        private GameObject inGamePoints;
+        private GameObject roundOverlay;
 
         public void OnEnable()
         {
+            this.stateMachine = new StateMachine();
             this.eventsController = EventsController.GetInstance();
-            this.ScoreRows = new List<Transform>();
 
+            this.inGamePoints = GameObjectExtensions.FindGameObjectByName(Constants.GameObjects.InGamePoints, findInactive: true);
+            this.roundOverlay = GameObjectExtensions.FindGameObjectByName(Constants.GameObjects.RoundOverlay, findInactive: true);
+
+            this.ScoreRows = new List<Transform>();
             this.ScoreContainer = transform.Find("ScoreContainer");
             this.ScoreRowTemplate = this.ScoreContainer.Find("ScoreRowTemplate");
             this.TotalRow = this.ScoreContainer.Find("TotalSection");
@@ -45,13 +52,28 @@ namespace Barbu.UI.Controllers
             if (gameObject.activeSelf && Input.GetMouseButtonDown(0))
             {
                 gameObject.SetActive(false);
-                this.eventsController.Fire(EventNames.RoundOver);
+                if (this.stateMachine.IsMenuOpen())
+                {
+                    this.stateMachine.SetMenuOpen(false);
+                    this.inGamePoints.SetActive(true);
+                    this.roundOverlay.SetActive(true);
+                    this.eventsController.Fire(EventNames.ResumeGame);
+                    this.gameObject.SetActive(false);
+                }
+                else
+                {
+                    this.eventsController.Fire(EventNames.ScoreMenuDismissed);
+                }
             }
         }
 
-        public void DisplayScores(Dictionary<string, int[]> scores, int currentRoundIndex, bool isPositiveRound = false)
+        public void DisplayScores(
+            Dictionary<string, int[]> scores,
+            int currentRoundIndex,
+            bool isPositiveRound = false,
+            bool skipAnimations = false)
         {
-            gameObject.SetActive(true);
+            this.gameObject.SetActive(true);
 
             var player1Total = 0;
             var player2Total = 0;
@@ -74,10 +96,10 @@ namespace Barbu.UI.Controllers
                 player2Total += player2Score;
                 player3Total += player3Score;
                 player4Total += player4Score;
-                this.SetScore(scoreRow, "Player1Label", player1Score, playAnimation: i == currentRoundIndex, isPositiveRound: isPositiveRound);
-                this.SetScore(scoreRow, "Player2Label", player2Score, playAnimation: i == currentRoundIndex, isPositiveRound: isPositiveRound);
-                this.SetScore(scoreRow, "Player3Label", player3Score, playAnimation: i == currentRoundIndex, isPositiveRound: isPositiveRound);
-                this.SetScore(scoreRow, "Player4Label", player4Score, playAnimation: i == currentRoundIndex, isPositiveRound: isPositiveRound);
+                this.SetScore(scoreRow, "Player1Label", player1Score, playAnimation: !skipAnimations && i == currentRoundIndex, isPositiveRound: isPositiveRound);
+                this.SetScore(scoreRow, "Player2Label", player2Score, playAnimation: !skipAnimations && i == currentRoundIndex, isPositiveRound: isPositiveRound);
+                this.SetScore(scoreRow, "Player3Label", player3Score, playAnimation: !skipAnimations && i == currentRoundIndex, isPositiveRound: isPositiveRound);
+                this.SetScore(scoreRow, "Player4Label", player4Score, playAnimation: !skipAnimations && i == currentRoundIndex, isPositiveRound: isPositiveRound);
             }
 
             var player1Previous = currentRoundIndex == 0 ? 0 : player1Total - scores[Constants.PlayerIds.Player1][currentRoundIndex];
@@ -85,10 +107,10 @@ namespace Barbu.UI.Controllers
             var player3Previous = currentRoundIndex == 0 ? 0 : player3Total - scores[Constants.PlayerIds.Player3][currentRoundIndex];
             var player4Previous = currentRoundIndex == 0 ? 0 : player4Total - scores[Constants.PlayerIds.Player4][currentRoundIndex];
 
-            this.SetScore(this.TotalRow, "Player1Label", player1Total, baseScore: player1Previous, playAnimation: true, isPositiveRound: isPositiveRound);
-            this.SetScore(this.TotalRow, "Player2Label", player2Total, baseScore: player2Previous, playAnimation: true, isPositiveRound: isPositiveRound);
-            this.SetScore(this.TotalRow, "Player3Label", player3Total, baseScore: player3Previous, playAnimation: true, isPositiveRound: isPositiveRound);
-            this.SetScore(this.TotalRow, "Player4Label", player4Total, baseScore: player4Previous, playAnimation: true, isPositiveRound: isPositiveRound);
+            this.SetScore(this.TotalRow, "Player1Label", player1Total, baseScore: player1Previous, playAnimation: !skipAnimations && true, isPositiveRound: isPositiveRound);
+            this.SetScore(this.TotalRow, "Player2Label", player2Total, baseScore: player2Previous, playAnimation: !skipAnimations && true, isPositiveRound: isPositiveRound);
+            this.SetScore(this.TotalRow, "Player3Label", player3Total, baseScore: player3Previous, playAnimation: !skipAnimations && true, isPositiveRound: isPositiveRound);
+            this.SetScore(this.TotalRow, "Player4Label", player4Total, baseScore: player4Previous, playAnimation: !skipAnimations && true, isPositiveRound: isPositiveRound);
         }
 
         private void SetScore(

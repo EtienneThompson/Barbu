@@ -9,6 +9,7 @@ namespace Barbu.UI.Controllers
         private Image settingsButtonImage;
         private Image newGameButtonImage;
         private Image rulesButtonImage;
+        private Image scoreButtonImage;
         private Label player1points;
         private Label player2points;
         private Label player3points;
@@ -33,6 +34,10 @@ namespace Barbu.UI.Controllers
             this.rulesButtonImage = root.Q<Image>("rulesButtonImage");
             var rulesIcon = Resources.Load<Texture2D>("Icons/Buttons/rules_button");
             this.rulesButtonImage.image = rulesIcon;
+
+            this.scoreButtonImage = root.Q<Image>("scoreButtonImage");
+            var scoreIcon = Resources.Load<Texture2D>("Icons/Buttons/score_button");
+            this.scoreButtonImage.image = scoreIcon;
 
             this.player1points = root.Q<Label>("player1points");
             this.player2points = root.Q<Label>("player2points");
