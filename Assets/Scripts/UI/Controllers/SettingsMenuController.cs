@@ -38,7 +38,7 @@ namespace Barbu.UI.Controllers
             this.stateMachine = new StateMachine();
             this.telemetryService = TelemetryService.GetInstance();
             this.stateMachine.SetMenuOpen(true);
-            this.settingsMenu = GameObject.Find(Constants.GameObjects.SettingsMenu);
+            this.settingsMenu = GameObjectExtensions.FindGameObjectByName(Constants.GameObjects.SettingsMenu, findInactive: true);
             var document = this.settingsMenu.GetComponent<UIDocument>();
             var root = document.rootVisualElement;
 
