@@ -19,10 +19,10 @@ namespace Barbu.UI.Controllers
         public void OnEnable()
         {
             this.telemetryService = TelemetryService.GetInstance();
-            this.gamesMenu = GameObject.Find(Constants.GameObjects.GamesMenu);
-            this.settingsMenu = GameObject.Find(Constants.GameObjects.SettingsMenu);
-            this.menuButtons = GameObject.Find(Constants.GameObjects.InGamePoints);
-            this.howToPlayScreen = GameObject.Find(Constants.GameObjects.HowToPlayScreen);
+            this.gamesMenu = GameObjectExtensions.FindGameObjectByName(Constants.GameObjects.GamesMenu, findInactive: true);
+            this.settingsMenu = GameObjectExtensions.FindGameObjectByName(Constants.GameObjects.SettingsMenu, findInactive: true);
+            this.menuButtons = GameObjectExtensions.FindGameObjectByName(Constants.GameObjects.InGamePoints, findInactive: true);
+            this.howToPlayScreen = GameObjectExtensions.FindGameObjectByName(Constants.GameObjects.HowToPlayScreen, findInactive: true);
             var document = this.menuButtons.GetComponent<UIDocument>();
             var root = document.rootVisualElement;
 
