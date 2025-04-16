@@ -52,7 +52,6 @@ namespace Barbu.Gameplay
             this.meshRenderer.material = Resources.Load(path, typeof(Material)) as Material;
             transform.position = position;
             transform.Rotate(rotateX, rotateY, rotateZ, Space.Self);
-            // this.initialColor = this.meshRenderer.material.GetColor("_EmissionColor");
             this.meshRenderer.material.SetFloat("_BorderThickness", 0.0f);
             this.initialColor = this.meshRenderer.material.GetColor("_BorderColor");
         }
@@ -116,14 +115,12 @@ namespace Barbu.Gameplay
 
         public void Highlight(Color color)
         {
-            // this.meshRenderer.material.SetColor("_EmissionColor", color);
             this.meshRenderer.material.SetFloat("_BorderThickness", 0.05f);
             this.meshRenderer.material.SetColor("_BorderColor", color);
         }
 
         public void RemoveHighlight()
         {
-            // this.meshRenderer.material.SetColor("_EmissionColor", initialColor);
             this.meshRenderer.material.SetFloat("_BorderThickness", 0.0f);
             this.meshRenderer.material.SetColor("_BorderColor", initialColor);
         }
