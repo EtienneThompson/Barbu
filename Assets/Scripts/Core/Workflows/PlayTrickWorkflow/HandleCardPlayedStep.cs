@@ -37,7 +37,7 @@ namespace Barbu
 
             args.Data.currentPile.AddCardToPile(card);
             var newHighestCard = args.Data.currentPile.GetHighestCard();
-            newHighestCard.Highlight(new Color(0.0f, 0.0f, 255.0f, 1.0f));
+            newHighestCard.Highlight(Color.yellow);
             this.stateMachine.SetHighestRank(newHighestCard.rank);
 
             args.Data.currentGameStateIndex++;
