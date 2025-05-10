@@ -2,19 +2,22 @@ namespace Barbu.Core.Workflows.RoundWorkflow
 {
     using System.Threading.Tasks;
     using Barbu.Core;
-    using Barbu.Interfaces.Core;
-    using Barbu.Interfaces.Core.Workflows;
-    using Barbu.Models.Workflows;
+    using Barbu.Core.Events;
+    using Barbu.Core.Telemetry;
     using Barbu.UI.Controllers;
     using UnityEngine;
 
     public class CleanupRoundStep : IStep<RoundArguments>
     {
         private IWorkflow workflow;
-        private StateMachine stateMachine;
+        private IStateMachine stateMachine;
         private ITelemetryService telemetryService;
 
-        public void Initialize(IWorkflow workflow, StateMachine stateMachine, ITelemetryService telemetryService)
+        public void Initialize(
+            IWorkflow workflow,
+            IEventsController eventsController,
+            IStateMachine stateMachine,
+            ITelemetryService telemetryService)
         {
             this.workflow = workflow;
             this.stateMachine = stateMachine;
@@ -51,7 +54,7 @@ namespace Barbu.Core.Workflows.RoundWorkflow
             args.Data.TricksPlayed = 0;
 
             this.workflow.SetNextStep(nameof(NextRoundStep));
-            this.workflow.WaitForEvent(Models.EventNames.ScoreMenuDismissed);
+            this.workflow.WaitForEvent(EventNames.ScoreMenuDismissed);
 
             return Task.CompletedTask;
         }

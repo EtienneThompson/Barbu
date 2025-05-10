@@ -1,13 +1,20 @@
 namespace Barbu.Gameplay.BoardState
 {
     using System;
+    using Barbu.Core;
+    using Barbu.Core.Telemetry;
     using Barbu.Gameplay;
-    using Barbu.Interfaces.Rounds;
+    using Barbu.Gameplay.Rounds;
 
     public class NormalComputerState : GameState
     {
-        public NormalComputerState(IRound round, string id, Hand hand)
-        : base(round, hand, id)
+        public NormalComputerState(
+            IStateMachine stateMachine,
+            ITelemetryService telemetryService,
+            IRound round,
+            string id,
+            Hand hand)
+        : base(stateMachine, telemetryService, round, hand, id)
         {
         }
 

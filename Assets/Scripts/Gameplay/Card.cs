@@ -3,8 +3,9 @@ namespace Barbu.Gameplay
     using System;
     using System.Collections;
     using Barbu.Core;
-    using Barbu.Models;
+    using Barbu.Core.Events;
     using UnityEngine;
+    using Zenject;
 
     public class Card : MonoBehaviour
     {
@@ -22,13 +23,25 @@ namespace Barbu.Gameplay
         public int rank;
         public string playerId;
         public CardState state;
-        private StateMachine stateMachine;
-        private EventsController eventsController;
+        private IStateMachine stateMachine;
+        private IEventsController eventsController;
         private Renderer meshRenderer;
         private Color initialColor;
         private string resourceRank;
 
-        public void InitializeData(string suit, string rank, string playerId)
+        [Inject]
+        public void Init(
+            IStateMachine stateMachine,
+            IEventsController eventsController)
+        {
+            this.stateMachine = stateMachine;
+            this.eventsController = eventsController;
+        }
+
+        public void InitializeData(
+            string suit,
+            string rank,
+            string playerId)
         {
             this.playerId = playerId;
             this.suit = suit;
@@ -45,8 +58,6 @@ namespace Barbu.Gameplay
         {
             this.meshRenderer = GetComponent<MeshRenderer>();
             this.state = CardState.Waiting;
-            this.stateMachine = new StateMachine();
-            this.eventsController = EventsController.GetInstance();
 
             string path = "PlayingCards/Resource/Materials/BackColor_Black/Black_PlayingCards_" + this.suit + this.resourceRank + "_00";
             this.meshRenderer.material = Resources.Load(path, typeof(Material)) as Material;

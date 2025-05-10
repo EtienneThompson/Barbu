@@ -1,27 +1,32 @@
 namespace Barbu.Gameplay.BoardState
 {
     using Barbu.Core;
+    using Barbu.Core.Telemetry;
     using Barbu.Gameplay;
+    using Barbu.Gameplay.Rounds;
     using Barbu.Interfaces.BoardState;
-    using Barbu.Interfaces.Core;
-    using Barbu.Interfaces.Rounds;
 
-    public class GameState : IGameState
+    public abstract class GameState : IGameState
     {
         protected IRound round;
         protected Hand hand;
-        protected StateMachine stateMachine;
+        protected IStateMachine stateMachine;
         protected ITelemetryService telemetryService;
 
         public string PlayerId { get; private set; }
 
-        public GameState(IRound round, Hand hand, string id)
+        public GameState(
+            IStateMachine stateMachine,
+            ITelemetryService telemetryService,
+            IRound round,
+            Hand hand,
+            string id)
         {
             this.round = round;
             this.hand = hand;
             this.PlayerId = id;
-            this.stateMachine = new StateMachine();
-            this.telemetryService = TelemetryService.GetInstance();
+            this.stateMachine = stateMachine;
+            this.telemetryService = telemetryService;
         }
 
         public virtual void Start()

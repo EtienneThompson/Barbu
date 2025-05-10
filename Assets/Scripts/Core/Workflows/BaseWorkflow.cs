@@ -3,10 +3,8 @@ namespace Barbu.Core.Workflows
     using System;
     using System.Collections.Generic;
     using System.Threading.Tasks;
-    using Barbu.Interfaces.Core;
-    using Barbu.Interfaces.Core.Workflows;
-    using Barbu.Models;
-    using Barbu.Models.Workflows;
+    using Barbu.Core.Events;
+    using Barbu.Core.Telemetry;
 
     public abstract class BaseWorkflow<T> : IWorkflow, IDisposable
     {
@@ -18,18 +16,18 @@ namespace Barbu.Core.Workflows
 
         protected StepArguments<T> Arguments { get; set; }
 
-        protected EventsController eventsController;
-        protected StateMachine stateMachine;
+        protected IEventsController eventsController;
+        protected IStateMachine stateMachine;
         protected ITelemetryService telemetryService;
 
         private Dictionary<EventNames, Action<EventNames>> waitingHandlers;
         private Dictionary<EventNames, Action<EventNames, object>> waitingHandlersWithData;
 
-        protected BaseWorkflow()
+        protected BaseWorkflow(IEventsController eventsController, IStateMachine stateMachine, ITelemetryService telemetryService)
         {
-            this.eventsController = EventsController.GetInstance();
-            this.stateMachine = new StateMachine();
-            this.telemetryService = TelemetryService.GetInstance();
+            this.eventsController = eventsController;
+            this.stateMachine = stateMachine;
+            this.telemetryService = telemetryService;
 
             this.waitingHandlers = new Dictionary<EventNames, Action<EventNames>>();
             this.waitingHandlersWithData = new Dictionary<EventNames, Action<EventNames, object>>();
@@ -58,7 +56,7 @@ namespace Barbu.Core.Workflows
 
                 var step = this.Steps[this.currentStepName];
                 this.telemetryService.LogInfo("[BaseWorkflow] Initializing step");
-                step.Initialize(this, this.stateMachine, this.telemetryService);
+                step.Initialize(this, this.eventsController, this.stateMachine, this.telemetryService);
                 this.telemetryService.LogInfo("[BaseWorkflow] Starting step");
                 await step.InvokeAsync(this.Arguments);
 

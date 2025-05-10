@@ -1,13 +1,18 @@
 namespace Barbu.Gameplay.BoardState
 {
+    using Barbu.Core;
+    using Barbu.Core.Telemetry;
     using Barbu.Gameplay;
-    using Barbu.Interfaces.Rounds;
+    using Barbu.Gameplay.Rounds;
     using UnityEngine;
 
     public class PlayerState : GameState
     {
-        public PlayerState(IRound round, string id, Hand hand)
-        : base(round, hand, id)
+        public PlayerState(
+            IStateMachine stateMachine,
+            ITelemetryService telemetryService,
+            IRound round, string id, Hand hand)
+        : base(stateMachine, telemetryService, round, hand, id)
         {
         }
 

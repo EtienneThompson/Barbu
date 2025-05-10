@@ -44,6 +44,7 @@ namespace Barbu
 
         public static class GameObjects
         {
+            public const string ApplicationController = "ApplicationController";
             public const string GameBoard = "GameBoard";
             public const string ScoreMenuCanvas = "ScoreMenu";
             public const string MenuButtons = "MenuButtons";

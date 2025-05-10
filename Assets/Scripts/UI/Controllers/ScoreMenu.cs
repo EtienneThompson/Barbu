@@ -1,19 +1,24 @@
 namespace Barbu.UI.Controllers
 {
     using System.Collections.Generic;
-    using Barbu.Core;
-    using Barbu.Models;
+    using Barbu.Core.Events;
     using UnityEngine;
     using UnityEngine.UIElements;
+    using Zenject;
 
     public class ScoreMenu : MonoBehaviour
     {
-        private EventsController eventsController;
+        private IEventsController eventsController;
         private Dictionary<int, Label[]> roundLabelMap;
+
+        [Inject]
+        public void Init(IEventsController eventsController)
+        {
+            this.eventsController = eventsController;
+        }
 
         public void OnEnable()
         {
-            this.eventsController = EventsController.GetInstance();
             GameObject scoreBoard = GameObject.Find(Constants.GameObjects.ScoreMenuCanvas);
             var document = scoreBoard.GetComponent<UIDocument>();
             var root = document.rootVisualElement;

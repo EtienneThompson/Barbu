@@ -1,9 +1,8 @@
 namespace Barbu.Gameplay.Rounds.Rounds
 {
     using System.Collections.Generic;
-    using Barbu.Core;
+    using Barbu.Core.Telemetry;
     using Barbu.Gameplay.Rounds;
-    using Barbu.Interfaces.Core;
 
     public class ChaosRound : Round
     {
@@ -45,9 +44,10 @@ namespace Barbu.Gameplay.Rounds.Rounds
         private int ComputedPointsPerPile;
         private List<Round> mergedRounds;
 
-        public ChaosRound()
+        public ChaosRound(
+            ITelemetryService telemetryService)
         {
-            this.telemetryService = TelemetryService.GetInstance();
+            this.telemetryService = telemetryService;
             this.ComputedPointMapping = new Dictionary<string, int>();
             this.ComputedPointsPerPile = 0;
             this.mergedRounds = new List<Round>();

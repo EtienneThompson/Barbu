@@ -1,8 +1,9 @@
 namespace Barbu.Core
 {
-    using Barbu.Interfaces.Core;
+    using Barbu.Core.Telemetry;
     using UnityEngine;
     using UnityEngine.Advertisements;
+    using Zenject;
 
     public class AdvertisementController : MonoBehaviour, IUnityAdsInitializationListener, IUnityAdsLoadListener, IUnityAdsShowListener
     {
@@ -11,9 +12,14 @@ namespace Barbu.Core
         [SerializeField] private bool adLoaded;
         private ITelemetryService telemetryService;
 
+        [Inject]
+        public void Init(ITelemetryService telemetryService)
+        {
+            this.telemetryService = telemetryService;
+        }
+
         public void Awake()
         {
-            this.telemetryService = TelemetryService.GetInstance();
             this.InitializeAds();
         }
 

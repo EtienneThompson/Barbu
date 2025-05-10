@@ -1,9 +1,9 @@
 namespace Barbu.Core.Workflows.RoundWorkflow
 {
+    using Barbu.Core.Events;
+    using Barbu.Core.Telemetry;
     using Barbu.Core.Workflows;
-    using Barbu.Interfaces.Core.Workflows;
-    using Barbu.Interfaces.Rounds;
-    using Barbu.Models.Workflows;
+    using Barbu.Gameplay.Rounds;
     using System.Collections.Generic;
     using UnityEngine;
 
@@ -20,7 +20,14 @@ namespace Barbu.Core.Workflows.RoundWorkflow
             [nameof(ShowAdvertisementStep)] = new ShowAdvertisementStep(),
         };
 
-        public RoundWorkflow(Statistics.GameTypes gameType, List<IRound> rounds)
+        public RoundWorkflow(
+            IEventsController eventsController,
+            IStateMachine stateMachine,
+            ITelemetryService telemetryService,
+            IComputerStateFactory computerStateFactory,
+            GameTypes gameType,
+            List<IRound> rounds)
+            : base(eventsController, stateMachine, telemetryService)
         {
             this.currentStepName = nameof(SetupRoundStep);
             this.Arguments = new StepArguments<RoundArguments>
@@ -38,6 +45,7 @@ namespace Barbu.Core.Workflows.RoundWorkflow
                         [Constants.PlayerIds.Player4] = new int[rounds.Count],
                     },
                     TricksPlayed = 0,
+                    ComputerStateFactory = computerStateFactory,
                 }
             };
 

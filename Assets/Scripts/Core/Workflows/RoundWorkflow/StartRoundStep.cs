@@ -3,22 +3,27 @@ namespace Barbu.Core.Workflows.RoundWorkflow
     using System;
     using System.Threading.Tasks;
     using Barbu.Core;
+    using Barbu.Core.Events;
+    using Barbu.Core.Telemetry;
     using Barbu.Core.Workflows.PlayTrickWorkflow;
-    using Barbu.Interfaces.Core;
-    using Barbu.Interfaces.Core.Workflows;
-    using Barbu.Models.Workflows;
     using Barbu.UI.Controllers;
     using UnityEngine;
 
     public class StartRoundStep : IStep<RoundArguments>
     {
         private IWorkflow workflow;
-        private StateMachine stateMachine;
+        private IEventsController eventsController;
+        private IStateMachine stateMachine;
         private ITelemetryService telemetryService;
 
-        public void Initialize(IWorkflow workflow, StateMachine stateMachine, ITelemetryService telemetryService)
+        public void Initialize(
+            IWorkflow workflow,
+            IEventsController eventsController,
+            IStateMachine stateMachine,
+            ITelemetryService telemetryService)
         {
             this.workflow = workflow;
+            this.eventsController = eventsController;
             this.stateMachine = stateMachine;
             this.telemetryService = telemetryService;
         }
@@ -54,6 +59,10 @@ namespace Barbu.Core.Workflows.RoundWorkflow
 
             this.telemetryService.LogInfo($"[RoundWorkflow] [StartRound] Setting starting player: {startingPlayerId}");
             args.Data.PlayTrickWorkflow = new PlayTrickWorkflow(
+                this.eventsController,
+                this.stateMachine,
+                this.telemetryService,
+                args.Data.ComputerStateFactory,
                 args.Data.GetCurrentRound(),
                 args.Data.PlayerPoints,
                 args.Data.Hands,
@@ -67,7 +76,7 @@ namespace Barbu.Core.Workflows.RoundWorkflow
             inGamePointsController.SetRoundName(args.Data.GetCurrentRound().Name);
 
             this.workflow.SetNextStep(nameof(StartRoundStep));
-            this.workflow.WaitForEvent(Models.EventNames.PileResolved);
+            this.workflow.WaitForEvent(EventNames.PileResolved);
 
             return Task.CompletedTask;
         }

@@ -2,21 +2,21 @@ namespace Barbu.Gameplay
 {
     using System.Collections.Generic;
     using Barbu.Core;
-    using Barbu.Models;
+    using Barbu.Core.Events;
 
     public class Pile
     {
         private List<Card> cardsInPile;
         private int cardsResolved;
-        private StateMachine stateMachine;
-        private EventsController eventsController;
+        private readonly IStateMachine stateMachine;
+        private readonly IEventsController eventsController;
 
-        public Pile()
+        public Pile(IStateMachine stateMachine, IEventsController eventsController)
         {
             this.cardsInPile = new List<Card>();
             this.cardsResolved = 0;
-            this.stateMachine = new StateMachine();
-            this.eventsController = EventsController.GetInstance();
+            this.stateMachine = stateMachine;
+            this.eventsController = eventsController;
         }
 
         public int GetPileSize()

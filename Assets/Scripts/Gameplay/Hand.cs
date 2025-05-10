@@ -1,10 +1,9 @@
 namespace Barbu.Gameplay
 {
+    using Barbu.Gameplay.Rounds;
     using System;
     using System.Collections.Generic;
     using System.Linq;
-    using Barbu.Gameplay.BoardState;
-    using Barbu.Interfaces.Rounds;
 
     public class Hand
     {

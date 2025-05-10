@@ -1,11 +1,12 @@
 namespace Barbu.UI.Controllers
 {
     using Barbu.Core;
-    using Barbu.Models;
+    using Barbu.Core.Events;
     using System;
     using System.Collections.Generic;
     using TMPro;
     using UnityEngine;
+    using Zenject;
 
     public class ScoreMenuController : MonoBehaviour
     {
@@ -16,16 +17,20 @@ namespace Barbu.UI.Controllers
         private Transform TotalRow;
         private List<Transform> ScoreRows;
 
-        private StateMachine stateMachine;
-        private EventsController eventsController;
+        private IStateMachine stateMachine;
+        private IEventsController eventsController;
         private GameObject inGamePoints;
         private GameObject roundOverlay;
 
+        [Inject]
+        public void Init(IStateMachine stateMachine, IEventsController eventsController)
+        {
+            this.stateMachine = stateMachine;
+            this.eventsController = eventsController;
+        }
+
         public void OnEnable()
         {
-            this.stateMachine = new StateMachine();
-            this.eventsController = EventsController.GetInstance();
-
             this.inGamePoints = GameObjectExtensions.FindGameObjectByName(Constants.GameObjects.InGamePoints, findInactive: true);
             this.roundOverlay = GameObjectExtensions.FindGameObjectByName(Constants.GameObjects.RoundOverlay, findInactive: true);
 

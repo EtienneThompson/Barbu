@@ -1,9 +1,9 @@
 namespace Barbu.UI.Controllers
 {
-    using Barbu.Core;
-    using Barbu.Interfaces.Core;
+    using Barbu.Core.Telemetry;
     using UnityEngine;
     using UnityEngine.UIElements;
+    using Zenject;
 
     public class HowToPlayScreenController : MonoBehaviour
     {
@@ -11,9 +11,14 @@ namespace Barbu.UI.Controllers
         private GameObject howToPlayScreen;
         private Button closeBtn;
 
+        [Inject]
+        public void Init(ITelemetryService telemetryService)
+        {
+            this.telemetryService = telemetryService;
+        }
+
         public void OnEnable()
         {
-            this.telemetryService = TelemetryService.GetInstance();
             this.howToPlayScreen = GameObjectExtensions.FindGameObjectByName(Constants.GameObjects.HowToPlayScreen, findInactive: true);
             var document = this.howToPlayScreen.GetComponent<UIDocument>();
             var root = document.rootVisualElement;
