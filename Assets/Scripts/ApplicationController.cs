@@ -1,19 +1,23 @@
 namespace Barbu
 {
-    using Barbu.Core;
     using Barbu.Interfaces.Core;
     using UnityEngine;
+    using Zenject;
 
     public class ApplicationController : MonoBehaviour
     {
         private ITelemetryService telemetryService;
 
+        [Inject]
+        public void Init(ITelemetryService telemetryService)
+        {
+            this.telemetryService = telemetryService;
+        }
+
         void Awake()
         {
-            Application.targetFrameRate = 60;
-
-            this.telemetryService = TelemetryService.GetInstance();
             this.telemetryService.LogInfo("Application launched");
+            Application.targetFrameRate = 60;
 
             // Hide any UI objects.
             GameObject scoreBoard = GameObject.Find(Constants.GameObjects.ScoreMenuCanvas);
