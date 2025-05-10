@@ -10,6 +10,7 @@ namespace Barbu
 
     public class GameBoard : MonoBehaviour
     {
+        public bool IsInitialized { get; private set; }
         private StateMachine stateMachine;
         private GlobalContext globalContext;
         private ITelemetryService telemetryService;
@@ -39,25 +40,7 @@ namespace Barbu
                 }
             }
 
-            // Hide any UI objects.
-            GameObject scoreBoard = GameObject.Find(Constants.GameObjects.ScoreMenuCanvas);
-            scoreBoard.SetActive(false);
-            GameObject gamesMenu = GameObject.Find(Constants.GameObjects.GamesMenu);
-            gamesMenu.SetActive(false);
-            GameObject settingsMenu = GameObject.Find(Constants.GameObjects.SettingsMenu);
-            settingsMenu.SetActive(false);
-            GameObject singleRoundMenu = GameObject.Find(Constants.GameObjects.SingleRoundMenu);
-            singleRoundMenu.SetActive(false);
-
-            if (Settings.HasSeenHowToPlayByDefault())
-            {
-                GameObject howToPlayScreen = GameObject.Find(Constants.GameObjects.HowToPlayScreen);
-                howToPlayScreen.SetActive(false);
-            }
-            else
-            {
-                Settings.SetSeenHowToPlayByDefault();
-            }
+            this.IsInitialized = true;
 
             this.CreateNewGame(Constants.TraditionalRoundManager.GameName, string.Empty);
         }
