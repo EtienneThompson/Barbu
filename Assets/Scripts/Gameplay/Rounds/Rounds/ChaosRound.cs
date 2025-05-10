@@ -1,9 +1,8 @@
 namespace Barbu.Gameplay.Rounds.Rounds
 {
     using System.Collections.Generic;
-    using Barbu.Core;
+    using Barbu.Core.Telemetry;
     using Barbu.Gameplay.Rounds;
-    using Barbu.Interfaces.Core;
 
     public class ChaosRound : Round
     {

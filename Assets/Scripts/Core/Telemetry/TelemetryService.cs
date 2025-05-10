@@ -1,7 +1,6 @@
-namespace Barbu.Core
+namespace Barbu.Core.Telemetry
 {
     using System;
-    using Barbu.Interfaces.Core;
     using UnityEngine;
 
     public class TelemetryService : ITelemetryService

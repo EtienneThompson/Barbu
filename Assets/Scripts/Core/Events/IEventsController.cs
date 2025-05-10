@@ -1,7 +1,6 @@
-namespace Barbu.Core
+namespace Barbu.Core.Events
 {
     using System;
-    using Barbu.Models;
 
     public interface IEventsController
     {

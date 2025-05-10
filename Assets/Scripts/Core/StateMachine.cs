@@ -1,7 +1,7 @@
 namespace Barbu.Core
 {
+    using Barbu.Core.Events;
     using Barbu.Gameplay;
-    using Barbu.Models;
 
     public class StateMachine : IStateMachine
     {

@@ -1,4 +1,4 @@
-namespace Barbu.Models.Workflows
+namespace Barbu.Core.Workflows
 {
     public class StepArguments<T>
     {

@@ -2,8 +2,8 @@ namespace Barbu.Core.Workflows.RoundWorkflow
 {
     using System.Threading.Tasks;
     using Barbu.Core;
-    using Barbu.Interfaces.Core.Workflows;
-    using Barbu.Models.Workflows;
+    using Barbu.Core.Events;
+    using Barbu.Core.Telemetry;
 
     public class NextRoundStep : IStep<RoundArguments>
     {

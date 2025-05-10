@@ -1,7 +1,7 @@
 namespace Barbu.UI.Controllers
 {
     using Barbu.Core;
-    using Barbu.Models;
+    using Barbu.Core.Events;
     using System;
     using System.Collections.Generic;
     using TMPro;

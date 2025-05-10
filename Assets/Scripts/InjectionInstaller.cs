@@ -1,5 +1,7 @@
 using Barbu;
 using Barbu.Core;
+using Barbu.Core.Events;
+using Barbu.Core.Telemetry;
 using Barbu.Core.Workflows;
 using Barbu.Gameplay;
 using Barbu.Gameplay.BoardState;
@@ -33,11 +35,6 @@ public class InjectionInstaller : MonoInstaller
         Container
             .Bind<IComputerStateFactory>()
             .To<ComputerStateFactory>()
-            .AsSingle();
-
-        Container
-            .Bind<IRoundFactory>()
-            .To<RoundFactory>()
             .AsSingle();
 
         Container

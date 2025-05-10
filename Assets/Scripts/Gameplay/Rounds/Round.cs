@@ -2,7 +2,6 @@ namespace Barbu.Gameplay.Rounds
 {
     using System;
     using System.Collections.Generic;
-    using Barbu.Interfaces.Rounds;
 
     public class Round : IRound
     {

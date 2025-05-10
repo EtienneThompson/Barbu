@@ -1,11 +1,11 @@
 namespace Barbu.Core.Workflows.PlayTrickWorkflow
 {
     using System.Collections.Generic;
+    using Barbu.Core.Events;
+    using Barbu.Core.Telemetry;
     using Barbu.Gameplay;
     using Barbu.Gameplay.BoardState;
-    using Barbu.Interfaces.Core.Workflows;
-    using Barbu.Interfaces.Rounds;
-    using Barbu.Models.Workflows;
+    using Barbu.Gameplay.Rounds;
 
     public class PlayTrickWorkflow : BaseWorkflow<PlayTrickArguments>
     {

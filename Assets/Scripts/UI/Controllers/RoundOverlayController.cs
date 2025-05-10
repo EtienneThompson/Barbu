@@ -3,8 +3,8 @@ namespace Barbu.UI.Controllers
     using System;
     using System.Collections;
     using System.Linq;
-    using Barbu.Core;
-    using Barbu.Models;
+    using Barbu.Core.Events;
+    using Barbu.Core.Telemetry;
     using UnityEngine;
     using UnityEngine.UIElements;
     using Zenject;

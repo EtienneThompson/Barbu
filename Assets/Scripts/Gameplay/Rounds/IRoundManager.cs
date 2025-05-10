@@ -1,4 +1,4 @@
-namespace Barbu.Interfaces.Rounds
+namespace Barbu.Gameplay.Rounds
 {
     using Barbu.Gameplay;
 

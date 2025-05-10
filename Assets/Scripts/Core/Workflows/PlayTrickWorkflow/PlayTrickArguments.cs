@@ -1,8 +1,8 @@
-namespace Barbu.Models.Workflows
+namespace Barbu.Core.Workflows.PlayTrickWorkflow
 {
     using Barbu.Gameplay;
     using Barbu.Gameplay.BoardState;
-    using Barbu.Interfaces.Rounds;
+    using Barbu.Gameplay.Rounds;
     using System.Collections.Generic;
 
     public class PlayTrickArguments

@@ -1,10 +1,10 @@
-namespace Barbu.Models.Workflows
+namespace Barbu.Core.Workflows.RoundWorkflow
 {
     using System.Collections.Generic;
     using System.Linq;
     using Barbu.Core.Workflows.PlayTrickWorkflow;
     using Barbu.Gameplay;
-    using Barbu.Interfaces.Rounds;
+    using Barbu.Gameplay.Rounds;
 
     public class RoundArguments
     {

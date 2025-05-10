@@ -3,10 +3,8 @@ namespace Barbu.Core.Workflows
     using System;
     using System.Collections.Generic;
     using System.Threading.Tasks;
-    using Barbu.Interfaces.Core;
-    using Barbu.Interfaces.Core.Workflows;
-    using Barbu.Models;
-    using Barbu.Models.Workflows;
+    using Barbu.Core.Events;
+    using Barbu.Core.Telemetry;
 
     public abstract class BaseWorkflow<T> : IWorkflow, IDisposable
     {

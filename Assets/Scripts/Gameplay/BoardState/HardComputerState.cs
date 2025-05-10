@@ -2,8 +2,9 @@ namespace Barbu.Gameplay.BoardState
 {
     using System;
     using Barbu.Core;
+    using Barbu.Core.Telemetry;
     using Barbu.Gameplay;
-    using Barbu.Interfaces.Rounds;
+    using Barbu.Gameplay.Rounds;
 
     public class HardComputerState : GameState
     {

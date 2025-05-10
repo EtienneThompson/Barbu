@@ -1,4 +1,4 @@
-namespace Barbu.Core
+namespace Barbu.Core.Telemetry
 {
     public enum LogLevel
     {

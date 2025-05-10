@@ -1,7 +1,8 @@
 namespace Barbu.Gameplay.BoardState
 {
     using Barbu.Core;
-    using Barbu.Interfaces.Rounds;
+    using Barbu.Core.Telemetry;
+    using Barbu.Gameplay.Rounds;
 
     public class ComputerStateFactory : IComputerStateFactory
     {

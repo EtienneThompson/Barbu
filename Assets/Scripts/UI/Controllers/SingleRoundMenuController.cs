@@ -10,7 +10,6 @@ namespace Barbu.UI.Controllers
         private IStateMachine stateMachine;
         private GameBoard gameBoard;
         private GameObject singleRoundMenu;
-        private GameObject gamesMenu;
         private Button heartsBtn;
         private Button queensBtn;
         private Button kingOfHeartsBtn;
@@ -30,7 +29,6 @@ namespace Barbu.UI.Controllers
             this.stateMachine.SetMenuOpen(true);
             this.gameBoard = GameObject.Find(Constants.GameObjects.GameBoard).GetComponent<GameBoard>();
             this.singleRoundMenu = GameObject.Find(Constants.GameObjects.SingleRoundMenu);
-            this.gamesMenu = GameObject.Find(Constants.GameObjects.GamesMenu);
             var document = this.singleRoundMenu.GetComponent<UIDocument>();
             var root = document.rootVisualElement;
 

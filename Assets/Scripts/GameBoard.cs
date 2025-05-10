@@ -3,8 +3,9 @@ namespace Barbu
     using System;
     using System.Threading.Tasks;
     using Barbu.Core;
+    using Barbu.Core.Telemetry;
+    using Barbu.Core.Workflows;
     using Barbu.Gameplay;
-    using Barbu.Gameplay.Rounds;
     using UnityEngine;
     using Zenject;
 
@@ -13,7 +14,7 @@ namespace Barbu
         private IStateMachine stateMachine;
         private GlobalContext globalContext;
         private ITelemetryService telemetryService;
-        private IRoundFactory roundFactory;
+        private IWorkflowFactory workflowFactory;
         private ICardFactory cardFactory;
         private string[] kCardSuits = new string[] { "Club", "Diamond", "Spade", "Heart" };
         // Ranks must match the resources used, 01 is A and 11, 12, and 13 are J, Q, and K.
@@ -26,12 +27,12 @@ namespace Barbu
         public void Init(
             ITelemetryService telemetryService,
             IStateMachine stateMachine,
-            IRoundFactory roundFactory,
+            IWorkflowFactory workflowFactory,
             ICardFactory cardFactory)
         {
             this.telemetryService = telemetryService;
             this.stateMachine = stateMachine;
-            this.roundFactory = roundFactory;
+            this.workflowFactory = workflowFactory;
             this.cardFactory = cardFactory;
         }
 
@@ -64,15 +65,15 @@ namespace Barbu
             switch (gameName)
             {
                 case Constants.TraditionalRoundManager.GameName:
-                    this.globalContext.RoundWorkflow = this.roundFactory.CreateTraditionalRoundWorkflow();
+                    this.globalContext.RoundWorkflow = this.workflowFactory.CreateTraditionalRoundWorkflow();
                     Statistics.IncrementGamesPlayed(GameTypes.Traditional);
                     break;
                 case Constants.SingleRoundManager.GameName:
-                    this.globalContext.RoundWorkflow = this.roundFactory.CreateSingleRoundWorkflow(subType);
+                    this.globalContext.RoundWorkflow = this.workflowFactory.CreateSingleRoundWorkflow(subType);
                     Statistics.IncrementGamesPlayed(GameTypes.Single);
                     break;
                 case Constants.ChaosRoundManager.GameName:
-                    this.globalContext.RoundWorkflow = this.roundFactory.CreateChaosRoundWorkflow();
+                    this.globalContext.RoundWorkflow = this.workflowFactory.CreateChaosRoundWorkflow();
                     Statistics.IncrementGamesPlayed(GameTypes.Chaos);
                     break;
                 default:

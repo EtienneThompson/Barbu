@@ -1,6 +1,6 @@
-namespace Barbu.Interfaces.Core.Workflows
+namespace Barbu.Core.Workflows
 {
-    using Barbu.Models;
+    using Barbu.Core.Events;
     using System.Threading.Tasks;
 
     public interface IWorkflow

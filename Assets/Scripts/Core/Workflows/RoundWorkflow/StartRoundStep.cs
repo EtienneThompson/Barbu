@@ -3,9 +3,9 @@ namespace Barbu.Core.Workflows.RoundWorkflow
     using System;
     using System.Threading.Tasks;
     using Barbu.Core;
+    using Barbu.Core.Events;
+    using Barbu.Core.Telemetry;
     using Barbu.Core.Workflows.PlayTrickWorkflow;
-    using Barbu.Interfaces.Core.Workflows;
-    using Barbu.Models.Workflows;
     using Barbu.UI.Controllers;
     using UnityEngine;
 
@@ -76,7 +76,7 @@ namespace Barbu.Core.Workflows.RoundWorkflow
             inGamePointsController.SetRoundName(args.Data.GetCurrentRound().Name);
 
             this.workflow.SetNextStep(nameof(StartRoundStep));
-            this.workflow.WaitForEvent(Models.EventNames.PileResolved);
+            this.workflow.WaitForEvent(EventNames.PileResolved);
 
             return Task.CompletedTask;
         }

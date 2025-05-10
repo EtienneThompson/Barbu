@@ -1,8 +1,8 @@
 namespace Barbu.Core.Workflows.PlayTrickWorkflow
 {
     using System.Threading.Tasks;
-    using Barbu.Interfaces.Core.Workflows;
-    using Barbu.Models.Workflows;
+    using Barbu.Core.Events;
+    using Barbu.Core.Telemetry;
     using Barbu.UI.Controllers;
     using UnityEngine;
 

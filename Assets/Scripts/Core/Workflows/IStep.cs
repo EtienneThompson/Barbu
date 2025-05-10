@@ -1,8 +1,9 @@
-namespace Barbu.Interfaces.Core.Workflows
+namespace Barbu.Core.Workflows
 {
     using System.Threading.Tasks;
     using Barbu.Core;
-    using Barbu.Models.Workflows;
+    using Barbu.Core.Events;
+    using Barbu.Core.Telemetry;
 
     public interface IStep<T>
     {

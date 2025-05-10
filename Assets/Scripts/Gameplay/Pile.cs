@@ -2,7 +2,7 @@ namespace Barbu.Gameplay
 {
     using System.Collections.Generic;
     using Barbu.Core;
-    using Barbu.Models;
+    using Barbu.Core.Events;
 
     public class Pile
     {

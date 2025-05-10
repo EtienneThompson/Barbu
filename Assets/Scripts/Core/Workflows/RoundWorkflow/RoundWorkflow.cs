@@ -1,9 +1,9 @@
 namespace Barbu.Core.Workflows.RoundWorkflow
 {
+    using Barbu.Core.Events;
+    using Barbu.Core.Telemetry;
     using Barbu.Core.Workflows;
-    using Barbu.Interfaces.Core.Workflows;
-    using Barbu.Interfaces.Rounds;
-    using Barbu.Models.Workflows;
+    using Barbu.Gameplay.Rounds;
     using System.Collections.Generic;
     using UnityEngine;
 

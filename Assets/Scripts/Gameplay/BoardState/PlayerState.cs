@@ -1,8 +1,9 @@
 namespace Barbu.Gameplay.BoardState
 {
     using Barbu.Core;
+    using Barbu.Core.Telemetry;
     using Barbu.Gameplay;
-    using Barbu.Interfaces.Rounds;
+    using Barbu.Gameplay.Rounds;
     using UnityEngine;
 
     public class PlayerState : GameState

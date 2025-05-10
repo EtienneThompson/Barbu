@@ -1,6 +1,6 @@
 namespace Barbu.Core
 {
-    using Barbu.Interfaces.Core;
+    using Barbu.Core.Telemetry;
     using UnityEngine;
     using UnityEngine.Advertisements;
     using Zenject;

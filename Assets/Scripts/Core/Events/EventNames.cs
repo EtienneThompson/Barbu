@@ -1,4 +1,4 @@
-namespace Barbu.Models
+namespace Barbu.Core.Events
 {
     public enum EventNames
     {

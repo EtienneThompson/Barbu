@@ -1,9 +1,10 @@
 namespace Barbu.Gameplay.BoardState
 {
     using Barbu.Core;
+    using Barbu.Core.Telemetry;
     using Barbu.Gameplay;
+    using Barbu.Gameplay.Rounds;
     using Barbu.Interfaces.BoardState;
-    using Barbu.Interfaces.Rounds;
 
     public abstract class GameState : IGameState
     {

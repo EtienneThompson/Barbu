@@ -1,8 +1,7 @@
 namespace Barbu.UI.Controllers
 {
     using System.Collections.Generic;
-    using Barbu.Core;
-    using Barbu.Models;
+    using Barbu.Core.Events;
     using UnityEngine;
     using UnityEngine.UIElements;
     using Zenject;

@@ -1,8 +1,7 @@
-namespace Barbu.Core
+namespace Barbu.Core.Events
 {
     using System;
-    using Barbu.Interfaces.Core;
-    using Barbu.Models;
+    using Barbu.Core.Telemetry;
 
     /// <summary>
     /// EventsController is the main hub at which different systems in the game can
