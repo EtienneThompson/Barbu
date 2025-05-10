@@ -1,6 +1,6 @@
 namespace Barbu
 {
-    using Barbu.Interfaces.Core;
+    using Barbu.Core;
     using UnityEngine;
     using Zenject;
 

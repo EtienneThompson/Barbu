@@ -4,22 +4,27 @@ namespace Barbu.UI.Controllers
     using System.Collections;
     using System.Linq;
     using Barbu.Core;
-    using Barbu.Interfaces.Core;
     using Barbu.Models;
     using UnityEngine;
     using UnityEngine.UIElements;
+    using Zenject;
 
     public class RoundOverlayController : MonoBehaviour
     {
-        private EventsController eventsController;
+        private IEventsController eventsController;
         private ITelemetryService telemetryService;
         private Label roundLabel;
         private Label subtitleLabel;
 
+        [Inject]
+        public void Init(IEventsController eventsController, ITelemetryService telemetryService)
+        {
+            this.eventsController = eventsController;
+            this.telemetryService = telemetryService;
+        }
+
         public void OnEnable()
         {
-            this.eventsController = EventsController.GetInstance();
-            this.telemetryService = TelemetryService.GetInstance();
             var roundOverlay = GameObject.Find(Constants.GameObjects.RoundOverlay);
             var document = roundOverlay.GetComponent<UIDocument>();
             var root = document.rootVisualElement;
@@ -28,7 +33,7 @@ namespace Barbu.UI.Controllers
             this.subtitleLabel = root.Q<Label>("subtitle");
         }
 
-        public void DisplayRound(string roundName, Statistics.GameTypes gameType)
+        public void DisplayRound(string roundName, GameTypes gameType)
         {
             StartCoroutine(DisplayRoutine(
                 roundName,

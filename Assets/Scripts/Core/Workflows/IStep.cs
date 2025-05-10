@@ -6,7 +6,11 @@ namespace Barbu.Interfaces.Core.Workflows
 
     public interface IStep<T>
     {
-        void Initialize(IWorkflow workflow, StateMachine stateMachine, ITelemetryService telemetryService);
+        void Initialize(
+            IWorkflow workflow,
+            IEventsController eventsController,
+            IStateMachine stateMachine,
+            ITelemetryService telemetryService);
 
         Task InvokeAsync(StepArguments<T> args);
     }

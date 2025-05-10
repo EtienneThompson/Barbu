@@ -3,9 +3,9 @@ namespace Barbu.UI.Controllers
     using System;
     using System.Collections.Generic;
     using Barbu.Core;
-    using Barbu.Interfaces.Core;
     using UnityEngine;
     using UnityEngine.UIElements;
+    using Zenject;
 
     public class SettingsMenuController : MonoBehaviour
     {
@@ -20,7 +20,7 @@ namespace Barbu.UI.Controllers
             [Settings.SortingOptions.SuitHighToLowAlternating.ToString()] = "♥ ♠ ♦ ♣ A → 2",
         };
 
-        private StateMachine stateMachine;
+        private IStateMachine stateMachine;
         private ITelemetryService telemetryService;
         private GameObject settingsMenu;
         private Button sortingPreviousBtn;
@@ -33,10 +33,15 @@ namespace Barbu.UI.Controllers
         private int currentSortingOption;
         private int currentDifficultyOption;
 
+        [Inject]
+        public void Init(IStateMachine stateMachine, ITelemetryService telemetryService)
+        {
+            this.stateMachine = stateMachine;
+            this.telemetryService = telemetryService;
+        }
+
         public void OnEnable()
         {
-            this.stateMachine = new StateMachine();
-            this.telemetryService = TelemetryService.GetInstance();
             this.stateMachine.SetMenuOpen(true);
             this.settingsMenu = GameObjectExtensions.FindGameObjectByName(Constants.GameObjects.SettingsMenu, findInactive: true);
             var document = this.settingsMenu.GetComponent<UIDocument>();

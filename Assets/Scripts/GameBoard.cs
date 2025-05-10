@@ -5,15 +5,16 @@ namespace Barbu
     using Barbu.Core;
     using Barbu.Gameplay;
     using Barbu.Gameplay.Rounds;
-    using Barbu.Interfaces.Core;
     using UnityEngine;
+    using Zenject;
 
     public class GameBoard : MonoBehaviour
     {
-        public bool IsInitialized { get; private set; }
-        private StateMachine stateMachine;
+        private IStateMachine stateMachine;
         private GlobalContext globalContext;
         private ITelemetryService telemetryService;
+        private IRoundFactory roundFactory;
+        private ICardFactory cardFactory;
         private string[] kCardSuits = new string[] { "Club", "Diamond", "Spade", "Heart" };
         // Ranks must match the resources used, 01 is A and 11, 12, and 13 are J, Q, and K.
         private string[] kCardRanks = new string[] { "01", "02", "03", "04", "05", "06", "07",
@@ -21,14 +22,23 @@ namespace Barbu
         private string[] cards = new string[52];
         private Hand[] hands = new Hand[4];
 
+        [Inject]
+        public void Init(
+            ITelemetryService telemetryService,
+            IStateMachine stateMachine,
+            IRoundFactory roundFactory,
+            ICardFactory cardFactory)
+        {
+            this.telemetryService = telemetryService;
+            this.stateMachine = stateMachine;
+            this.roundFactory = roundFactory;
+            this.cardFactory = cardFactory;
+        }
+
         // Start is called before the first frame update
         void Start()
         {
-            Application.targetFrameRate = 60;
-
-            this.stateMachine = new StateMachine();
             this.globalContext = GlobalContext.GetInstance();
-            this.telemetryService = TelemetryService.GetInstance();
 
             // Create the deck of 52 cards.
             for (int i = 0; i < kCardSuits.Length; i++)
@@ -39,8 +49,6 @@ namespace Barbu
                     cards[i * 13 + j] = card;
                 }
             }
-
-            this.IsInitialized = true;
 
             this.CreateNewGame(Constants.TraditionalRoundManager.GameName, string.Empty);
         }
@@ -56,16 +64,16 @@ namespace Barbu
             switch (gameName)
             {
                 case Constants.TraditionalRoundManager.GameName:
-                    this.globalContext.RoundWorkflow = RoundFactory.CreateTraditionalRoundWorkflow();
-                    Statistics.IncrementGamesPlayed(Statistics.GameTypes.Traditional);
+                    this.globalContext.RoundWorkflow = this.roundFactory.CreateTraditionalRoundWorkflow();
+                    Statistics.IncrementGamesPlayed(GameTypes.Traditional);
                     break;
                 case Constants.SingleRoundManager.GameName:
-                    this.globalContext.RoundWorkflow = RoundFactory.CreateSingleRoundWorkflow(subType);
-                    Statistics.IncrementGamesPlayed(Statistics.GameTypes.Single);
+                    this.globalContext.RoundWorkflow = this.roundFactory.CreateSingleRoundWorkflow(subType);
+                    Statistics.IncrementGamesPlayed(GameTypes.Single);
                     break;
                 case Constants.ChaosRoundManager.GameName:
-                    this.globalContext.RoundWorkflow = RoundFactory.CreateChaosRoundWorkflow();
-                    Statistics.IncrementGamesPlayed(Statistics.GameTypes.Chaos);
+                    this.globalContext.RoundWorkflow = this.roundFactory.CreateChaosRoundWorkflow();
+                    Statistics.IncrementGamesPlayed(GameTypes.Chaos);
                     break;
                 default:
                     throw new Exception("Incorrect game name provided");
@@ -141,7 +149,7 @@ namespace Barbu
                     var suit = deck[index].Substring(0, deck[index].Length - 2);
                     var rank = deck[index].Substring(deck[index].Length - 2);
                     var playerId = (j + 1).ToString();
-                    var card = CardFactory.CreateCard(suit, rank, playerId);
+                    var card = this.cardFactory.CreateCard(suit, rank, playerId);
 
                     hands[j].AddCard(card);
                 }

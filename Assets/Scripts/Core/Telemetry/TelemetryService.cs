@@ -6,20 +6,8 @@ namespace Barbu.Core
 
     public class TelemetryService : ITelemetryService
     {
-        private static TelemetryService instance = null;
-
-        private TelemetryService()
+        public TelemetryService()
         {
-        }
-
-        public static TelemetryService GetInstance()
-        {
-            if (instance == null)
-            {
-                instance = new TelemetryService();
-            }
-
-            return instance;
         }
 
         public void Log(LogLevel level, string message)

@@ -1,13 +1,19 @@
 namespace Barbu.Gameplay.BoardState
 {
     using System;
+    using Barbu.Core;
     using Barbu.Gameplay;
     using Barbu.Interfaces.Rounds;
 
     public class EasyComputerState : GameState
     {
-        public EasyComputerState(IRound round, string id, Hand hand)
-        : base(round, hand, id)
+        public EasyComputerState(
+            IStateMachine stateMachine,
+            ITelemetryService telemetryService,
+            IRound round,
+            string id,
+            Hand hand)
+        : base(stateMachine, telemetryService, round, hand, id)
         {
         }
 

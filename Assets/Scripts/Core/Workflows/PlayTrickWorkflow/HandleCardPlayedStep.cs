@@ -4,7 +4,6 @@ namespace Barbu
     using Barbu.Core;
     using Barbu.Core.Workflows.PlayTrickWorkflow;
     using Barbu.Gameplay;
-    using Barbu.Interfaces.Core;
     using Barbu.Interfaces.Core.Workflows;
     using Barbu.Models.Workflows;
     using UnityEngine;
@@ -12,10 +11,14 @@ namespace Barbu
     public class HandleCardPlayedStep : IStep<PlayTrickArguments>
     {
         private IWorkflow workflow;
-        private StateMachine stateMachine;
+        private IStateMachine stateMachine;
         private ITelemetryService telemetryService;
 
-        public void Initialize(IWorkflow workflow, StateMachine stateMachine, ITelemetryService telemetryService)
+        public void Initialize(
+            IWorkflow workflow,
+            IEventsController eventsController,
+            IStateMachine stateMachine,
+            ITelemetryService telemetryService)
         {
             this.workflow = workflow;
             this.stateMachine = stateMachine;

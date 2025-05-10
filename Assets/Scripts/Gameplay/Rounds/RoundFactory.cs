@@ -2,18 +2,32 @@ namespace Barbu.Gameplay.Rounds
 {
     using System;
     using System.Collections.Generic;
+    using Barbu.Core;
     using Barbu.Core.Workflows.RoundWorkflow;
     using Barbu.Gameplay.Rounds.Rounds;
     using Barbu.Interfaces.Rounds;
     using UnityEngine;
 
-    public class RoundFactory
+    public class RoundFactory : IRoundFactory
     {
-        public RoundFactory()
+        private readonly IEventsController eventsController;
+        private readonly IStateMachine stateMachine;
+        private readonly ITelemetryService telemetryService;
+        private readonly IComputerStateFactory computerStateFactory;
+
+        public RoundFactory(
+            IEventsController eventsController,
+            IStateMachine stateMachine,
+            ITelemetryService telemetryService,
+            IComputerStateFactory computerStateFactory)
         {
+            this.eventsController = eventsController;
+            this.stateMachine = stateMachine;
+            this.telemetryService = telemetryService;
+            this.computerStateFactory = computerStateFactory;
         }
 
-        public static RoundWorkflow CreateTraditionalRoundWorkflow()
+        public RoundWorkflow CreateTraditionalRoundWorkflow()
         {
             var heartsRound = new HeartsRound();
             var queensRound = new QueensRound();
@@ -31,11 +45,17 @@ namespace Barbu.Gameplay.Rounds
                 everythingRound,
             };
 
-            var workflow = new RoundWorkflow(Statistics.GameTypes.Traditional, roundList);
+            var workflow = new RoundWorkflow(
+                this.eventsController,
+                this.stateMachine,
+                this.telemetryService,
+                this.computerStateFactory,
+                GameTypes.Traditional,
+                roundList);
             return workflow;
         }
 
-        public static RoundWorkflow CreateSingleRoundWorkflow(string roundType)
+        public RoundWorkflow CreateSingleRoundWorkflow(string roundType)
         {
             Round round;
             switch (roundType)
@@ -66,13 +86,19 @@ namespace Barbu.Gameplay.Rounds
             {
                 round,
             };
-            var workflow = new RoundWorkflow(Statistics.GameTypes.Single, roundList);
+            var workflow = new RoundWorkflow(
+                this.eventsController,
+                this.stateMachine,
+                this.telemetryService,
+                this.computerStateFactory,
+                GameTypes.Single,
+                roundList);
             return workflow;
         }
 
-        public static RoundWorkflow CreateChaosRoundWorkflow()
+        public RoundWorkflow CreateChaosRoundWorkflow()
         {
-            var chaosRound = new ChaosRound();
+            var chaosRound = new ChaosRound(this.telemetryService);
 
             var roundsToMerge = (int)Mathf.Floor(UnityEngine.Random.Range(2.0f, 4.0f));
             for (int i = 0; i < roundsToMerge; i++)
@@ -85,7 +111,13 @@ namespace Barbu.Gameplay.Rounds
             {
                 chaosRound,
             };
-            var workflow = new RoundWorkflow(Statistics.GameTypes.Chaos, roundList);
+            var workflow = new RoundWorkflow(
+                this.eventsController,
+                this.stateMachine,
+                this.telemetryService,
+                this.computerStateFactory,
+                GameTypes.Chaos,
+                roundList);
             return workflow;
         }
     }

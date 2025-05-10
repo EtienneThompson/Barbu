@@ -1,10 +1,22 @@
 namespace Barbu.Gameplay.BoardState
 {
+    using Barbu.Core;
     using Barbu.Interfaces.Rounds;
 
-    public class ComputerStateFactory
+    public class ComputerStateFactory : IComputerStateFactory
     {
-        public static GameState GetComputerStateFromSettings(
+        private readonly IStateMachine stateMachine;
+        private readonly ITelemetryService telemetryService;
+
+        public ComputerStateFactory(
+            IStateMachine stateMachine,
+            ITelemetryService telemetryService)
+        {
+            this.stateMachine = stateMachine;
+            this.telemetryService = telemetryService;
+        }
+
+        public GameState GetComputerStateFromSettings(
             IRound round,
             string id,
             Hand hand)
@@ -12,12 +24,12 @@ namespace Barbu.Gameplay.BoardState
             switch (Settings.ComputerDifficultyPreference)
             {
                 case Settings.ComputerDifficulty.Hard:
-                    return new HardComputerState(round, id, hand);
+                    return new HardComputerState(this.stateMachine, this.telemetryService, round, id, hand);
                 case Settings.ComputerDifficulty.Normal:
-                    return new NormalComputerState(round, id, hand);
+                    return new NormalComputerState(this.stateMachine, this.telemetryService, round, id, hand);
                 case Settings.ComputerDifficulty.Easy:
                 default:
-                    return new EasyComputerState(round, id, hand);
+                    return new EasyComputerState(this.stateMachine, this.telemetryService, round, id, hand);
             }
         }
     }

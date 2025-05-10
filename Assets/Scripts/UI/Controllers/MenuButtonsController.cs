@@ -1,15 +1,15 @@
 namespace Barbu.UI.Controllers
 {
     using Barbu.Core;
-    using Barbu.Interfaces.Core;
     using Barbu.Models;
     using UnityEngine;
     using UnityEngine.UIElements;
+    using Zenject;
 
     public class MenuButtonsController : MonoBehaviour
     {
-        private StateMachine stateMachine;
-        private EventsController eventsController;
+        private IStateMachine stateMachine;
+        private IEventsController eventsController;
         private GlobalContext globalContext;
         private ITelemetryService telemetryService;
 
@@ -26,12 +26,20 @@ namespace Barbu.UI.Controllers
         private Button howToPlayBtn;
         private Button scoreBtn;
 
+        [Inject]
+        public void Init(
+            IStateMachine stateMachine,
+            IEventsController eventsController,
+            ITelemetryService telemetryService)
+        {
+            this.stateMachine = stateMachine;
+            this.eventsController = eventsController;
+            this.telemetryService = telemetryService;
+        }
+
         public void OnEnable()
         {
-            this.stateMachine = new StateMachine();
-            this.eventsController = EventsController.GetInstance();
             this.globalContext = GlobalContext.GetInstance();
-            this.telemetryService = TelemetryService.GetInstance();
 
             this.inGamePoints = GameObjectExtensions.FindGameObjectByName(Constants.GameObjects.InGamePoints, findInactive: true);
             this.roundOverlay = GameObjectExtensions.FindGameObjectByName(Constants.GameObjects.RoundOverlay, findInactive: true);

@@ -11,7 +11,7 @@ namespace Barbu.Core
     /// For example, the gameplay loop system can subscribe to the pause or resume
     /// delegates to be told when to stop by another system, i.e. the menuing system.
     /// </summary>
-    public class EventsController
+    public class EventsController : IEventsController
     {
         public static event Action<EventNames> PauseGame;
         public static event Action<EventNames> ResumeGame;
@@ -22,23 +22,11 @@ namespace Barbu.Core
         public static event Action<EventNames> RoundAnimationOver;
         public static event Action<EventNames> WinnerAnimationOver;
 
-        private static EventsController singleton;
+        private readonly ITelemetryService telemetryService;
 
-        private ITelemetryService telemetryService;
-
-        private EventsController()
+        public EventsController(ITelemetryService telemetryService)
         {
-            this.telemetryService = TelemetryService.GetInstance();
-        }
-
-        public static EventsController GetInstance()
-        {
-            if (singleton == null)
-            {
-                singleton = new EventsController();
-            }
-
-            return singleton;
+            this.telemetryService = telemetryService;
         }
 
         public void Subscribe(EventNames eventName, Action<EventNames> listener)

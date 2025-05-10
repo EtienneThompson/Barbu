@@ -3,10 +3,11 @@ namespace Barbu.UI.Controllers
     using Barbu.Core;
     using UnityEngine;
     using UnityEngine.UIElements;
+    using Zenject;
 
     public class SingleRoundMenuController : MonoBehaviour
     {
-        private StateMachine stateMachine;
+        private IStateMachine stateMachine;
         private GameBoard gameBoard;
         private GameObject singleRoundMenu;
         private GameObject gamesMenu;
@@ -18,9 +19,14 @@ namespace Barbu.UI.Controllers
         private Button everythingBtn;
         private Button closeBtn;
 
+        [Inject]
+        public void Init(IStateMachine stateMachine)
+        {
+            this.stateMachine = stateMachine;
+        }
+
         public void OnEnable()
         {
-            this.stateMachine = new StateMachine();
             this.stateMachine.SetMenuOpen(true);
             this.gameBoard = GameObject.Find(Constants.GameObjects.GameBoard).GetComponent<GameBoard>();
             this.singleRoundMenu = GameObject.Find(Constants.GameObjects.SingleRoundMenu);

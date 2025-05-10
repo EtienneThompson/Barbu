@@ -1,21 +1,10 @@
 namespace Barbu
 {
-    using Barbu.Core;
-    using Barbu.Interfaces.Core;
     using System;
     using UnityEngine;
 
     public class Statistics
     {
-        public static ITelemetryService telemetryService = TelemetryService.GetInstance();
-
-        public enum GameTypes
-        {
-            Traditional,
-            Single,
-            Chaos,
-        }
-
         public static int GetGamesFinished()
         {
             return PlayerPrefs.GetInt(Constants.PlayerPrefsKeys.SingleGamesFinished);

@@ -1,7 +1,6 @@
 namespace Barbu.Core.Workflows.PlayTrickWorkflow
 {
     using System.Threading.Tasks;
-    using Barbu.Interfaces.Core;
     using Barbu.Interfaces.Core.Workflows;
     using Barbu.Models.Workflows;
     using Barbu.UI.Controllers;
@@ -10,10 +9,14 @@ namespace Barbu.Core.Workflows.PlayTrickWorkflow
     public class ResolveTrickStep : IStep<PlayTrickArguments>
     {
         private IWorkflow parentWorkflow;
-        private StateMachine stateMachine;
+        private IStateMachine stateMachine;
         private ITelemetryService telemetryService;
 
-        public void Initialize(IWorkflow workflow, StateMachine stateMachine, ITelemetryService telemetryService)
+        public void Initialize(
+            IWorkflow workflow,
+            IEventsController eventsController,
+            IStateMachine stateMachine,
+            ITelemetryService telemetryService)
         {
             this.parentWorkflow = workflow;
             this.stateMachine = stateMachine;

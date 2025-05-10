@@ -8,7 +8,7 @@ namespace Barbu.Models.Workflows
 
     public class RoundArguments
     {
-        public Statistics.GameTypes GameType { get; set; }
+        public GameTypes GameType { get; set; }
 
         public List<IRound> Rounds { get; set; }
 
@@ -21,6 +21,8 @@ namespace Barbu.Models.Workflows
         public int TricksPlayed { get; set; }
 
         public PlayTrickWorkflow PlayTrickWorkflow { get; set; }
+
+        public IComputerStateFactory ComputerStateFactory { get; set; }
 
         public IRound GetCurrentRound()
         {

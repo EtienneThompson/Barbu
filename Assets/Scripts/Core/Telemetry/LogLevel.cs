@@ -1,4 +1,4 @@
-namespace Barbu.Interfaces.Core
+namespace Barbu.Core
 {
     public enum LogLevel
     {

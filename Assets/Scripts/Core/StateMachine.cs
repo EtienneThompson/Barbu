@@ -3,10 +3,8 @@ namespace Barbu.Core
     using Barbu.Gameplay;
     using Barbu.Models;
 
-    public class StateMachine
+    public class StateMachine : IStateMachine
     {
-        private static readonly StateMachine instance = new StateMachine();
-
         private bool isSettingUp = false;
         private int numCardsPlayed = 0;
         private bool canCardBePlayed = false;
@@ -18,112 +16,112 @@ namespace Barbu.Core
 
         private bool playerCardMustBeStartingSuit;
 
-        private EventsController eventsController;
+        private readonly IEventsController eventsController;
 
-        public StateMachine()
+        public StateMachine(IEventsController eventsController)
         {
-            this.eventsController = EventsController.GetInstance();
+            this.eventsController = eventsController;
         }
 
         public void SetIsSettingUp(bool isSetup)
         {
-            instance.isSettingUp = isSetup;
+            this.isSettingUp = isSetup;
         }
 
         public bool IsSettingUp()
         {
-            return instance.isSettingUp;
+            return this.isSettingUp;
         }
 
         public int NumCardsPlayed()
         {
-            return instance.numCardsPlayed;
+            return this.numCardsPlayed;
         }
 
         public bool IsCardPlayable()
         {
-            return instance.canCardBePlayed;
+            return this.canCardBePlayed;
         }
 
         public void IncrementNumCardsPlayed()
         {
-            instance.numCardsPlayed += 1;
+            this.numCardsPlayed += 1;
         }
 
         public void ResetNumCardsPlayed()
         {
-            instance.numCardsPlayed = 0;
+            this.numCardsPlayed = 0;
         }
 
         public void SetCardPlayable(bool state)
         {
-            instance.canCardBePlayed = state;
+            this.canCardBePlayed = state;
         }
 
         public string GetStartingSuit()
         {
-            return instance.startingSuit;
+            return this.startingSuit;
         }
 
         public void SetStartingSuit(string suit)
         {
-            instance.startingSuit = suit;
+            this.startingSuit = suit;
         }
 
         public void SetPlayerMustPlayStartingSuit(bool isStartingPlayer, Hand hand)
         {
-            instance.playerCardMustBeStartingSuit = !isStartingPlayer && hand.CardsInSuit(instance.startingSuit).Count > 0;
+            this.playerCardMustBeStartingSuit = !isStartingPlayer && hand.CardsInSuit(this.startingSuit).Count > 0;
         }
 
         public bool MustPlayCardInStartingSuit()
         {
-            return instance.playerCardMustBeStartingSuit;
+            return this.playerCardMustBeStartingSuit;
         }
 
         public bool IsMenuOpen()
         {
-            return instance.menuOpen;
+            return this.menuOpen;
         }
 
         public void SetMenuOpen(bool isOpen)
         {
-            instance.menuOpen = isOpen;
+            this.menuOpen = isOpen;
 
             if (isOpen)
             {
-                instance.isGamePaused = true;
+                this.isGamePaused = true;
                 this.eventsController.Fire(EventNames.PauseGame);
             }
             else
             {
-                instance.isGamePaused = false;
+                this.isGamePaused = false;
                 this.eventsController.Fire(EventNames.ResumeGame);
             }
         }
 
         public int GetHighestRankedCard()
         {
-            return instance.highestRank;
+            return this.highestRank;
         }
 
         public void SetHighestRank(int rank)
         {
-            instance.highestRank = rank;
+            this.highestRank = rank;
         }
 
         public bool IsGamePaused()
         {
-            return instance.isGamePaused;
+            return this.isGamePaused;
         }
 
         public void SetAutoPlayMode(bool autoPlayMode)
         {
-            instance.AutoPlayCards = autoPlayMode;
+            this.AutoPlayCards = autoPlayMode;
         }
 
         public bool IsAutoPlayMode()
         {
-            return instance.AutoPlayCards;
+            return this.AutoPlayCards;
         }
     }
 }
