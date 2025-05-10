@@ -154,13 +154,11 @@ namespace Barbu
             {
                 for (int j = 0; j < 4; j++)
                 {
-                    GameObject myCard = Instantiate(Resources.Load("BlankPlayingCard", typeof(GameObject)), new Vector3(0, 0, 0), Quaternion.identity) as GameObject;
-                    Card card = myCard.GetComponent<Card>();
                     var index = i * 4 + j;
                     var suit = deck[index].Substring(0, deck[index].Length - 2);
                     var rank = deck[index].Substring(deck[index].Length - 2);
                     var playerId = (j + 1).ToString();
-                    card.InitializeData(suit, rank, playerId);
+                    var card = CardFactory.CreateCard(suit, rank, playerId);
 
                     hands[j].AddCard(card);
                 }
