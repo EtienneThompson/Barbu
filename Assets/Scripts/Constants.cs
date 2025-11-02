@@ -68,6 +68,7 @@ namespace Barbu
         {
             public const string SortingOptions = "SortingOptions";
             public const string ComputerDifficulty = "ComputerDifficulty";
+            public const string BackColorOption = "BackColorOption";
             public const string SeenHowToPlayInstructions = "SeenHowToPlayInstructions";
 
             public const string TraditionalGamesPlayed = "TraditionalGamesPlayed";

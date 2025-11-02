@@ -59,7 +59,8 @@ namespace Barbu.Gameplay
             this.meshRenderer = GetComponent<MeshRenderer>();
             this.state = CardState.Waiting;
 
-            string path = "PlayingCards/Resource/Materials/BackColor_Black/Black_PlayingCards_" + this.suit + this.resourceRank + "_00";
+            var backColor = Settings.BackColorPreference.ToString();
+            string path = $"PlayingCards/Resource/Materials/BackColor_{backColor}/{backColor}_PlayingCards_{this.suit}{this.resourceRank}_00";
             this.meshRenderer.material = Resources.Load(path, typeof(Material)) as Material;
             transform.position = position;
             transform.Rotate(rotateX, rotateY, rotateZ, Space.Self);

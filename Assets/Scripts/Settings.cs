@@ -61,6 +61,24 @@ namespace Barbu
             Hard,
         }
 
+        public enum BackColorOption
+        {
+            /// <summary>
+            /// Use a black back color for cards.
+            /// </summary>
+            Black,
+
+            /// <summary>
+            /// Use a red back color for cards.
+            /// </summary>
+            Red,
+
+            /// <summary>
+            /// Use a blue back color for cards.
+            /// </summary>
+            Blue,
+        }
+
         public static SortingOptions[] HandSortingOptions => (SortingOptions[])Enum.GetValues(typeof(SortingOptions));
 
         public static SortingOptions SortingPreference
@@ -88,6 +106,21 @@ namespace Barbu
             set
             {
                 PlayerPrefs.SetInt(Constants.PlayerPrefsKeys.ComputerDifficulty, (int)value);
+            }
+        }
+
+        public static BackColorOption[] BackColors => (BackColorOption[])Enum.GetValues(typeof(BackColorOption));
+
+        public static BackColorOption BackColorPreference
+        {
+            get
+            {
+                return (BackColorOption)PlayerPrefs.GetInt(Constants.PlayerPrefsKeys.BackColorOption);
+            }
+
+            set
+            {
+                PlayerPrefs.SetInt(Constants.PlayerPrefsKeys.BackColorOption, (int)value);
             }
         }
 

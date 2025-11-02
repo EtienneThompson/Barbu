@@ -28,11 +28,15 @@ namespace Barbu.UI.Controllers
         private Button sortingNextBtn;
         private Button difficultyPreviousBtn;
         private Button difficultyNextBtn;
+        private Button backColorPreviousBtn;
+        private Button backColorNextBtn;
         private Button closeBtn;
         private Label currentlySelectedSortingOption;
         private Label currentlySelectedDifficulty;
+        private Label currentlySelectedBackColor;
         private int currentSortingOption;
         private int currentDifficultyOption;
+        private int currentBackColorOption;
 
         [Inject]
         public void Init(IStateMachine stateMachine, ITelemetryService telemetryService)
@@ -52,21 +56,28 @@ namespace Barbu.UI.Controllers
             this.sortingNextBtn = root.Q<Button>("sortingNext");
             this.difficultyPreviousBtn = root.Q<Button>("difficultyPrevious");
             this.difficultyNextBtn = root.Q<Button>("difficultyNext");
+            this.backColorPreviousBtn = root.Q<Button>("backColorPrevious");
+            this.backColorNextBtn = root.Q<Button>("backColorNext");
             this.closeBtn = root.Q<Button>("close");
 
             this.currentlySelectedSortingOption = root.Q<Label>("currentlySelectedSortingOption");
             this.currentlySelectedDifficulty = root.Q<Label>("currentlySelectedDifficulty");
+            this.currentlySelectedBackColor = root.Q<Label>("currentlySelectedBackColor");
             _ = HandSortingStrings.TryGetValue(Settings.SortingPreference.ToString(), out var initialSortingOptionString);
             this.currentlySelectedSortingOption.text = initialSortingOptionString;
             this.currentlySelectedSortingOption.style.unityFontDefinition = FontDefinition.FromFont(Resources.Load<Font>("Fonts/LucidaSansUnicodeRegular"));
             this.currentSortingOption = Array.IndexOf(Settings.HandSortingOptions, Settings.SortingPreference);
             this.currentlySelectedDifficulty.text = Settings.ComputerDifficultyPreference.ToString();
             this.currentDifficultyOption = Array.IndexOf(Settings.ComputerDifficulties, Settings.ComputerDifficultyPreference);
+            this.currentBackColorOption = Array.IndexOf(Settings.BackColors, Settings.BackColorPreference);
+            this.currentlySelectedBackColor.text = Settings.BackColors[this.currentBackColorOption].ToString();
 
             this.sortingPreviousBtn.RegisterCallback<ClickEvent>(HandleSortingPreviousButtonClick);
             this.sortingNextBtn.RegisterCallback<ClickEvent>(HandleSortingNextButtonClick);
             this.difficultyPreviousBtn.RegisterCallback<ClickEvent>(HandleDifficultyPreviousButtonClick);
             this.difficultyNextBtn.RegisterCallback<ClickEvent>(HandleDifficultyNextButtonClick);
+            this.backColorPreviousBtn.RegisterCallback<ClickEvent>(HandleBackColorPreviousButtonClick);
+            this.backColorNextBtn.RegisterCallback<ClickEvent>(HandleBackColorNextButtonClick);
             this.closeBtn.RegisterCallback<ClickEvent>(HandleCloseButtonClick);
         }
 
@@ -77,6 +88,8 @@ namespace Barbu.UI.Controllers
             this.sortingNextBtn.UnregisterCallback<ClickEvent>(HandleSortingNextButtonClick);
             this.difficultyPreviousBtn.UnregisterCallback<ClickEvent>(HandleSortingPreviousButtonClick);
             this.difficultyNextBtn.UnregisterCallback<ClickEvent>(HandleDifficultyNextButtonClick);
+            this.backColorPreviousBtn.UnregisterCallback<ClickEvent>(HandleBackColorPreviousButtonClick);
+            this.backColorNextBtn.UnregisterCallback<ClickEvent>(HandleBackColorNextButtonClick);
             this.closeBtn.UnregisterCallback<ClickEvent>(HandleCloseButtonClick);
         }
 
@@ -112,6 +125,22 @@ namespace Barbu.UI.Controllers
             this.currentDifficultyOption = this.SafeMod(this.currentDifficultyOption + 1, Settings.ComputerDifficulties.Length);
             this.currentlySelectedDifficulty.text = Settings.ComputerDifficulties[this.currentDifficultyOption].ToString();
             Settings.ComputerDifficultyPreference = Settings.ComputerDifficulties[this.currentDifficultyOption];
+        }
+
+        private void HandleBackColorPreviousButtonClick(ClickEvent evt)
+        {
+            this.telemetryService.LogInfo("Back Color Previous Button clicked");
+            this.currentBackColorOption = this.SafeMod(this.currentBackColorOption - 1, Settings.BackColors.Length);
+            this.currentlySelectedBackColor.text = Settings.BackColors[this.currentBackColorOption].ToString();
+            Settings.BackColorPreference = Settings.BackColors[this.currentBackColorOption];
+        }
+
+        private void HandleBackColorNextButtonClick(ClickEvent evt)
+        {
+            this.telemetryService.LogInfo("Back Color Next Button clicked");
+            this.currentBackColorOption = this.SafeMod(this.currentBackColorOption + 1, Settings.BackColors.Length);
+            this.currentlySelectedBackColor.text = Settings.BackColors[this.currentBackColorOption].ToString();
+            Settings.BackColorPreference = Settings.BackColors[this.currentBackColorOption];
         }
 
         private void HandleCloseButtonClick(ClickEvent evt)

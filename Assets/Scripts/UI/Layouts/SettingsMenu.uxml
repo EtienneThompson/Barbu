@@ -35,6 +35,18 @@
                     </ui:VisualElement>
                 </ui:VisualElement>
             </ui:VisualElement>
+            <ui:VisualElement name="settings-row">
+                <ui:VisualElement name="left-column">
+                    <ui:Label text="Card Back Color" />
+                </ui:VisualElement>
+                <ui:VisualElement name="right-column">
+                    <ui:VisualElement name="row">
+                        <ui:Button class="arrow-button" name="backColorPrevious" text="&lt;" />
+                        <ui:Label class="selection-box" name="currentlySelectedBackColor" text="Black" />
+                        <ui:Button class="arrow-button" name="backColorNext" text="&gt;" />
+                    </ui:VisualElement>
+                </ui:VisualElement>
+            </ui:VisualElement>
             <ui:Button class="settings-button" name="close" text="Close" />
         </ui:VisualElement>
     </ui:VisualElement>
