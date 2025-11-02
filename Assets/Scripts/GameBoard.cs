@@ -15,12 +15,7 @@ namespace Barbu
         private GlobalContext globalContext;
         private ITelemetryService telemetryService;
         private IWorkflowFactory workflowFactory;
-        private ICardFactory cardFactory;
-        private string[] kCardSuits = new string[] { "Club", "Diamond", "Spade", "Heart" };
-        // Ranks must match the resources used, 01 is A and 11, 12, and 13 are J, Q, and K.
-        private string[] kCardRanks = new string[] { "01", "02", "03", "04", "05", "06", "07",
-                                                 "08", "09", "10", "11", "12", "13" };
-        private string[] cards = new string[52];
+        private IDeck deck;
         private Hand[] hands = new Hand[4];
 
         [Inject]
@@ -28,29 +23,19 @@ namespace Barbu
             ITelemetryService telemetryService,
             IStateMachine stateMachine,
             IWorkflowFactory workflowFactory,
-            ICardFactory cardFactory)
+            IDeck deck)
         {
+            telemetryService.LogInfo("GameBoard injected");
             this.telemetryService = telemetryService;
             this.stateMachine = stateMachine;
             this.workflowFactory = workflowFactory;
-            this.cardFactory = cardFactory;
+            this.deck = deck;
         }
 
         // Start is called before the first frame update
         void Start()
         {
             this.globalContext = GlobalContext.GetInstance();
-
-            // Create the deck of 52 cards.
-            for (int i = 0; i < kCardSuits.Length; i++)
-            {
-                for (int j = 0; j < kCardRanks.Length; j++)
-                {
-                    var card = kCardSuits[i] + kCardRanks[j];
-                    cards[i * 13 + j] = card;
-                }
-            }
-
             this.CreateNewGame(Constants.TraditionalRoundManager.GameName, string.Empty);
         }
 
@@ -95,12 +80,6 @@ namespace Barbu
             return this.hands;
         }
 
-        private void DealHand()
-        {
-            this.Shuffle(cards);
-            this.DealHand(cards);
-        }
-
         private void DestroyCards()
         {
             foreach (var hand in this.hands)
@@ -120,23 +99,11 @@ namespace Barbu
             }
         }
 
-        private void Shuffle<T>(T[] array)
+        private void DealHand()
         {
-            for (int i = 0; i < 5; i++)
-            {
-                int n = array.Length;
-                while (n > 1)
-                {
-                    int k = (int)Mathf.Floor(UnityEngine.Random.value * (n--));
-                    T temp = array[n];
-                    array[n] = array[k];
-                    array[k] = temp;
-                }
-            }
-        }
+            this.deck.ResetDeck();
+            this.deck.ShuffleComplete();
 
-        private void DealHand(string[] deck)
-        {
             for (int i = 0; i < 4; i++)
             {
                 hands[i] = new Hand();
@@ -146,12 +113,7 @@ namespace Barbu
             {
                 for (int j = 0; j < 4; j++)
                 {
-                    var index = i * 4 + j;
-                    var suit = deck[index].Substring(0, deck[index].Length - 2);
-                    var rank = deck[index].Substring(deck[index].Length - 2);
-                    var playerId = (j + 1).ToString();
-                    var card = this.cardFactory.CreateCard(suit, rank, playerId);
-
+                    var card = this.deck.DrawCard((j + 1).ToString());
                     hands[j].AddCard(card);
                 }
             }

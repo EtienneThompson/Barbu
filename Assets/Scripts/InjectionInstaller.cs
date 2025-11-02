@@ -5,13 +5,14 @@ using Barbu.Core.Telemetry;
 using Barbu.Core.Workflows;
 using Barbu.Gameplay;
 using Barbu.Gameplay.BoardState;
-using Barbu.Gameplay.Rounds;
+using UnityEngine;
 using Zenject;
 
 public class InjectionInstaller : MonoInstaller
 {
     public override void InstallBindings()
     {
+        Debug.Log("Installing bindings...");
         Container
             .Bind<IStateMachine>()
             .To<StateMachine>()
@@ -28,6 +29,11 @@ public class InjectionInstaller : MonoInstaller
             .AsSingle();
 
         Container
+            .Bind<IDeck>()
+            .To<Deck>()
+            .AsSingle();
+
+        Container
             .Bind<ICardFactory>()
             .To<CardFactory>()
             .AsSingle();
@@ -41,5 +47,6 @@ public class InjectionInstaller : MonoInstaller
             .Bind<IWorkflowFactory>()
             .To<WorkflowFactory>()
             .AsSingle();
+        Debug.Log("Finished installing bindings");
     }
 }

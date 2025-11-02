@@ -130,25 +130,25 @@ namespace Barbu.Core.Events
             switch (eventName)
             {
                 case EventNames.PauseGame:
-                    PauseGame.Invoke(EventNames.PauseGame);
+                    PauseGame?.Invoke(EventNames.PauseGame);
                     return;
                 case EventNames.ResumeGame:
-                    ResumeGame.Invoke(EventNames.ResumeGame);
+                    ResumeGame?.Invoke(EventNames.ResumeGame);
                     return;
                 case EventNames.ScoreMenuDismissed:
-                    ScoreMenuDismissed.Invoke(EventNames.ScoreMenuDismissed);
+                    ScoreMenuDismissed?.Invoke(EventNames.ScoreMenuDismissed);
                     return;
                 case EventNames.CardInPileResolved:
-                    CardInPileResolved.Invoke(EventNames.CardInPileResolved);
+                    CardInPileResolved?.Invoke(EventNames.CardInPileResolved);
                     return;
                 case EventNames.PileResolved:
-                    PileResolved.Invoke(EventNames.PileResolved);
+                    PileResolved?.Invoke(EventNames.PileResolved);
                     return;
                 case EventNames.RoundAnimationFinished:
-                    RoundAnimationOver.Invoke(EventNames.RoundAnimationFinished);
+                    RoundAnimationOver?.Invoke(EventNames.RoundAnimationFinished);
                     return;
                 case EventNames.WinnerAnimationFinished:
-                    WinnerAnimationOver.Invoke(EventNames.WinnerAnimationFinished);
+                    WinnerAnimationOver?.Invoke(EventNames.WinnerAnimationFinished);
                     return;
                 default:
                     var errorMessage = $"The event {eventName} is not able to be subscribed to!";
@@ -163,7 +163,7 @@ namespace Barbu.Core.Events
             switch (eventName)
             {
                 case EventNames.PlayCard:
-                    PlayCard.Invoke(EventNames.PlayCard, data);
+                    PlayCard?.Invoke(EventNames.PlayCard, data);
                     return;
                 default:
                     var errorMessage = $"The event {eventName} is not able to be fired!";
