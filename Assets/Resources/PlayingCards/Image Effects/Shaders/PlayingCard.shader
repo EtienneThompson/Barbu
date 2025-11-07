@@ -25,12 +25,16 @@ Shader "Custom/TwoSidedCardWithBorder" {
             struct v2f
             {
                 float4 pos : SV_POSITION;
-                float2 uv : TEXCOORD0;
-                float3 viewNormal : TEXCOORD1;
+                float2 uvFront : TEXCOORD0;
+                float2 uvBack : TEXCOORD1;
+                float3 worldPos : TEXCOORD2;
+                float3 worldNormal : TEXCOORD3;
             };
 
             sampler2D _FrontTex;
             sampler2D _BackTex;
+            float4 _FrontTex_ST;
+            float4 _BackTex_ST;
             fixed4 _BorderColor;
             float _BorderThickness;
 
@@ -38,33 +42,34 @@ Shader "Custom/TwoSidedCardWithBorder" {
             {
                 v2f o;
                 o.pos = UnityObjectToClipPos(v.vertex);
-                o.uv = v.uv;
-                o.viewNormal = UnityObjectToWorldNormal(v.normal);
+                o.uvFront = TRANSFORM_TEX(v.uv, _FrontTex);
+                o.uvBack = TRANSFORM_TEX(v.uv, _BackTex);
+                o.worldPos = mul(unity_ObjectToWorld, v.vertex).xyz;
+                o.worldNormal = UnityObjectToWorldNormal(v.normal);
                 return o;
             }
 
             fixed4 frag(v2f i) : SV_Target
             {
-                float3 viewDir = normalize(UnityWorldSpaceViewDir(i.viewNormal));
-                float frontFacing = dot(i.viewNormal, viewDir);
-                float2 uv = i.uv;
+                float3 viewDir = normalize(UnityWorldSpaceViewDir(i.worldPos));
+                float frontFacing = dot(i.worldNormal, viewDir);
 
                 // Check if the pixel is within the border
                 // Need extra offset for x because it is shorter than y.
-                if (uv.x < 0.1675 + _BorderThickness || uv.x > 0.8325 - _BorderThickness ||
-                    uv.y < _BorderThickness || uv.y > 1.0 - _BorderThickness)
+                if (i.uvFront.x < 0.1675 + _BorderThickness || i.uvFront.x > 0.8325 - _BorderThickness ||
+                    i.uvFront.y < _BorderThickness || i.uvFront.y > 1.0 - _BorderThickness)
                 {
                     return _BorderColor; // Render the border color
                 }
 
-                // Render the front or back texture
+                // Sample appropriate texture
                 if (frontFacing > 0)
                 {
-                    return tex2D(_FrontTex, uv);
+                    return tex2D(_FrontTex, i.uvFront);
                 }
                 else
                 {
-                    return tex2D(_BackTex, uv);
+                    return tex2D(_BackTex, i.uvBack);
                 }
             }
             ENDCG
