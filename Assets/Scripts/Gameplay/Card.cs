@@ -2,6 +2,7 @@ namespace Barbu.Gameplay
 {
     using System;
     using System.Collections;
+    using System.IO;
     using Barbu.Core;
     using Barbu.Core.Events;
     using UnityEngine;
@@ -60,8 +61,34 @@ namespace Barbu.Gameplay
             this.state = CardState.Waiting;
 
             var backColor = Settings.BackColorPreference.ToString();
-            string path = $"PlayingCards/Resource/Materials/BackColor_{backColor}/{backColor}_PlayingCards_{this.suit}{this.resourceRank}_00";
-            this.meshRenderer.material = Resources.Load(path, typeof(Material)) as Material;
+
+            var frontTextureImagePath = Path.Combine("PlayingCards", "Image", "PlayingCards", $"{this.suit}{this.resourceRank}");
+            var frontTexture = Resources.Load<Texture2D>(frontTextureImagePath);
+            if (frontTexture == null)
+            {
+                Debug.LogError($"Resource not found: {frontTextureImagePath}");
+                throw new FileNotFoundException(frontTextureImagePath);
+            }
+
+            var backTextureImagePath = Path.Combine("PlayingCards", "Image", "PlayingCards", $"BackColor_{backColor}");
+            var backTexture = Resources.Load<Texture2D>(backTextureImagePath);
+            if (backTexture == null)
+            {
+                Debug.LogError($"Resource not found: {backTextureImagePath}");
+                throw new FileNotFoundException(backTextureImagePath);
+            }
+
+            var shader = Shader.Find("Custom/TwoSidedCardWithBorder");
+            if (shader == null)
+            {
+                Debug.LogError($"Shader not found Custom/TwoSidedCardWithBorder");
+                throw new FileNotFoundException("Custom/TwoSidedCardWithBorder");
+            }
+            var instanceMaterial = new Material(shader);
+            instanceMaterial.SetTexture("_FrontTex", frontTexture);
+            instanceMaterial.SetTexture("_BackTex", backTexture);
+            this.meshRenderer.material = instanceMaterial;
+
             transform.position = position;
             transform.Rotate(rotateX, rotateY, rotateZ, Space.Self);
             this.meshRenderer.material.SetFloat("_BorderThickness", 0.0f);
