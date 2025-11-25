@@ -20,12 +20,12 @@ namespace Barbu.Gameplay.BoardState
 
         public override void Start()
         {
-            if (!this.stateMachine.IsCardPlayable())
+            if (!this.stateMachine.CanCardBePlayed)
             {
                 throw new Exception("Computer can't make a move right now.");
             }
 
-            this.stateMachine.SetCardPlayable(false);
+            this.stateMachine.CanCardBePlayed.Disable();
             var isPositiveRound = this.round.IsRoundPositive();
             var cardsInSuit = this.hand.CardsInSuit(this.stateMachine.GetStartingSuit());
             var playableCards = cardsInSuit.Count > 0 ? cardsInSuit : this.hand.GetAvailableCards();
@@ -86,8 +86,8 @@ namespace Barbu.Gameplay.BoardState
                 else
                 {
                     this.telemetryService.LogInfo("Computer playing based on turn order");
-                    this.telemetryService.LogInfo("Computer is player " + this.stateMachine.NumCardsPlayed());
-                    if (this.stateMachine.NumCardsPlayed() == 0)
+                    this.telemetryService.LogInfo("Computer is player " + this.stateMachine.NumCardsPlayed);
+                    if (this.stateMachine.NumCardsPlayed == 0)
                     {
                         this.telemetryService.LogInfo("Computer playing first, using lowest card");
                         this.telemetryService.LogInfo("Number of cards to choose from: " + playableCards.Count);
@@ -96,12 +96,12 @@ namespace Barbu.Gameplay.BoardState
                         lowestCard.PlayCard();
                         return;
                     }
-                    else if (this.stateMachine.NumCardsPlayed() == 1 || this.stateMachine.NumCardsPlayed() == 2)
+                    else if (this.stateMachine.NumCardsPlayed == 1 || this.stateMachine.NumCardsPlayed == 2)
                     {
                         this.telemetryService.LogInfo("Computer playing 2nd or 3rd");
                         var bestCard = isPositiveRound ?
-                            this.hand.GetCardAboveRank(playableCards, this.stateMachine.GetHighestRankedCard()) :
-                            this.hand.GetCardBelowRank(playableCards, this.stateMachine.GetHighestRankedCard(), useLowestFallback: true);
+                            this.hand.GetCardAboveRank(playableCards, this.stateMachine.HighestRank) :
+                            this.hand.GetCardBelowRank(playableCards, this.stateMachine.HighestRank, useLowestFallback: true);
                         this.telemetryService.LogInfo("Computer playing " + bestCard.GetName());
                         bestCard.PlayCard();
                         return;
@@ -110,8 +110,8 @@ namespace Barbu.Gameplay.BoardState
                     {
                         this.telemetryService.LogInfo("Computer going last");
                         var bestCard = isPositiveRound ?
-                            this.hand.GetCardAboveRank(playableCards, this.stateMachine.GetHighestRankedCard()) :
-                            this.hand.GetCardBelowRank(playableCards, this.stateMachine.GetHighestRankedCard(), useLowestFallback: false);
+                            this.hand.GetCardAboveRank(playableCards, this.stateMachine.HighestRank) :
+                            this.hand.GetCardBelowRank(playableCards, this.stateMachine.HighestRank, useLowestFallback: false);
                         this.telemetryService.LogInfo("Computer playing " + bestCard.GetName());
                         bestCard.PlayCard();
                         return;

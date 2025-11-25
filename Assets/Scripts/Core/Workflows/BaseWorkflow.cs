@@ -60,7 +60,7 @@ namespace Barbu.Core.Workflows
                 this.telemetryService.LogInfo("[BaseWorkflow] Starting step");
                 await step.InvokeAsync(this.Arguments);
 
-                if (this.stateMachine.IsGamePaused() || this.IsPaused)
+                if (this.stateMachine.IsGamePaused || this.IsPaused)
                 {
                     this.telemetryService.LogInfo("[BaseWorkflow] Pausing workflow");
                     break;
@@ -146,7 +146,7 @@ namespace Barbu.Core.Workflows
 
             // Only resume the workflow when the event is received if the entire game is not paused.
             this.IsPaused = false;
-            if (!this.stateMachine.IsGamePaused())
+            if (!this.stateMachine.IsGamePaused)
             {
                 await this.StartAsync();
             }

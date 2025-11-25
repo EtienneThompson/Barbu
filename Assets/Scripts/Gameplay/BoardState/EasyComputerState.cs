@@ -20,12 +20,12 @@ namespace Barbu.Gameplay.BoardState
 
         public override void Start()
         {
-            if (!this.stateMachine.IsCardPlayable())
+            if (!this.stateMachine.CanCardBePlayed)
             {
                 throw new Exception("Computer can't make a move right now.");
             }
 
-            this.stateMachine.SetCardPlayable(false);
+            this.stateMachine.CanCardBePlayed.Disable();
             var cardsInSuit = this.hand.CardsInSuit(this.stateMachine.GetStartingSuit());
             if (cardsInSuit.Count > 0)
             {

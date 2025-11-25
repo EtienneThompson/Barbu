@@ -40,7 +40,7 @@ namespace Barbu.Core.Workflows.PlayTrickWorkflow
             args.Data.PlayerPoints[playerId][args.Data.RoundNumber] += pointsInPile;
 
             args.Data.currentPile.StartPileResolution(highestCard.playerId);
-            this.stateMachine.SetHighestRank(0);
+            this.stateMachine.HighestRank.Set(0);
             this.parentWorkflow.SetNextStep(null);
             return Task.CompletedTask;
         }

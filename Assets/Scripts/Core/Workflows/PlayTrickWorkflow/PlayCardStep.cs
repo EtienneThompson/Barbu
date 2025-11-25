@@ -26,7 +26,7 @@ namespace Barbu.Core.Workflows.PlayTrickWorkflow
             this.telemetryService.LogInfo("[PlayTrickWorkflow] Playing card...");
             var gameState = args.Data.gameStates[args.Data.currentGameStateIndex % 4];
             this.telemetryService.LogInfo($"[PlayTrickWorkflow] Player {gameState.PlayerId} playing...");
-            this.stateMachine.SetCardPlayable(true);
+            this.stateMachine.CanCardBePlayed.Enable();
             gameState.Start();
             this.parentWorkflow.SetNextStep(nameof(HandleCardPlayedStep));
             this.parentWorkflow.WaitForEventWithData(EventNames.PlayCard);

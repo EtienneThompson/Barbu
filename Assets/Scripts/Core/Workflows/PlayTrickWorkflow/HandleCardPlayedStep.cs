@@ -29,7 +29,7 @@ namespace Barbu.Core.Workflows.PlayTrickWorkflow
             this.telemetryService.LogInfo("[PlayTrickWorkflow] Handling played card...");
             var card = (Card)args.EventData;
             this.telemetryService.LogInfo($"[PlayTrickWorkflow] Card player id: {card.playerId}");
-            this.stateMachine.SetCardPlayable(false);
+            this.stateMachine.CanCardBePlayed.Disable();
 
             var gameState = args.Data.gameStates[args.Data.currentGameStateIndex % 4];
             gameState.CleanUp();
@@ -40,7 +40,7 @@ namespace Barbu.Core.Workflows.PlayTrickWorkflow
             args.Data.currentPile.AddCardToPile(card);
             var newHighestCard = args.Data.currentPile.GetHighestCard();
             newHighestCard.Highlight(Color.yellow);
-            this.stateMachine.SetHighestRank(newHighestCard.rank);
+            this.stateMachine.HighestRank.Set(newHighestCard.rank);
 
             args.Data.currentGameStateIndex++;
             if (args.Data.currentPile.GetPileSize() == 4)

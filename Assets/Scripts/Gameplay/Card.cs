@@ -100,8 +100,8 @@ namespace Barbu.Gameplay
         {
             if (((this.stateMachine.MustPlayCardInStartingSuit() && this.suit.Equals(this.stateMachine.GetStartingSuit())) ||
                 !this.stateMachine.MustPlayCardInStartingSuit()) &&
-                this.stateMachine.IsCardPlayable() &&
-                !this.stateMachine.IsMenuOpen() &&
+                this.stateMachine.CanCardBePlayed &&
+                !this.stateMachine.IsMenuOpen &&
                 Input.GetMouseButtonDown(0))
             {
                 Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
@@ -146,10 +146,10 @@ namespace Barbu.Gameplay
         public void PlayCard()
         {
             transform.rotation = Quaternion.Euler(new Vector3(0, 0, 0));
-            stateMachine.IncrementNumCardsPlayed();
+            stateMachine.NumCardsPlayed.Increment();
             StartCoroutine(MoveToCenterRoutine());
             this.state = CardState.Played;
-            this.stateMachine.SetCardPlayable(false);
+            this.stateMachine.CanCardBePlayed.Disable();
         }
 
         public void Highlight(Color color)
@@ -198,19 +198,19 @@ namespace Barbu.Gameplay
 
         private float GetMovingSpeed()
         {
-            return baseSpeed * (this.stateMachine.IsAutoPlayMode() ? 10.0f : 1.0f) * Time.deltaTime;
+            return baseSpeed * (this.stateMachine.AutoPlayCards ? 10.0f : 1.0f) * Time.deltaTime;
         }
 
         private float GetPlayCardDelay()
         {
-            return 0.5f * (this.stateMachine.IsAutoPlayMode() ? 0.1f : 1.0f);
+            return 0.5f * (this.stateMachine.AutoPlayCards ? 0.1f : 1.0f);
         }
 
         private IEnumerator MoveToCenterRoutine()
         {
             transform.localScale = new Vector3(0.7f, 0.7f, 0.7f);
             Vector3 center;
-            var verticalPosition = 0.5f + this.stateMachine.NumCardsPlayed() * 0.01f;
+            var verticalPosition = 0.5f + this.stateMachine.NumCardsPlayed * 0.01f;
             switch (this.playerId)
             {
                 case Constants.PlayerIds.Player1:

@@ -42,9 +42,9 @@ namespace Barbu
         public void CreateNewGame(string gameName, string subType)
         {
             this.telemetryService.LogInfo("Creating new game...");
-            this.stateMachine.SetIsSettingUp(true);
-            this.stateMachine.SetCardPlayable(false);
-            this.stateMachine.ResetNumCardsPlayed();
+            this.stateMachine.IsSettingUp.Enable();
+            this.stateMachine.CanCardBePlayed.Disable();
+            this.stateMachine.NumCardsPlayed.Set(0);
             this.globalContext.RoundWorkflow?.Dispose();
             this.CleanupRound();
             switch (gameName)
@@ -65,7 +65,7 @@ namespace Barbu
                     throw new Exception("Incorrect game name provided");
             }
 
-            this.stateMachine.SetIsSettingUp(false);
+            this.stateMachine.IsSettingUp.Disable();
             Task _ = this.globalContext.RoundWorkflow.StartAsync();
         }
 

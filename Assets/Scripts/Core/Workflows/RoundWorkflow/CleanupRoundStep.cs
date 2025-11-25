@@ -50,7 +50,7 @@ namespace Barbu.Core.Workflows.RoundWorkflow
                 args.Data.CurrentRoundIndex,
                 args.Data.GetCurrentRound().IsRoundPositive());
 
-            this.stateMachine.SetAutoPlayMode(false);
+            this.stateMachine.AutoPlayCards.Disable();
             args.Data.TricksPlayed = 0;
 
             this.workflow.SetNextStep(nameof(NextRoundStep));

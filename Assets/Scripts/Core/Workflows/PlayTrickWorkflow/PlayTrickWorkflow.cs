@@ -32,7 +32,7 @@ namespace Barbu.Core.Workflows.PlayTrickWorkflow
         {
             this.computerStateFactory = computerStateFactory;
             var gameStates = new GameState[4]; 
-            if (!this.stateMachine.IsAutoPlayMode())
+            if (!this.stateMachine.AutoPlayCards)
             {
                 gameStates[0] = new PlayerState(stateMachine, telemetryService, round, Constants.PlayerIds.Player1, playerHands[0]);
             }

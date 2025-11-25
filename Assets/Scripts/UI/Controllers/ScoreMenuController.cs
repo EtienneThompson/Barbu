@@ -57,7 +57,7 @@ namespace Barbu.UI.Controllers
             if (gameObject.activeSelf && Input.GetMouseButtonDown(0))
             {
                 gameObject.SetActive(false);
-                if (this.stateMachine.IsMenuOpen())
+                if (this.stateMachine.IsMenuOpen)
                 {
                     this.stateMachine.SetMenuOpen(false);
                     this.inGamePoints.SetActive(true);
