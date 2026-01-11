@@ -6,6 +6,7 @@ namespace Barbu.Gameplay
     using Barbu.Core;
     using Barbu.Core.Events;
     using UnityEngine;
+    using UnityEngine.EventSystems;
     using Zenject;
 
     public class Card : MonoBehaviour
@@ -91,29 +92,9 @@ namespace Barbu.Gameplay
 
             transform.position = position;
             transform.Rotate(rotateX, rotateY, rotateZ, Space.Self);
+            transform.localScale = new Vector3(5, 5, 5);
             this.meshRenderer.material.SetFloat("_BorderThickness", 0.0f);
             this.initialColor = this.meshRenderer.material.GetColor("_BorderColor");
-        }
-
-        // Update is called once per frame
-        void Update()
-        {
-            if (((this.stateMachine.MustPlayCardInStartingSuit() && this.suit.Equals(this.stateMachine.GetStartingSuit())) ||
-                !this.stateMachine.MustPlayCardInStartingSuit()) &&
-                this.stateMachine.IsCardPlayable() &&
-                !this.stateMachine.IsMenuOpen() &&
-                Input.GetMouseButtonDown(0))
-            {
-                Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-                RaycastHit hit;
-                if (Physics.Raycast(ray, out hit))
-                {
-                    if (hit.transform == transform)
-                    {
-                        this.PlayCard();
-                    }
-                }
-            }
         }
 
         public string GetName()
@@ -304,6 +285,18 @@ namespace Barbu.Gameplay
                     finalPosition,
                     this.GetMovingSpeed() * AdjustPositionInHandMultiplier);
                 yield return null;
+            }
+        }
+
+        public void OnPointerClick()
+        {
+            Debug.Log($"Card {this.suit}{this.rank} clicked");
+            if (((this.stateMachine.MustPlayCardInStartingSuit() && this.suit.Equals(this.stateMachine.GetStartingSuit())) ||
+                !this.stateMachine.MustPlayCardInStartingSuit()) &&
+                this.stateMachine.IsCardPlayable() &&
+                !this.stateMachine.IsMenuOpen())
+            {
+                this.PlayCard();
             }
         }
     }

@@ -15,7 +15,8 @@ namespace Barbu
 
         public Card CreateCard(string suit, string rank, string playerId)
         {
-            GameObject cardObject = this.instantiator.InstantiatePrefabResource("BlankPlayingCard");
+            GameObject parent = GameObjectExtensions.FindGameObjectByName("Cards");
+            GameObject cardObject = this.instantiator.InstantiatePrefabResource("BlankPlayingCard", parent.transform);
             Card card = cardObject.GetComponent<Card>();
 
             card.InitializeData(suit, rank, playerId);

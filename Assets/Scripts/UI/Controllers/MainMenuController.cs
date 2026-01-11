@@ -10,7 +10,7 @@ namespace Barbu
     public class MainMenuController : MonoBehaviour
     {
         private Camera mainCamera;
-        private Transform mainMenuContainer;
+        private GameObject mainMenuContainer;
         private Button settingsButton;
         private Button gamesButton;
         private Button rulesButton;
@@ -31,7 +31,7 @@ namespace Barbu
             var cameraObject = GameObjectExtensions.FindGameObjectByName("Main Camera");
             this.mainCamera = cameraObject.GetComponent<Camera>();
 
-            this.mainMenuContainer = transform.Find("MainMenuContainer");
+            this.mainMenuContainer = GameObjectExtensions.FindGameObjectByName("MainMenuContainer");
 
             this.settingsButton = GetButtonObject("SettingsButton");
             this.gamesButton = GetButtonObject("GamesButton");
@@ -54,46 +54,43 @@ namespace Barbu
             this.scoreButton.onClick.RemoveAllListeners();
         }
 
-        public void Update()
+        public void ToggleMenuVisibility()
         {
-            if (EventSystem.current != null && EventSystem.current.IsPointerOverGameObject())
-                return;
-
-            if (Input.GetMouseButtonDown(0))
+            if (this.IsUIVisible(this.mainMenuContainer.GetComponent<RectTransform>()))
             {
-                if (this.IsTransformInCameraView(this.mainMenuContainer, this.mainCamera))
-                {
-                    this.telemetryService.LogInfo("Moving menu out of view");
-                    var outOfViewRelativePosition = new Vector2(45, 0);
-                    StartCoroutine(this.MoveMenu(outOfViewRelativePosition));
-                }
-                else
-                {
-                    this.telemetryService.LogInfo("Moving menu into view");
-                    var inViewRelativePosition = new Vector2(-45, 0);
-                    StartCoroutine(this.MoveMenu(inViewRelativePosition));
-                }
+                this.telemetryService.LogInfo("Moving menu out of view");
+                var outOfViewRelativePosition = new Vector2(45, 0);
+                StartCoroutine(this.MoveMenu(outOfViewRelativePosition));
+            }
+            else
+            {
+                this.telemetryService.LogInfo("Moving menu into view");
+                var inViewRelativePosition = new Vector2(-45, 0);
+                StartCoroutine(this.MoveMenu(inViewRelativePosition));
             }
         }
 
-        /// <summary>
-        /// Checks if a transform's position is within the camera's viewport.
-        /// </summary>
-        bool IsTransformInCameraView(Transform obj, Camera cam)
+        bool IsUIVisible(RectTransform rectTransform)
         {
-            if (obj == null || cam == null)
-                return false;
+            if (rectTransform == null) return false;
 
-            // Convert world position to viewport space
-            Vector3 viewportPos = cam.WorldToViewportPoint(obj.position);
+            Vector3[] corners = new Vector3[4];
+            rectTransform.GetWorldCorners(corners);
 
-            // Check if object is in front of the camera
-            if (viewportPos.z <= 0)
-                return false;
+            // Screen bounds
+            float screenWidth = Screen.width;
+            float screenHeight = Screen.height;
 
-            // Check if within viewport bounds
-            return viewportPos.x >= 0 && viewportPos.x <= 1 &&
-                   viewportPos.y >= 0 && viewportPos.y <= 1;
+            // Check if any corner is inside the screen
+            foreach (Vector3 corner in corners)
+            {
+                if (corner.x >= 0 && corner.x <= screenWidth &&
+                    corner.y >= 0 && corner.y <= screenHeight)
+                {
+                    return true;
+                }
+            }
+            return false;
         }
 
         private void HandleSettingsButtonClick()
