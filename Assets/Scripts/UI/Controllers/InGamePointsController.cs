@@ -1,60 +1,35 @@
 namespace Barbu.UI.Controllers
 {
     using System.Collections.Generic;
+    using TMPro;
     using UnityEngine;
     using UnityEngine.UIElements;
 
     public class InGamePointsController : MonoBehaviour
     {
-        private Image settingsButtonImage;
-        private Image newGameButtonImage;
-        private Image rulesButtonImage;
-        private Image scoreButtonImage;
-        private Label player1points;
-        private Label player2points;
-        private Label player3points;
-        private Label player4points;
-        private Dictionary<string, Label> playerPoints;
+        private TextMeshProUGUI player1points;
+        private TextMeshProUGUI player2points;
+        private TextMeshProUGUI player3points;
+        private TextMeshProUGUI player4points;
+        private Dictionary<string, TextMeshProUGUI> playerPoints;
         private Label roundName;
 
         private void OnEnable()
         {
-            var inGamePoints = GameObject.Find(Constants.GameObjects.InGamePoints);
-            var document = inGamePoints.GetComponent<UIDocument>();
-            var root = document.rootVisualElement;
-
-            this.settingsButtonImage = root.Q<Image>("settingsButtonImage");
-            var settingsIcon = Resources.Load<Texture2D>("Icons/Buttons/settings_button");
-            this.settingsButtonImage.image = settingsIcon;
-
-            this.newGameButtonImage = root.Q<Image>("newGameButtonImage");
-            var newGameIcon = Resources.Load<Texture2D>("Icons/Buttons/new_game_button");
-            this.newGameButtonImage.image = newGameIcon;
-
-            this.rulesButtonImage = root.Q<Image>("rulesButtonImage");
-            var rulesIcon = Resources.Load<Texture2D>("Icons/Buttons/rules_button");
-            this.rulesButtonImage.image = rulesIcon;
-
-            this.scoreButtonImage = root.Q<Image>("scoreButtonImage");
-            var scoreIcon = Resources.Load<Texture2D>("Icons/Buttons/score_button");
-            this.scoreButtonImage.image = scoreIcon;
-
-            this.player1points = root.Q<Label>("player1points");
-            this.player2points = root.Q<Label>("player2points");
-            this.player3points = root.Q<Label>("player3points");
-            this.player4points = root.Q<Label>("player4points");
+            this.player1points = this.GetTextComponent("Player1Points");
+            this.player2points = this.GetTextComponent("Player2Points");
+            this.player3points = this.GetTextComponent("Player3Points");
+            this.player4points = this.GetTextComponent("Player4Points");
 
             this.ResetPoints();
 
-            this.playerPoints = new Dictionary<string, Label>
+            this.playerPoints = new Dictionary<string, TextMeshProUGUI>
             {
                 [Constants.PlayerIds.Player1] = this.player1points,
                 [Constants.PlayerIds.Player2] = this.player2points,
                 [Constants.PlayerIds.Player3] = this.player3points,
                 [Constants.PlayerIds.Player4] = this.player4points,
             };
-
-            this.roundName = root.Q<Label>("round-name");
         }
 
         public void SetRoundName(string roundName)
@@ -72,15 +47,21 @@ namespace Barbu.UI.Controllers
         public void UpdatePlayerPoints(string player, int points)
         {
             var currentPoints = int.Parse(this.playerPoints[player].text);
-            this.playerPoints[player].text = (currentPoints + points).ToString();
+            this.playerPoints[player].text = $"{(currentPoints + points).ToString()} Pts";
         }
 
         public void ResetPoints()
         {
-            this.player1points.text = "0";
-            this.player2points.text = "0";
-            this.player3points.text = "0";
-            this.player4points.text = "0";
+            this.player1points.text = "0 Pts";
+            this.player2points.text = "0 Pts";
+            this.player3points.text = "0 Pts";
+            this.player4points.text = "0 Pts";
+        }
+
+        private TextMeshProUGUI GetTextComponent(string gameObjectName)
+        {
+            var gameObject = GameObjectExtensions.FindGameObjectByName(gameObjectName);
+            return gameObject.GetComponent<TextMeshProUGUI>();
         }
     }
 }
