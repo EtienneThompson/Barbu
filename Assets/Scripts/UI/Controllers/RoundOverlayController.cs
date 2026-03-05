@@ -5,6 +5,7 @@ namespace Barbu.UI.Controllers
     using System.Linq;
     using Barbu.Core.Events;
     using Barbu.Core.Telemetry;
+    using TMPro;
     using UnityEngine;
     using UnityEngine.UIElements;
     using Zenject;
@@ -16,6 +17,9 @@ namespace Barbu.UI.Controllers
         private Label roundLabel;
         private Label subtitleLabel;
 
+        private TextMeshProUGUI roundText;
+        private TextMeshProUGUI subtitleText;
+
         [Inject]
         public void Init(IEventsController eventsController, ITelemetryService telemetryService)
         {
@@ -25,12 +29,12 @@ namespace Barbu.UI.Controllers
 
         public void OnEnable()
         {
-            var roundOverlay = GameObject.Find(Constants.GameObjects.RoundOverlay);
-            var document = roundOverlay.GetComponent<UIDocument>();
-            var root = document.rootVisualElement;
-
-            this.roundLabel = root.Q<Label>("round");
-            this.subtitleLabel = root.Q<Label>("subtitle");
+            this.telemetryService.LogInfo("Round Overlay Controller OnEnable");
+            var roundObject = GameObjectExtensions.FindGameObjectByName("RoundOverlayTitle");
+            this.telemetryService.LogInfo(roundObject?.ToString());
+            this.roundText = roundObject?.GetComponent<TextMeshProUGUI>();
+            var subtitleObject = GameObjectExtensions.FindGameObjectByName("RoundOverlaySubtitle");
+            this.subtitleText = subtitleObject?.GetComponent<TextMeshProUGUI>();
         }
 
         public void DisplayRound(string roundName, GameTypes gameType)
@@ -77,8 +81,8 @@ namespace Barbu.UI.Controllers
 
         public void HideText()
         {
-            this.roundLabel.text = string.Empty;
-            this.subtitleLabel.text = string.Empty;
+            this.roundText.text = string.Empty;
+            this.subtitleText.text = string.Empty;
         }
 
         private IEnumerator DisplayRoutine(string mainText, string subText = null, float delay = 1.5f, Action callback = null)
@@ -95,8 +99,8 @@ namespace Barbu.UI.Controllers
 
         private void ShowText(string mainText, string subText = null)
         {
-            this.roundLabel.text = mainText;
-            this.subtitleLabel.text = subText;
+            this.roundText.text = mainText;
+            this.subtitleText.text = subText;
         }
     }
 }

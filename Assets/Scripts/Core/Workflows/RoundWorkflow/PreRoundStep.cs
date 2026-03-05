@@ -25,7 +25,8 @@ namespace Barbu.Core.Workflows.RoundWorkflow
         public Task InvokeAsync(StepArguments<RoundArguments> args)
         {
             this.telemetryService.LogInfo("[RoundWorkflow] Executing PreRound step...");
-            GameObject roundOverlay = GameObject.Find(Constants.GameObjects.RoundOverlay);
+            GameObject roundOverlay = GameObjectExtensions.FindGameObjectByName(Constants.GameObjects.RoundOverlay, findInactive: true);
+            roundOverlay.SetActive(true);
             var controller = roundOverlay.GetComponent<RoundOverlayController>();
             controller.DisplayRound(args.Data.GetCurrentRound().Name, args.Data.GameType);
 

@@ -130,24 +130,24 @@ namespace Barbu
                     float rotateZ = 0.0f;
                     if (j == 0)
                     {
-                        position = new Vector3((i * 2) - 10, 0.5f + (0.01f * i), -10);
+                        position = new Vector3((i * 2) - 12, 0.5f + (0.01f * i), -12);
                         rotateX = -90.0f;
                     }
                     else if (j == 1)
                     {
-                        position = new Vector3(-22, 0.5f + (-0.01f * i), i - 6);
+                        position = new Vector3(-22, 0.5f + (-0.01f * i), i - 6.5f);
                         rotateY = 90.0f;
                         rotateZ = 90.0f;
                     }
                     else if (j == 2)
                     {
-                        position = new Vector3(i - 6, 0.5f + (-0.01f * i), 12);
+                        position = new Vector3(i - 6.5f, 0.5f + (-0.01f * i), 12);
                         rotateX = -90.0f;
                         rotateZ = 180.0f;
                     }
                     else
                     {
-                        position = new Vector3(22, 0.5f + (0.01f * i), i - 6);
+                        position = new Vector3(22, 0.5f + (0.01f * i), i - 6.5f);
                         rotateY = -90.0f;
                         rotateZ = -90.0f;
                     }

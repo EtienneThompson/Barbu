@@ -12,7 +12,7 @@ namespace Barbu.UI.Controllers
         private TextMeshProUGUI player3points;
         private TextMeshProUGUI player4points;
         private Dictionary<string, TextMeshProUGUI> playerPoints;
-        private Label roundName;
+        //private Label roundName;
 
         private void OnEnable()
         {
@@ -34,14 +34,14 @@ namespace Barbu.UI.Controllers
 
         public void SetRoundName(string roundName)
         {
-            this.roundName.text = roundName;
-            this.roundName.style.display = DisplayStyle.Flex;
+            //this.roundName.text = roundName;
+            //this.roundName.style.display = DisplayStyle.Flex;
         }
 
         public void ResetRoundName()
         {
-            this.roundName.text = string.Empty;
-            this.roundName.style.display = DisplayStyle.None;
+            //this.roundName.text = string.Empty;
+            //this.roundName.style.display = DisplayStyle.None;
         }
 
         public void UpdatePlayerPoints(string player, int points)

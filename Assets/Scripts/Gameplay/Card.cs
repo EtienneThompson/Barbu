@@ -1,12 +1,11 @@
 namespace Barbu.Gameplay
 {
+    using Barbu.Core;
+    using Barbu.Core.Events;
     using System;
     using System.Collections;
     using System.IO;
-    using Barbu.Core;
-    using Barbu.Core.Events;
     using UnityEngine;
-    using UnityEngine.EventSystems;
     using Zenject;
 
     public class Card : MonoBehaviour
@@ -18,6 +17,7 @@ namespace Barbu.Gameplay
         }
 
         public const float baseSpeed = 30.0f;
+        public const float movementTime = 0.5f;
         public const float MoveToPlayerMultiplier = 2.0f;
         public const float AdjustPositionInHandMultiplier = 0.75f;
 
@@ -92,7 +92,7 @@ namespace Barbu.Gameplay
 
             transform.position = position;
             transform.Rotate(rotateX, rotateY, rotateZ, Space.Self);
-            transform.localScale = new Vector3(5, 5, 5);
+            transform.localScale = new Vector3(1, 1, 1);
             this.meshRenderer.material.SetFloat("_BorderThickness", 0.0f);
             this.initialColor = this.meshRenderer.material.GetColor("_BorderColor");
         }
@@ -211,11 +211,18 @@ namespace Barbu.Gameplay
             }
 
             var rotate = new Vector3(0.0f, UnityEngine.Random.Range(-5.0f, 5.0f), 0.0f);
-            while (transform.position != center)
+            var elapsedTime = 0.0f;
+            var initialPosition = transform.position;
+            while (elapsedTime < movementTime)
             {
-                transform.position = Vector3.MoveTowards(transform.position, center, this.GetMovingSpeed());
+                elapsedTime += Time.deltaTime;
+                float t = Mathf.Clamp01(elapsedTime / movementTime);
+
+                // Smooth movement (ease in/out)
+                transform.position = Vector3.Lerp(initialPosition, center, t);
                 transform.Rotate(rotate * this.GetMovingSpeed());
-                yield return null;
+
+                yield return null; // Wait until next frame
             }
             yield return new WaitForSeconds(this.GetPlayCardDelay());
             eventsController.Fire(EventNames.PlayCard, this);
