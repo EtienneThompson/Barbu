@@ -17,8 +17,8 @@ namespace Barbu.Gameplay
         }
 
         public const float baseSpeed = 30.0f;
-        public const float movementTime = 0.5f;
-        public const float MoveToPlayerMultiplier = 2.0f;
+        public const float baseMovementTime = 0.5f;
+        public const float autoPlayMovementTime = 0.1f;
         public const float AdjustPositionInHandMultiplier = 0.75f;
 
         public string suit;
@@ -213,6 +213,7 @@ namespace Barbu.Gameplay
             var rotate = new Vector3(0.0f, UnityEngine.Random.Range(-5.0f, 5.0f), 0.0f);
             var elapsedTime = 0.0f;
             var initialPosition = transform.position;
+            var movementTime = this.stateMachine.IsAutoPlayMode() ? autoPlayMovementTime : baseMovementTime;
             while (elapsedTime < movementTime)
             {
                 elapsedTime += Time.deltaTime;
@@ -220,7 +221,7 @@ namespace Barbu.Gameplay
 
                 // Smooth movement (ease in/out)
                 transform.position = Vector3.Lerp(initialPosition, center, t);
-                transform.Rotate(rotate * this.GetMovingSpeed());
+                transform.Rotate(rotate * this.GetMovingSpeed(), Space.World);
 
                 yield return null; // Wait until next frame
             }
@@ -249,13 +250,18 @@ namespace Barbu.Gameplay
                     throw new Exception("The provided player id is invalid");
             }
 
-            while (transform.position != finalPosition)
+            var elapsedTime = 0.0f;
+            var initialPosition = transform.position;
+            var movementTime = this.stateMachine.IsAutoPlayMode() ? autoPlayMovementTime : baseMovementTime;
+            while (elapsedTime < movementTime)
             {
-                transform.position = Vector3.MoveTowards(
-                    transform.position,
-                    finalPosition,
-                    this.GetMovingSpeed() * MoveToPlayerMultiplier);
-                yield return null;
+                elapsedTime += Time.deltaTime;
+                float t = Mathf.Clamp01(elapsedTime / movementTime);
+
+                // Smooth movement (ease in/out)
+                transform.position = Vector3.Lerp(initialPosition, finalPosition, t);
+
+                yield return null; // Wait until next frame
             }
 
             yield return new WaitForSeconds(0.1f);
@@ -285,13 +291,18 @@ namespace Barbu.Gameplay
                     throw new Exception("The provided player id is invalid");
             }
 
-            while (transform.position != finalPosition)
+            var elapsedTime = 0.0f;
+            var initialPosition = transform.position;
+            var movementTime = this.stateMachine.IsAutoPlayMode() ? autoPlayMovementTime : baseMovementTime;
+            while (elapsedTime < movementTime)
             {
-                transform.position = Vector3.MoveTowards(
-                    transform.position,
-                    finalPosition,
-                    this.GetMovingSpeed() * AdjustPositionInHandMultiplier);
-                yield return null;
+                elapsedTime += Time.deltaTime;
+                float t = Mathf.Clamp01(elapsedTime / movementTime);
+
+                // Smooth movement (ease in/out)
+                transform.position = Vector3.Lerp(initialPosition, finalPosition, t);
+
+                yield return null; // Wait until next frame
             }
         }
 

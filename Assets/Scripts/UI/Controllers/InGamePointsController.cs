@@ -46,7 +46,8 @@ namespace Barbu.UI.Controllers
 
         public void UpdatePlayerPoints(string player, int points)
         {
-            var currentPoints = int.Parse(this.playerPoints[player].text);
+            var ptsInt = this.playerPoints[player].text.Split(" ")[0];
+            var currentPoints = int.Parse(ptsInt);
             this.playerPoints[player].text = $"{(currentPoints + points).ToString()} Pts";
         }
 
