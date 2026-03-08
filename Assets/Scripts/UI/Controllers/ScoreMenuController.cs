@@ -61,7 +61,6 @@ namespace Barbu.UI.Controllers
                 {
                     this.stateMachine.SetMenuOpen(false);
                     this.inGamePoints.SetActive(true);
-                    this.roundOverlay.SetActive(true);
                     this.eventsController.Fire(EventNames.ResumeGame);
                     this.gameObject.SetActive(false);
                 }
