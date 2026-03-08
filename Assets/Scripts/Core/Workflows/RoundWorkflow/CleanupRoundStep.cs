@@ -38,7 +38,7 @@ namespace Barbu.Core.Workflows.RoundWorkflow
             inGamePointsController.ResetPoints();
             inGamePointsOverlay.SetActive(false);
 
-            var roundOverlay = GameObject.Find(Constants.GameObjects.RoundOverlay);
+            var roundOverlay = GameObjectExtensions.FindGameObjectByName(Constants.GameObjects.RoundOverlay, findInactive: true);
             var roundOverlayController = roundOverlay.GetComponent<RoundOverlayController>();
             roundOverlayController.HideText();
 

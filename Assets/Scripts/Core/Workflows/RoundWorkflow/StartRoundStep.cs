@@ -31,6 +31,8 @@ namespace Barbu.Core.Workflows.RoundWorkflow
         public Task InvokeAsync(StepArguments<RoundArguments> args)
         {
             this.telemetryService.LogInfo("[RoundWorkflow] [StartRoundStep] Executing StartRound step...");
+            var roundOverlay = GameObjectExtensions.FindGameObjectByName(Constants.GameObjects.RoundOverlay, findInactive: true);
+            roundOverlay.SetActive(false);
             this.stateMachine.ResetNumCardsPlayed();
 
             if (args.Data.TricksPlayed == Constants.NumPilesPerRound)
@@ -52,7 +54,7 @@ namespace Barbu.Core.Workflows.RoundWorkflow
             {
                 this.telemetryService.LogInfo("[RoundWorkflow] [StartRound] Round is over, auto playing remaining cards.");
                 this.stateMachine.SetAutoPlayMode(true);
-                var roundOverlay = GameObject.Find(Constants.GameObjects.RoundOverlay);
+                roundOverlay.SetActive(true);
                 var roundOverlayController = roundOverlay.GetComponent<RoundOverlayController>();
                 roundOverlayController.ShowRoundOverMessage();
             }

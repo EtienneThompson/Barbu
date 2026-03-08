@@ -1,10 +1,10 @@
 namespace Barbu.Gameplay
 {
+    using Barbu.Core;
+    using Barbu.Core.Events;
     using System;
     using System.Collections;
     using System.IO;
-    using Barbu.Core;
-    using Barbu.Core.Events;
     using UnityEngine;
     using Zenject;
 
@@ -17,7 +17,8 @@ namespace Barbu.Gameplay
         }
 
         public const float baseSpeed = 30.0f;
-        public const float MoveToPlayerMultiplier = 2.0f;
+        public const float baseMovementTime = 0.5f;
+        public const float autoPlayMovementTime = 0.1f;
         public const float AdjustPositionInHandMultiplier = 0.75f;
 
         public string suit;
@@ -91,29 +92,9 @@ namespace Barbu.Gameplay
 
             transform.position = position;
             transform.Rotate(rotateX, rotateY, rotateZ, Space.Self);
+            transform.localScale = new Vector3(1, 1, 1);
             this.meshRenderer.material.SetFloat("_BorderThickness", 0.0f);
             this.initialColor = this.meshRenderer.material.GetColor("_BorderColor");
-        }
-
-        // Update is called once per frame
-        void Update()
-        {
-            if (((this.stateMachine.MustPlayCardInStartingSuit() && this.suit.Equals(this.stateMachine.GetStartingSuit())) ||
-                !this.stateMachine.MustPlayCardInStartingSuit()) &&
-                this.stateMachine.IsCardPlayable() &&
-                !this.stateMachine.IsMenuOpen() &&
-                Input.GetMouseButtonDown(0))
-            {
-                Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-                RaycastHit hit;
-                if (Physics.Raycast(ray, out hit))
-                {
-                    if (hit.transform == transform)
-                    {
-                        this.PlayCard();
-                    }
-                }
-            }
         }
 
         public string GetName()
@@ -230,11 +211,19 @@ namespace Barbu.Gameplay
             }
 
             var rotate = new Vector3(0.0f, UnityEngine.Random.Range(-5.0f, 5.0f), 0.0f);
-            while (transform.position != center)
+            var elapsedTime = 0.0f;
+            var initialPosition = transform.position;
+            var movementTime = this.stateMachine.IsAutoPlayMode() ? autoPlayMovementTime : baseMovementTime;
+            while (elapsedTime < movementTime)
             {
-                transform.position = Vector3.MoveTowards(transform.position, center, this.GetMovingSpeed());
-                transform.Rotate(rotate * this.GetMovingSpeed());
-                yield return null;
+                elapsedTime += Time.deltaTime;
+                float t = Mathf.Clamp01(elapsedTime / movementTime);
+
+                // Smooth movement (ease in/out)
+                transform.position = Vector3.Lerp(initialPosition, center, t);
+                transform.Rotate(rotate * this.GetMovingSpeed(), Space.World);
+
+                yield return null; // Wait until next frame
             }
             yield return new WaitForSeconds(this.GetPlayCardDelay());
             eventsController.Fire(EventNames.PlayCard, this);
@@ -261,13 +250,18 @@ namespace Barbu.Gameplay
                     throw new Exception("The provided player id is invalid");
             }
 
-            while (transform.position != finalPosition)
+            var elapsedTime = 0.0f;
+            var initialPosition = transform.position;
+            var movementTime = this.stateMachine.IsAutoPlayMode() ? autoPlayMovementTime : baseMovementTime;
+            while (elapsedTime < movementTime)
             {
-                transform.position = Vector3.MoveTowards(
-                    transform.position,
-                    finalPosition,
-                    this.GetMovingSpeed() * MoveToPlayerMultiplier);
-                yield return null;
+                elapsedTime += Time.deltaTime;
+                float t = Mathf.Clamp01(elapsedTime / movementTime);
+
+                // Smooth movement (ease in/out)
+                transform.position = Vector3.Lerp(initialPosition, finalPosition, t);
+
+                yield return null; // Wait until next frame
             }
 
             yield return new WaitForSeconds(0.1f);
@@ -297,13 +291,30 @@ namespace Barbu.Gameplay
                     throw new Exception("The provided player id is invalid");
             }
 
-            while (transform.position != finalPosition)
+            var elapsedTime = 0.0f;
+            var initialPosition = transform.position;
+            var movementTime = this.stateMachine.IsAutoPlayMode() ? autoPlayMovementTime : baseMovementTime;
+            while (elapsedTime < movementTime)
             {
-                transform.position = Vector3.MoveTowards(
-                    transform.position,
-                    finalPosition,
-                    this.GetMovingSpeed() * AdjustPositionInHandMultiplier);
-                yield return null;
+                elapsedTime += Time.deltaTime;
+                float t = Mathf.Clamp01(elapsedTime / movementTime);
+
+                // Smooth movement (ease in/out)
+                transform.position = Vector3.Lerp(initialPosition, finalPosition, t);
+
+                yield return null; // Wait until next frame
+            }
+        }
+
+        public void OnPointerClick()
+        {
+            Debug.Log($"Card {this.suit}{this.rank} clicked");
+            if (((this.stateMachine.MustPlayCardInStartingSuit() && this.suit.Equals(this.stateMachine.GetStartingSuit())) ||
+                !this.stateMachine.MustPlayCardInStartingSuit()) &&
+                this.stateMachine.IsCardPlayable() &&
+                !this.stateMachine.IsMenuOpen())
+            {
+                this.PlayCard();
             }
         }
     }

@@ -3,6 +3,7 @@ namespace Barbu.Core.Workflows.RoundWorkflow
     using Barbu.Core;
     using Barbu.Core.Events;
     using Barbu.Core.Telemetry;
+    using Barbu.UI.Controllers;
     using System.Threading.Tasks;
     using UnityEngine;
 
@@ -24,6 +25,11 @@ namespace Barbu.Core.Workflows.RoundWorkflow
         public Task InvokeAsync(StepArguments<RoundArguments> args)
         {
             this.telemetryService.LogInfo("[RoundWorkflow] [ShowAdvertisement] Executing show advertisement step...");
+
+            var roundOverlay = GameObjectExtensions.FindGameObjectByName(Constants.GameObjects.RoundOverlay);
+            roundOverlay.SetActive(false);
+            var roundOverlayController = roundOverlay.GetComponent<RoundOverlayController>();
+            roundOverlayController.HideText();
 
             var gameBoard = GameObject.Find(Constants.GameObjects.GameBoard);
             var advertisementController = gameBoard.GetComponent<AdvertisementController>();
