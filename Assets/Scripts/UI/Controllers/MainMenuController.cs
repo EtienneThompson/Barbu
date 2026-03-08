@@ -99,6 +99,24 @@ namespace Barbu
             }
         }
 
+        public void ShowMenu()
+        {
+            if (!this.IsUIVisible(this.mainMenuContainer.GetComponent<RectTransform>()))
+            {
+                this.telemetryService.LogInfo("Moving menu into view");
+                StartCoroutine(this.MoveMenu(this.inViewRelativePosition));
+            }
+        }
+
+        public void HideMenu()
+        {
+            if (this.IsUIVisible(this.mainMenuContainer.GetComponent<RectTransform>()))
+            {
+                this.telemetryService.LogInfo("Moving menu out of view");
+                StartCoroutine(this.MoveMenu(this.outOfViewRelativePosition));
+            }
+        }
+
         bool IsUIVisible(RectTransform rectTransform)
         {
             if (rectTransform == null) return false;

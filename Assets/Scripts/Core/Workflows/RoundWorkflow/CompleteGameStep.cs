@@ -30,6 +30,7 @@ namespace Barbu.Core.Workflows.RoundWorkflow
             var winningPlayers = args.Data.GetWinningPlayerIds();
 
             var roundOverlay = GameObjectExtensions.FindGameObjectByName(Constants.GameObjects.RoundOverlay, findInactive: true);
+            roundOverlay.SetActive(true);
             var controller = roundOverlay.GetComponent<RoundOverlayController>();
             controller.DisplayWinner(winningPlayers);
 

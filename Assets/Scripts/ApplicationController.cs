@@ -51,20 +51,23 @@ namespace Barbu
                     return;
                 }
 
+                var mainMenu = GameObjectExtensions.FindGameObjectByName("MainMenu");
+                var mainMenuController = mainMenu.GetComponent<MainMenuController>();
+
                 Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
                 if (Physics.Raycast(ray, out var hit))
                 {
                     Card card = hit.collider.GetComponent<Card>();
                     if (card != null)
                     {
+                        // Hide the menu if a card is clicked and the menu is visible.
+                        mainMenuController.HideMenu();
                         card.OnPointerClick();
                         return;
                     }
                 }
 
                 // Default Behavior of the app, if an interaction hits nothing.
-                var mainMenu = GameObjectExtensions.FindGameObjectByName("MainMenu");
-                var mainMenuController = mainMenu.GetComponent<MainMenuController>();
                 mainMenuController.ToggleMenuVisibility();
             }
         }

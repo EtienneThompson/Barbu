@@ -7,15 +7,12 @@ namespace Barbu.UI.Controllers
     using Barbu.Core.Telemetry;
     using TMPro;
     using UnityEngine;
-    using UnityEngine.UIElements;
     using Zenject;
 
     public class RoundOverlayController : MonoBehaviour
     {
         private IEventsController eventsController;
         private ITelemetryService telemetryService;
-        private Label roundLabel;
-        private Label subtitleLabel;
 
         private TextMeshProUGUI roundText;
         private TextMeshProUGUI subtitleText;
@@ -39,6 +36,8 @@ namespace Barbu.UI.Controllers
 
         public void DisplayRound(string roundName, GameTypes gameType)
         {
+            this.roundText.fontSize = 36;
+            this.subtitleText.fontSize = 24;
             StartCoroutine(DisplayRoutine(
                 roundName,
                 subText: gameType.ToString(),
@@ -81,6 +80,8 @@ namespace Barbu.UI.Controllers
 
         public void HideText()
         {
+            this.roundText.fontSize = 32;
+            this.subtitleText.fontSize = 18;
             this.roundText.text = string.Empty;
             this.subtitleText.text = string.Empty;
         }
