@@ -28,8 +28,7 @@ namespace Barbu
             gamesMenu?.SetActive(false);
             GameObject settingsMenu = GameObject.Find(Constants.GameObjects.SettingsMenu);
             settingsMenu?.SetActive(false);
-            GameObject singleRoundMenu = GameObject.Find(Constants.GameObjects.SingleRoundMenu);
-            singleRoundMenu?.SetActive(false);
+
             GameObject roundOverlay = GameObject.Find(Constants.GameObjects.RoundOverlay);
             roundOverlay?.SetActive(false);
 

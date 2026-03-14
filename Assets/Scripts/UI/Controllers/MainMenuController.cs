@@ -26,7 +26,7 @@ namespace Barbu
         private GameObject howToPlayScreen;
         private GameObject inGamePoints;
         private GameObject roundOverlay;
-        private GameObject singleRoundMenu;
+        private SingleRoundMenuController singleRoundMenuController;
         private ScoreMenuController scoreMenuController;
 
         private IStateMachine stateMachine;
@@ -36,6 +36,8 @@ namespace Barbu
 
         private Vector2 inViewRelativePosition = new Vector2(-45, 0);
         private Vector2 outOfViewRelativePosition = new Vector2(45, 0);
+
+        private const float menuSlideSpeed = 300f;
 
         [Inject]
         public void Init(
@@ -71,7 +73,8 @@ namespace Barbu
             this.howToPlayScreen = GameObjectExtensions.FindGameObjectByName(Constants.GameObjects.HowToPlayScreen, findInactive: true);
             this.inGamePoints = GameObjectExtensions.FindGameObjectByName(Constants.GameObjects.InGamePoints, findInactive: true);
             this.roundOverlay = GameObjectExtensions.FindGameObjectByName(Constants.GameObjects.RoundOverlay, findInactive: true);
-            this.singleRoundMenu = GameObjectExtensions.FindGameObjectByName(Constants.GameObjects.SingleRoundMenu, findInactive: true);
+            var singleRoundMenuGO = GameObjectExtensions.FindGameObjectByName(Constants.GameObjects.SingleRoundMenu, findInactive: true);
+            this.singleRoundMenuController = singleRoundMenuGO.GetComponent<SingleRoundMenuController>();
             var scoreCanvas = GameObjectExtensions.FindGameObjectByName(Constants.GameObjects.ScoreMenuCanvas, findInactive: true);
             this.scoreMenuController = scoreCanvas.GetComponent<ScoreMenuController>();
 
@@ -99,12 +102,14 @@ namespace Barbu
             if (this.IsUIVisible(this.mainMenuContainer.GetComponent<RectTransform>()))
             {
                 this.telemetryService.LogInfo("Moving menu out of view");
-                StartCoroutine(this.MoveMenu(this.outOfViewRelativePosition));
+                this.singleRoundMenuController.FollowMenuOut();
+                StartCoroutine(this.MoveMenu(this.outOfViewRelativePosition, menuSlideSpeed));
             }
             else
             {
                 this.telemetryService.LogInfo("Moving menu into view");
-                StartCoroutine(this.MoveMenu(this.inViewRelativePosition));
+                this.singleRoundMenuController.FollowMenuIn();
+                StartCoroutine(this.MoveMenu(this.inViewRelativePosition, menuSlideSpeed));
             }
         }
 
@@ -113,7 +118,8 @@ namespace Barbu
             if (!this.IsUIVisible(this.mainMenuContainer.GetComponent<RectTransform>()))
             {
                 this.telemetryService.LogInfo("Moving menu into view");
-                StartCoroutine(this.MoveMenu(this.inViewRelativePosition));
+                this.singleRoundMenuController.FollowMenuIn();
+                StartCoroutine(this.MoveMenu(this.inViewRelativePosition, menuSlideSpeed));
             }
         }
 
@@ -122,7 +128,8 @@ namespace Barbu
             if (this.IsUIVisible(this.mainMenuContainer.GetComponent<RectTransform>()))
             {
                 this.telemetryService.LogInfo("Moving menu out of view");
-                StartCoroutine(this.MoveMenu(this.outOfViewRelativePosition));
+                this.singleRoundMenuController.FollowMenuOut();
+                StartCoroutine(this.MoveMenu(this.outOfViewRelativePosition, menuSlideSpeed));
             }
         }
 
@@ -167,8 +174,7 @@ namespace Barbu
         private void HandleSingleGameButtonClick()
         {
             this.telemetryService.LogInfo("Single game button clicked");
-            this.HideMenu();
-            this.singleRoundMenu.SetActive(true);
+            this.singleRoundMenuController.ToggleMenuVisibility();
         }
 
         private void HandleChaosGameButtonClick()
@@ -206,9 +212,9 @@ namespace Barbu
             return buttonObject.GetComponent<Button>();
         }
 
-        private IEnumerator MoveMenu(Vector2 finalPosition)
+        private IEnumerator MoveMenu(Vector2 finalPosition, float speed)
         {
-            var baseMoveSpeed = 300.0f;
+            var baseMoveSpeed = speed;
             var rectTransform = this.mainMenuContainer.GetComponent<RectTransform>();
             while (rectTransform.anchoredPosition != finalPosition)
             {
