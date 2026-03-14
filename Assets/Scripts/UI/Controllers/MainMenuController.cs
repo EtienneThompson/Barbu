@@ -15,15 +15,18 @@ namespace Barbu
         private Camera mainCamera;
         private GameObject mainMenuContainer;
         private Button settingsButton;
-        private Button gamesButton;
+        private Button tradGameButton;
+        private Button singleGameButton;
+        private Button chaosGameButton;
         private Button rulesButton;
         private Button scoreButton;
 
+        private GameBoard gameBoard;
         private GameObject settingsMenu;
-        private GameObject gamesMenu;
         private GameObject howToPlayScreen;
         private GameObject inGamePoints;
         private GameObject roundOverlay;
+        private GameObject singleRoundMenu;
         private ScoreMenuController scoreMenuController;
 
         private IStateMachine stateMachine;
@@ -57,21 +60,25 @@ namespace Barbu
             this.mainMenuContainer = GameObjectExtensions.FindGameObjectByName("MainMenuContainer");
 
             this.settingsButton = GetButtonObject("SettingsButton");
-            this.gamesButton = GetButtonObject("GamesButton");
+            this.tradGameButton = GetButtonObject("TradGameButton");
+            this.singleGameButton = GetButtonObject("SingleGameButton");
+            this.chaosGameButton = GetButtonObject("ChaosGameButton");
             this.rulesButton = GetButtonObject("RulesButton");
             this.scoreButton = GetButtonObject("ScoreButton");
 
+            this.gameBoard = GameObject.Find(Constants.GameObjects.GameBoard).GetComponent<GameBoard>();
             this.settingsMenu = GameObjectExtensions.FindGameObjectByName(Constants.GameObjects.SettingsMenu, findInactive: true);
-            this.gamesMenu = GameObjectExtensions.FindGameObjectByName(Constants.GameObjects.GamesMenu, findInactive: true);
             this.howToPlayScreen = GameObjectExtensions.FindGameObjectByName(Constants.GameObjects.HowToPlayScreen, findInactive: true);
             this.inGamePoints = GameObjectExtensions.FindGameObjectByName(Constants.GameObjects.InGamePoints, findInactive: true);
             this.roundOverlay = GameObjectExtensions.FindGameObjectByName(Constants.GameObjects.RoundOverlay, findInactive: true);
+            this.singleRoundMenu = GameObjectExtensions.FindGameObjectByName(Constants.GameObjects.SingleRoundMenu, findInactive: true);
             var scoreCanvas = GameObjectExtensions.FindGameObjectByName(Constants.GameObjects.ScoreMenuCanvas, findInactive: true);
             this.scoreMenuController = scoreCanvas.GetComponent<ScoreMenuController>();
 
-            //this.settingsButton.interactable = true;
             this.settingsButton.onClick.AddListener(this.HandleSettingsButtonClick);
-            this.gamesButton.onClick.AddListener(this.HandleGamesButtonClick);
+            this.tradGameButton.onClick.AddListener(this.HandleTradGameButtonClick);
+            this.singleGameButton.onClick.AddListener(this.HandleSingleGameButtonClick);
+            this.chaosGameButton.onClick.AddListener(this.HandleChaosGameButtonClick);
             this.rulesButton.onClick.AddListener(this.HandleRulesButtonClick);
             this.scoreButton.onClick.AddListener(this.HandleScoreButtonClick);
         }
@@ -80,7 +87,9 @@ namespace Barbu
         {
             this.telemetryService.LogInfo("Disabling MainMenuController");
             this.settingsButton.onClick.RemoveAllListeners();
-            this.gamesButton.onClick.RemoveAllListeners();
+            this.tradGameButton.onClick.RemoveAllListeners();
+            this.singleGameButton.onClick.RemoveAllListeners();
+            this.chaosGameButton.onClick.RemoveAllListeners();
             this.rulesButton.onClick.RemoveAllListeners();
             this.scoreButton.onClick.RemoveAllListeners();
         }
@@ -147,11 +156,27 @@ namespace Barbu
             this.settingsMenu.SetActive(true);
         }
 
-        private void HandleGamesButtonClick()
+        private void HandleTradGameButtonClick()
         {
-            this.telemetryService.LogInfo("Games button clicked");
-            this.ToggleMenuVisibility();
-            this.gamesMenu.SetActive(true);
+            this.telemetryService.LogInfo("Traditional game button clicked");
+            this.HideMenu();
+            this.stateMachine.SetMenuOpen(false);
+            this.gameBoard.CreateNewGame(Constants.TraditionalRoundManager.GameName, null);
+        }
+
+        private void HandleSingleGameButtonClick()
+        {
+            this.telemetryService.LogInfo("Single game button clicked");
+            this.HideMenu();
+            this.singleRoundMenu.SetActive(true);
+        }
+
+        private void HandleChaosGameButtonClick()
+        {
+            this.telemetryService.LogInfo("Chaos game button clicked");
+            this.HideMenu();
+            this.stateMachine.SetMenuOpen(false);
+            this.gameBoard.CreateNewGame(Constants.ChaosRoundManager.GameName, null);
         }
 
         private void HandleRulesButtonClick()
