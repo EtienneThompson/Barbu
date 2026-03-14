@@ -15,15 +15,18 @@ namespace Barbu
         private Camera mainCamera;
         private GameObject mainMenuContainer;
         private Button settingsButton;
-        private Button gamesButton;
+        private Button tradGameButton;
+        private Button singleGameButton;
+        private Button chaosGameButton;
         private Button rulesButton;
         private Button scoreButton;
 
+        private GameBoard gameBoard;
         private GameObject settingsMenu;
-        private GameObject gamesMenu;
         private GameObject howToPlayScreen;
         private GameObject inGamePoints;
         private GameObject roundOverlay;
+        private SingleRoundMenuController singleRoundMenuController;
         private ScoreMenuController scoreMenuController;
 
         private IStateMachine stateMachine;
@@ -33,6 +36,8 @@ namespace Barbu
 
         private Vector2 inViewRelativePosition = new Vector2(-45, 0);
         private Vector2 outOfViewRelativePosition = new Vector2(45, 0);
+
+        private const float menuSlideSpeed = 300f;
 
         [Inject]
         public void Init(
@@ -57,21 +62,26 @@ namespace Barbu
             this.mainMenuContainer = GameObjectExtensions.FindGameObjectByName("MainMenuContainer");
 
             this.settingsButton = GetButtonObject("SettingsButton");
-            this.gamesButton = GetButtonObject("GamesButton");
+            this.tradGameButton = GetButtonObject("TradGameButton");
+            this.singleGameButton = GetButtonObject("SingleGameButton");
+            this.chaosGameButton = GetButtonObject("ChaosGameButton");
             this.rulesButton = GetButtonObject("RulesButton");
             this.scoreButton = GetButtonObject("ScoreButton");
 
+            this.gameBoard = GameObject.Find(Constants.GameObjects.GameBoard).GetComponent<GameBoard>();
             this.settingsMenu = GameObjectExtensions.FindGameObjectByName(Constants.GameObjects.SettingsMenu, findInactive: true);
-            this.gamesMenu = GameObjectExtensions.FindGameObjectByName(Constants.GameObjects.GamesMenu, findInactive: true);
             this.howToPlayScreen = GameObjectExtensions.FindGameObjectByName(Constants.GameObjects.HowToPlayScreen, findInactive: true);
             this.inGamePoints = GameObjectExtensions.FindGameObjectByName(Constants.GameObjects.InGamePoints, findInactive: true);
             this.roundOverlay = GameObjectExtensions.FindGameObjectByName(Constants.GameObjects.RoundOverlay, findInactive: true);
+            var singleRoundMenuGO = GameObjectExtensions.FindGameObjectByName(Constants.GameObjects.SingleRoundMenu, findInactive: true);
+            this.singleRoundMenuController = singleRoundMenuGO.GetComponent<SingleRoundMenuController>();
             var scoreCanvas = GameObjectExtensions.FindGameObjectByName(Constants.GameObjects.ScoreMenuCanvas, findInactive: true);
             this.scoreMenuController = scoreCanvas.GetComponent<ScoreMenuController>();
 
-            //this.settingsButton.interactable = true;
             this.settingsButton.onClick.AddListener(this.HandleSettingsButtonClick);
-            this.gamesButton.onClick.AddListener(this.HandleGamesButtonClick);
+            this.tradGameButton.onClick.AddListener(this.HandleTradGameButtonClick);
+            this.singleGameButton.onClick.AddListener(this.HandleSingleGameButtonClick);
+            this.chaosGameButton.onClick.AddListener(this.HandleChaosGameButtonClick);
             this.rulesButton.onClick.AddListener(this.HandleRulesButtonClick);
             this.scoreButton.onClick.AddListener(this.HandleScoreButtonClick);
         }
@@ -80,7 +90,9 @@ namespace Barbu
         {
             this.telemetryService.LogInfo("Disabling MainMenuController");
             this.settingsButton.onClick.RemoveAllListeners();
-            this.gamesButton.onClick.RemoveAllListeners();
+            this.tradGameButton.onClick.RemoveAllListeners();
+            this.singleGameButton.onClick.RemoveAllListeners();
+            this.chaosGameButton.onClick.RemoveAllListeners();
             this.rulesButton.onClick.RemoveAllListeners();
             this.scoreButton.onClick.RemoveAllListeners();
         }
@@ -90,12 +102,14 @@ namespace Barbu
             if (this.IsUIVisible(this.mainMenuContainer.GetComponent<RectTransform>()))
             {
                 this.telemetryService.LogInfo("Moving menu out of view");
-                StartCoroutine(this.MoveMenu(this.outOfViewRelativePosition));
+                this.singleRoundMenuController.FollowMenuOut();
+                StartCoroutine(this.MoveMenu(this.outOfViewRelativePosition, menuSlideSpeed));
             }
             else
             {
                 this.telemetryService.LogInfo("Moving menu into view");
-                StartCoroutine(this.MoveMenu(this.inViewRelativePosition));
+                this.singleRoundMenuController.FollowMenuIn();
+                StartCoroutine(this.MoveMenu(this.inViewRelativePosition, menuSlideSpeed));
             }
         }
 
@@ -104,7 +118,8 @@ namespace Barbu
             if (!this.IsUIVisible(this.mainMenuContainer.GetComponent<RectTransform>()))
             {
                 this.telemetryService.LogInfo("Moving menu into view");
-                StartCoroutine(this.MoveMenu(this.inViewRelativePosition));
+                this.singleRoundMenuController.FollowMenuIn();
+                StartCoroutine(this.MoveMenu(this.inViewRelativePosition, menuSlideSpeed));
             }
         }
 
@@ -113,7 +128,8 @@ namespace Barbu
             if (this.IsUIVisible(this.mainMenuContainer.GetComponent<RectTransform>()))
             {
                 this.telemetryService.LogInfo("Moving menu out of view");
-                StartCoroutine(this.MoveMenu(this.outOfViewRelativePosition));
+                this.singleRoundMenuController.FollowMenuOut();
+                StartCoroutine(this.MoveMenu(this.outOfViewRelativePosition, menuSlideSpeed));
             }
         }
 
@@ -147,11 +163,26 @@ namespace Barbu
             this.settingsMenu.SetActive(true);
         }
 
-        private void HandleGamesButtonClick()
+        private void HandleTradGameButtonClick()
         {
-            this.telemetryService.LogInfo("Games button clicked");
-            this.ToggleMenuVisibility();
-            this.gamesMenu.SetActive(true);
+            this.telemetryService.LogInfo("Traditional game button clicked");
+            this.HideMenu();
+            this.stateMachine.SetMenuOpen(false);
+            this.gameBoard.CreateNewGame(Constants.TraditionalRoundManager.GameName, null);
+        }
+
+        private void HandleSingleGameButtonClick()
+        {
+            this.telemetryService.LogInfo("Single game button clicked");
+            this.singleRoundMenuController.ToggleMenuVisibility();
+        }
+
+        private void HandleChaosGameButtonClick()
+        {
+            this.telemetryService.LogInfo("Chaos game button clicked");
+            this.HideMenu();
+            this.stateMachine.SetMenuOpen(false);
+            this.gameBoard.CreateNewGame(Constants.ChaosRoundManager.GameName, null);
         }
 
         private void HandleRulesButtonClick()
@@ -181,9 +212,9 @@ namespace Barbu
             return buttonObject.GetComponent<Button>();
         }
 
-        private IEnumerator MoveMenu(Vector2 finalPosition)
+        private IEnumerator MoveMenu(Vector2 finalPosition, float speed)
         {
-            var baseMoveSpeed = 300.0f;
+            var baseMoveSpeed = speed;
             var rectTransform = this.mainMenuContainer.GetComponent<RectTransform>();
             while (rectTransform.anchoredPosition != finalPosition)
             {

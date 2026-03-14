@@ -54,6 +54,7 @@ namespace Barbu
             public const string InGamePoints = "InGamePoints";
             public const string HowToPlayScreen = "HowToPlayScreen";
             public const string SingleRoundMenu = "SingleRoundMenu";
+            public const string SingleRoundMenuContainer = "SingleRoundMenuContainer";
         }
 
         public static class PlayerIds
