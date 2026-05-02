@@ -75,3 +75,6 @@ crashlytics-build.properties
 
 # Platform Build Folders
 iOS/
+
+# Claude Code
+.claude
