@@ -79,6 +79,19 @@ namespace Barbu
             Blue,
         }
 
+        public enum MenuSide
+        {
+            /// <summary>
+            /// The menu appears on the right side of the screen.
+            /// </summary>
+            Right,
+
+            /// <summary>
+            /// The menu appears on the left side of the screen.
+            /// </summary>
+            Left,
+        }
+
         public static SortingOptions[] HandSortingOptions => (SortingOptions[])Enum.GetValues(typeof(SortingOptions));
 
         public static SortingOptions SortingPreference
@@ -121,6 +134,21 @@ namespace Barbu
             set
             {
                 PlayerPrefs.SetInt(Constants.PlayerPrefsKeys.BackColorOption, (int)value);
+            }
+        }
+
+        public static MenuSide[] MenuSides => (MenuSide[])Enum.GetValues(typeof(MenuSide));
+
+        public static MenuSide MenuSidePreference
+        {
+            get
+            {
+                return (MenuSide)PlayerPrefs.GetInt(Constants.PlayerPrefsKeys.MenuSideOption);
+            }
+
+            set
+            {
+                PlayerPrefs.SetInt(Constants.PlayerPrefsKeys.MenuSideOption, (int)value);
             }
         }
 

@@ -34,10 +34,39 @@ namespace Barbu
         private GlobalContext globalContext;
         private ITelemetryService telemetryService;
 
-        private Vector2 inViewRelativePosition = new Vector2(-45, 0);
-        private Vector2 outOfViewRelativePosition = new Vector2(45, 0);
-
         private const float menuSlideSpeed = 300f;
+
+        private Vector2 GetInViewPosition() =>
+            Settings.MenuSidePreference == Settings.MenuSide.Right
+                ? new Vector2(-45, 0)
+                : new Vector2(45, 0);
+
+        private Vector2 GetOutOfViewPosition() =>
+            Settings.MenuSidePreference == Settings.MenuSide.Right
+                ? new Vector2(45, 0)
+                : new Vector2(-45, 0);
+
+        public void ApplyMenuSide()
+        {
+            var rt = this.mainMenuContainer.GetComponent<RectTransform>();
+            bool isRight = Settings.MenuSidePreference == Settings.MenuSide.Right;
+            float anchorX = isRight ? 1f : 0f;
+            rt.anchorMin = new Vector2(anchorX, 0.5f);
+            rt.anchorMax = new Vector2(anchorX, 0.5f);
+            rt.pivot = new Vector2(0.5f, 0.5f);
+            rt.anchoredPosition = GetOutOfViewPosition();
+        }
+
+        private void InitializeMenuSide()
+        {
+            var rt = this.mainMenuContainer.GetComponent<RectTransform>();
+            bool isRight = Settings.MenuSidePreference == Settings.MenuSide.Right;
+            float anchorX = isRight ? 1f : 0f;
+            rt.anchorMin = new Vector2(anchorX, 0.5f);
+            rt.anchorMax = new Vector2(anchorX, 0.5f);
+            rt.pivot = new Vector2(0.5f, 0.5f);
+            rt.anchoredPosition = GetInViewPosition();
+        }
 
         [Inject]
         public void Init(
@@ -60,6 +89,7 @@ namespace Barbu
             this.mainCamera = cameraObject.GetComponent<Camera>();
 
             this.mainMenuContainer = GameObjectExtensions.FindGameObjectByName("MainMenuContainer");
+            this.InitializeMenuSide();
 
             this.settingsButton = GetButtonObject("SettingsButton");
             this.tradGameButton = GetButtonObject("TradGameButton");
@@ -103,13 +133,13 @@ namespace Barbu
             {
                 this.telemetryService.LogInfo("Moving menu out of view");
                 this.singleRoundMenuController.FollowMenuOut();
-                StartCoroutine(this.MoveMenu(this.outOfViewRelativePosition, menuSlideSpeed));
+                StartCoroutine(this.MoveMenu(this.GetOutOfViewPosition(), menuSlideSpeed));
             }
             else
             {
                 this.telemetryService.LogInfo("Moving menu into view");
                 this.singleRoundMenuController.FollowMenuIn();
-                StartCoroutine(this.MoveMenu(this.inViewRelativePosition, menuSlideSpeed));
+                StartCoroutine(this.MoveMenu(this.GetInViewPosition(), menuSlideSpeed));
             }
         }
 
@@ -119,7 +149,7 @@ namespace Barbu
             {
                 this.telemetryService.LogInfo("Moving menu into view");
                 this.singleRoundMenuController.FollowMenuIn();
-                StartCoroutine(this.MoveMenu(this.inViewRelativePosition, menuSlideSpeed));
+                StartCoroutine(this.MoveMenu(this.GetInViewPosition(), menuSlideSpeed));
             }
         }
 
@@ -129,7 +159,7 @@ namespace Barbu
             {
                 this.telemetryService.LogInfo("Moving menu out of view");
                 this.singleRoundMenuController.FollowMenuOut();
-                StartCoroutine(this.MoveMenu(this.outOfViewRelativePosition, menuSlideSpeed));
+                StartCoroutine(this.MoveMenu(this.GetOutOfViewPosition(), menuSlideSpeed));
             }
         }
 

@@ -23,12 +23,34 @@ namespace Barbu.UI.Controllers
         private IStateMachine stateMachine;
         private ITelemetryService telemetryService;
 
-        private Vector2 inViewRelativePosition = new Vector2(-110, 0);
-        private Vector2 behindMenuPosition = new Vector2(-45, 0);
-        private Vector2 offscreenPosition = new Vector2(45, 0);
-
         private const float menuSlideSpeed = 300f;
         private const float menuSlideOutSpeedWhenExtended = 600f;
+
+        private Vector2 GetInViewPosition() =>
+            Settings.MenuSidePreference == Settings.MenuSide.Right
+                ? new Vector2(-110, 0)
+                : new Vector2(110, 0);
+
+        private Vector2 GetBehindMenuPosition() =>
+            Settings.MenuSidePreference == Settings.MenuSide.Right
+                ? new Vector2(-45, 0)
+                : new Vector2(45, 0);
+
+        private Vector2 GetOffscreenPosition() =>
+            Settings.MenuSidePreference == Settings.MenuSide.Right
+                ? new Vector2(45, 0)
+                : new Vector2(-45, 0);
+
+        public void ApplyMenuSide()
+        {
+            var rt = this.singleRoundMenuContainer.GetComponent<RectTransform>();
+            bool isRight = Settings.MenuSidePreference == Settings.MenuSide.Right;
+            float anchorX = isRight ? 1f : 0f;
+            rt.anchorMin = new Vector2(anchorX, 0.5f);
+            rt.anchorMax = new Vector2(anchorX, 0.5f);
+            rt.pivot = new Vector2(0.5f, 0.5f);
+            rt.anchoredPosition = GetOffscreenPosition();
+        }
 
         [Inject]
         public void Init(IStateMachine stateMachine, ITelemetryService telemetryService)
@@ -43,6 +65,7 @@ namespace Barbu.UI.Controllers
 
             this.gameBoard = GameObject.Find(Constants.GameObjects.GameBoard).GetComponent<GameBoard>();
             this.singleRoundMenuContainer = GameObjectExtensions.FindGameObjectByName(Constants.GameObjects.SingleRoundMenuContainer);
+            this.ApplyMenuSide();
 
             var mainMenuGO = GameObjectExtensions.FindGameObjectByName("MainMenu");
             this.mainMenuController = mainMenuGO.GetComponent<MainMenuController>();
@@ -75,25 +98,24 @@ namespace Barbu.UI.Controllers
 
         public void ToggleMenuVisibility()
         {
-            var rt = this.singleRoundMenuContainer.GetComponent<RectTransform>();
-            if (rt.anchoredPosition.x < this.behindMenuPosition.x)
+            if (this.IsExtended())
             {
                 this.telemetryService.LogInfo("Moving single round menu back behind main menu");
                 this.stateMachine.SetMenuOpen(false);
-                StartCoroutine(this.MoveMenu(this.behindMenuPosition, menuSlideSpeed));
+                StartCoroutine(this.MoveMenu(this.GetBehindMenuPosition(), menuSlideSpeed));
             }
             else
             {
                 this.telemetryService.LogInfo("Moving single round menu into view");
                 this.stateMachine.SetMenuOpen(true);
-                StartCoroutine(this.MoveMenu(this.inViewRelativePosition, menuSlideSpeed));
+                StartCoroutine(this.MoveMenu(this.GetInViewPosition(), menuSlideSpeed));
             }
         }
 
         public void FollowMenuIn()
         {
             this.telemetryService.LogInfo("Single round menu following main menu in");
-            StartCoroutine(this.MoveMenu(this.behindMenuPosition, menuSlideSpeed));
+            StartCoroutine(this.MoveMenu(this.GetBehindMenuPosition(), menuSlideSpeed));
         }
 
         public void FollowMenuOut()
@@ -101,13 +123,15 @@ namespace Barbu.UI.Controllers
             this.telemetryService.LogInfo("Single round menu following main menu out");
             this.stateMachine.SetMenuOpen(false);
             var speed = this.IsExtended() ? menuSlideOutSpeedWhenExtended : menuSlideSpeed;
-            StartCoroutine(this.MoveMenu(this.offscreenPosition, speed));
+            StartCoroutine(this.MoveMenu(this.GetOffscreenPosition(), speed));
         }
 
         public bool IsExtended()
         {
             var rt = this.singleRoundMenuContainer.GetComponent<RectTransform>();
-            return rt.anchoredPosition.x <= this.behindMenuPosition.x - 1f;
+            return Settings.MenuSidePreference == Settings.MenuSide.Right
+                ? rt.anchoredPosition.x <= this.GetBehindMenuPosition().x - 1f
+                : rt.anchoredPosition.x >= this.GetBehindMenuPosition().x + 1f;
         }
 
         private void HandleHeartsButtonClick()

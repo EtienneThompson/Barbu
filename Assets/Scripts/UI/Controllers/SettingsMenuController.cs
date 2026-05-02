@@ -30,13 +30,17 @@ namespace Barbu.UI.Controllers
         private Button difficultyNextBtn;
         private Button backColorPreviousBtn;
         private Button backColorNextBtn;
+        private Button menuSidePreviousBtn;
+        private Button menuSideNextBtn;
         private Button closeBtn;
         private Label currentlySelectedSortingOption;
         private Label currentlySelectedDifficulty;
         private Label currentlySelectedBackColor;
+        private Label currentlySelectedMenuSide;
         private int currentSortingOption;
         private int currentDifficultyOption;
         private int currentBackColorOption;
+        private int currentMenuSideOption;
 
         [Inject]
         public void Init(IStateMachine stateMachine, ITelemetryService telemetryService)
@@ -58,11 +62,14 @@ namespace Barbu.UI.Controllers
             this.difficultyNextBtn = root.Q<Button>("difficultyNext");
             this.backColorPreviousBtn = root.Q<Button>("backColorPrevious");
             this.backColorNextBtn = root.Q<Button>("backColorNext");
+            this.menuSidePreviousBtn = root.Q<Button>("menuSidePrevious");
+            this.menuSideNextBtn = root.Q<Button>("menuSideNext");
             this.closeBtn = root.Q<Button>("close");
 
             this.currentlySelectedSortingOption = root.Q<Label>("currentlySelectedSortingOption");
             this.currentlySelectedDifficulty = root.Q<Label>("currentlySelectedDifficulty");
             this.currentlySelectedBackColor = root.Q<Label>("currentlySelectedBackColor");
+            this.currentlySelectedMenuSide = root.Q<Label>("currentlySelectedMenuSide");
             _ = HandSortingStrings.TryGetValue(Settings.SortingPreference.ToString(), out var initialSortingOptionString);
             this.currentlySelectedSortingOption.text = initialSortingOptionString;
             this.currentlySelectedSortingOption.style.unityFontDefinition = FontDefinition.FromFont(Resources.Load<Font>("Fonts/LucidaSansUnicodeRegular"));
@@ -71,6 +78,8 @@ namespace Barbu.UI.Controllers
             this.currentDifficultyOption = Array.IndexOf(Settings.ComputerDifficulties, Settings.ComputerDifficultyPreference);
             this.currentBackColorOption = Array.IndexOf(Settings.BackColors, Settings.BackColorPreference);
             this.currentlySelectedBackColor.text = Settings.BackColors[this.currentBackColorOption].ToString();
+            this.currentMenuSideOption = Array.IndexOf(Settings.MenuSides, Settings.MenuSidePreference);
+            this.currentlySelectedMenuSide.text = Settings.MenuSides[this.currentMenuSideOption].ToString();
 
             this.sortingPreviousBtn.RegisterCallback<ClickEvent>(HandleSortingPreviousButtonClick);
             this.sortingNextBtn.RegisterCallback<ClickEvent>(HandleSortingNextButtonClick);
@@ -78,6 +87,8 @@ namespace Barbu.UI.Controllers
             this.difficultyNextBtn.RegisterCallback<ClickEvent>(HandleDifficultyNextButtonClick);
             this.backColorPreviousBtn.RegisterCallback<ClickEvent>(HandleBackColorPreviousButtonClick);
             this.backColorNextBtn.RegisterCallback<ClickEvent>(HandleBackColorNextButtonClick);
+            this.menuSidePreviousBtn.RegisterCallback<ClickEvent>(HandleMenuSidePreviousButtonClick);
+            this.menuSideNextBtn.RegisterCallback<ClickEvent>(HandleMenuSideNextButtonClick);
             this.closeBtn.RegisterCallback<ClickEvent>(HandleCloseButtonClick);
         }
 
@@ -90,6 +101,8 @@ namespace Barbu.UI.Controllers
             this.difficultyNextBtn.UnregisterCallback<ClickEvent>(HandleDifficultyNextButtonClick);
             this.backColorPreviousBtn.UnregisterCallback<ClickEvent>(HandleBackColorPreviousButtonClick);
             this.backColorNextBtn.UnregisterCallback<ClickEvent>(HandleBackColorNextButtonClick);
+            this.menuSidePreviousBtn.UnregisterCallback<ClickEvent>(HandleMenuSidePreviousButtonClick);
+            this.menuSideNextBtn.UnregisterCallback<ClickEvent>(HandleMenuSideNextButtonClick);
             this.closeBtn.UnregisterCallback<ClickEvent>(HandleCloseButtonClick);
         }
 
@@ -141,6 +154,33 @@ namespace Barbu.UI.Controllers
             this.currentBackColorOption = this.SafeMod(this.currentBackColorOption + 1, Settings.BackColors.Length);
             this.currentlySelectedBackColor.text = Settings.BackColors[this.currentBackColorOption].ToString();
             Settings.BackColorPreference = Settings.BackColors[this.currentBackColorOption];
+        }
+
+        private void HandleMenuSidePreviousButtonClick(ClickEvent evt)
+        {
+            this.telemetryService.LogInfo("Menu Side Previous button clicked");
+            this.currentMenuSideOption = this.SafeMod(this.currentMenuSideOption - 1, Settings.MenuSides.Length);
+            this.currentlySelectedMenuSide.text = Settings.MenuSides[this.currentMenuSideOption].ToString();
+            Settings.MenuSidePreference = Settings.MenuSides[this.currentMenuSideOption];
+            this.NotifyMenuControllersOfSideChange();
+        }
+
+        private void HandleMenuSideNextButtonClick(ClickEvent evt)
+        {
+            this.telemetryService.LogInfo("Menu Side Next button clicked");
+            this.currentMenuSideOption = this.SafeMod(this.currentMenuSideOption + 1, Settings.MenuSides.Length);
+            this.currentlySelectedMenuSide.text = Settings.MenuSides[this.currentMenuSideOption].ToString();
+            Settings.MenuSidePreference = Settings.MenuSides[this.currentMenuSideOption];
+            this.NotifyMenuControllersOfSideChange();
+        }
+
+        private void NotifyMenuControllersOfSideChange()
+        {
+            var mainMenuGO = GameObjectExtensions.FindGameObjectByName("MainMenu");
+            mainMenuGO.GetComponent<MainMenuController>().ApplyMenuSide();
+
+            var singleRoundMenuGO = GameObjectExtensions.FindGameObjectByName(Constants.GameObjects.SingleRoundMenu, findInactive: true);
+            singleRoundMenuGO.GetComponent<SingleRoundMenuController>().ApplyMenuSide();
         }
 
         private void HandleCloseButtonClick(ClickEvent evt)
