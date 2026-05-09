@@ -23,33 +23,62 @@ namespace Barbu.UI.Controllers
         private IStateMachine stateMachine;
         private ITelemetryService telemetryService;
 
-        private const float menuSlideSpeed = 300f;
-        private const float menuSlideOutSpeedWhenExtended = 600f;
+        private const float menuSlideDuration = 0.64f;
+        private const float menuSlideOutDurationWhenExtended = 0.32f;
+        private float MenuSlideSpeed => MenuOffscreenShift / menuSlideDuration;
+        private float MenuSlideOutSpeedWhenExtended => MenuOffscreenShift / menuSlideOutDurationWhenExtended;
+        private const float MenuRightAnchorMinX = 0.9f;
+        private const float MenuRightAnchorMaxX = 0.9875f;
+        private const float MenuAnchorMinY = 0.1f;
+        private const float MenuAnchorMaxY = 0.9f;
+        private float MenuPanelWidth => this.canvasRectTransform.rect.width * (MenuRightAnchorMaxX - MenuRightAnchorMinX);
+        private float MenuOffscreenShift => this.canvasRectTransform.rect.width * (1f - MenuRightAnchorMinX);
 
-        private Vector2 GetInViewPosition() =>
-            Settings.MenuSidePreference == Settings.MenuSide.Right
-                ? new Vector2(-110, 0)
-                : new Vector2(110, 0);
+        private RectTransform canvasRectTransform;
+        private Coroutine moveCoroutine;
 
-        private Vector2 GetBehindMenuPosition() =>
-            Settings.MenuSidePreference == Settings.MenuSide.Right
-                ? new Vector2(-45, 0)
-                : new Vector2(45, 0);
+        private Vector2 GetInViewPosition()
+        {
+            bool isRight = Settings.MenuSidePreference == Settings.MenuSide.Right;
+            return isRight ? new Vector2(-MenuPanelWidth, 0) : new Vector2(MenuPanelWidth, 0);
+        }
 
-        private Vector2 GetOffscreenPosition() =>
-            Settings.MenuSidePreference == Settings.MenuSide.Right
-                ? new Vector2(45, 0)
-                : new Vector2(-45, 0);
+        private Vector2 GetBehindMenuPosition() => Vector2.zero;
+
+        private Vector2 GetOffscreenPosition()
+        {
+            bool isRight = Settings.MenuSidePreference == Settings.MenuSide.Right;
+            return isRight ? new Vector2(MenuOffscreenShift, 0) : new Vector2(-MenuOffscreenShift, 0);
+        }
 
         public void ApplyMenuSide()
         {
             var rt = this.singleRoundMenuContainer.GetComponent<RectTransform>();
             bool isRight = Settings.MenuSidePreference == Settings.MenuSide.Right;
-            float anchorX = isRight ? 1f : 0f;
-            rt.anchorMin = new Vector2(anchorX, 0.5f);
-            rt.anchorMax = new Vector2(anchorX, 0.5f);
+            rt.anchorMin = isRight
+                ? new Vector2(MenuRightAnchorMinX, MenuAnchorMinY)
+                : new Vector2(1f - MenuRightAnchorMaxX, MenuAnchorMinY);
+            rt.anchorMax = isRight
+                ? new Vector2(MenuRightAnchorMaxX, MenuAnchorMaxY)
+                : new Vector2(1f - MenuRightAnchorMinX, MenuAnchorMaxY);
             rt.pivot = new Vector2(0.5f, 0.5f);
+            rt.sizeDelta = Vector2.zero;
             rt.anchoredPosition = GetOffscreenPosition();
+        }
+
+        private void InitializeMenuSide()
+        {
+            var rt = this.singleRoundMenuContainer.GetComponent<RectTransform>();
+            bool isRight = Settings.MenuSidePreference == Settings.MenuSide.Right;
+            rt.anchorMin = isRight
+                ? new Vector2(MenuRightAnchorMinX, MenuAnchorMinY)
+                : new Vector2(1f - MenuRightAnchorMaxX, MenuAnchorMinY);
+            rt.anchorMax = isRight
+                ? new Vector2(MenuRightAnchorMaxX, MenuAnchorMaxY)
+                : new Vector2(1f - MenuRightAnchorMinX, MenuAnchorMaxY);
+            rt.pivot = new Vector2(0.5f, 0.5f);
+            rt.sizeDelta = Vector2.zero;
+            rt.anchoredPosition = GetBehindMenuPosition();
         }
 
         [Inject]
@@ -65,7 +94,8 @@ namespace Barbu.UI.Controllers
 
             this.gameBoard = GameObject.Find(Constants.GameObjects.GameBoard).GetComponent<GameBoard>();
             this.singleRoundMenuContainer = GameObjectExtensions.FindGameObjectByName(Constants.GameObjects.SingleRoundMenuContainer);
-            this.ApplyMenuSide();
+            this.canvasRectTransform = this.singleRoundMenuContainer.GetComponentInParent<Canvas>().GetComponent<RectTransform>();
+            this.InitializeMenuSide();
 
             var mainMenuGO = GameObjectExtensions.FindGameObjectByName("MainMenu");
             this.mainMenuController = mainMenuGO.GetComponent<MainMenuController>();
@@ -102,36 +132,44 @@ namespace Barbu.UI.Controllers
             {
                 this.telemetryService.LogInfo("Moving single round menu back behind main menu");
                 this.stateMachine.SetMenuOpen(false);
-                StartCoroutine(this.MoveMenu(this.GetBehindMenuPosition(), menuSlideSpeed));
+                this.StartMoveMenu(this.GetBehindMenuPosition(), MenuSlideSpeed);
             }
             else
             {
                 this.telemetryService.LogInfo("Moving single round menu into view");
                 this.stateMachine.SetMenuOpen(true);
-                StartCoroutine(this.MoveMenu(this.GetInViewPosition(), menuSlideSpeed));
+                this.StartMoveMenu(this.GetInViewPosition(), MenuSlideSpeed);
             }
         }
 
         public void FollowMenuIn()
         {
             this.telemetryService.LogInfo("Single round menu following main menu in");
-            StartCoroutine(this.MoveMenu(this.GetBehindMenuPosition(), menuSlideSpeed));
+            this.StartMoveMenu(this.GetBehindMenuPosition(), MenuSlideSpeed);
         }
 
         public void FollowMenuOut()
         {
             this.telemetryService.LogInfo("Single round menu following main menu out");
             this.stateMachine.SetMenuOpen(false);
-            var speed = this.IsExtended() ? menuSlideOutSpeedWhenExtended : menuSlideSpeed;
-            StartCoroutine(this.MoveMenu(this.GetOffscreenPosition(), speed));
+            var speed = this.IsExtended() ? MenuSlideOutSpeedWhenExtended : MenuSlideSpeed;
+            this.StartMoveMenu(this.GetOffscreenPosition(), speed);
         }
 
         public bool IsExtended()
         {
             var rt = this.singleRoundMenuContainer.GetComponent<RectTransform>();
-            return Settings.MenuSidePreference == Settings.MenuSide.Right
-                ? rt.anchoredPosition.x <= this.GetBehindMenuPosition().x - 1f
-                : rt.anchoredPosition.x >= this.GetBehindMenuPosition().x + 1f;
+            bool isRight = Settings.MenuSidePreference == Settings.MenuSide.Right;
+            return isRight
+                ? rt.anchoredPosition.x < -(MenuPanelWidth / 2f)
+                : rt.anchoredPosition.x > (MenuPanelWidth / 2f);
+        }
+
+        private void StartMoveMenu(Vector2 target, float speed)
+        {
+            if (this.moveCoroutine != null)
+                StopCoroutine(this.moveCoroutine);
+            this.moveCoroutine = StartCoroutine(this.MoveMenu(target, speed));
         }
 
         private void HandleHeartsButtonClick()

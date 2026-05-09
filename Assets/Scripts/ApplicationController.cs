@@ -40,11 +40,18 @@ namespace Barbu
             }
         }
 
+        private bool IsPointerOverUI()
+        {
+            if (Input.touchCount > 0)
+                return EventSystem.current.IsPointerOverGameObject(Input.GetTouch(0).fingerId);
+            return EventSystem.current.IsPointerOverGameObject();
+        }
+
         void Update()
         {
             if (Input.GetMouseButtonDown(0))
             {
-                if (EventSystem.current.IsPointerOverGameObject())
+                if (this.IsPointerOverUI())
                 {
                     Debug.Log("UI element clicked");
                     return;
