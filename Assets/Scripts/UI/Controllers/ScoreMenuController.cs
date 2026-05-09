@@ -83,11 +83,20 @@ namespace Barbu.UI.Controllers
             var player2Total = 0;
             var player3Total = 0;
             var player4Total = 0;
-            for (int i = 0; i < scores[Constants.PlayerIds.Player1].Length; i++)
+            int roundCount = scores[Constants.PlayerIds.Player1].Length;
+            const float rowHeight = 0.1f;
+            const float availableSpace = 0.8f; // y: 0.1 (above TotalSection) to 0.9 (below TitleSection)
+            float gap = (availableSpace - roundCount * rowHeight) / (roundCount + 1);
+            for (int i = 0; i < roundCount; i++)
             {
                 Transform scoreRow = Instantiate(this.ScoreRowTemplate, this.ScoreContainer);
                 RectTransform rectTransform = scoreRow.GetComponent<RectTransform>();
-                rectTransform.anchoredPosition = new Vector2(0, 58.5f - (58.5f * i));
+                float topAnchor = 0.9f - (i + 1) * gap - i * rowHeight;
+                float bottomAnchor = topAnchor - rowHeight;
+                rectTransform.anchorMin = new Vector2(0f, bottomAnchor);
+                rectTransform.anchorMax = new Vector2(1f, topAnchor);
+                rectTransform.sizeDelta = Vector2.zero;
+                rectTransform.anchoredPosition = Vector2.zero;
                 scoreRow.gameObject.SetActive(true);
                 this.ScoreRows.Add(scoreRow);
 
