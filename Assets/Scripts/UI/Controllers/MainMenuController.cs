@@ -34,26 +34,37 @@ namespace Barbu
         private GlobalContext globalContext;
         private ITelemetryService telemetryService;
 
-        private const float menuSlideSpeed = 300f;
+        private const float menuSlideDuration = 0.64f;
+        private float MenuSlideSpeed => MenuOffscreenShift / menuSlideDuration;
+        private const float MenuRightAnchorMinX = 0.9f;
+        private const float MenuRightAnchorMaxX = 0.9875f;
+        private const float MenuAnchorMinY = 0.1f;
+        private const float MenuAnchorMaxY = 0.9f;
+        private float MenuOffscreenShift => this.canvasRectTransform.rect.width * (1f - MenuRightAnchorMinX);
 
-        private Vector2 GetInViewPosition() =>
-            Settings.MenuSidePreference == Settings.MenuSide.Right
-                ? new Vector2(-45, 0)
-                : new Vector2(45, 0);
+        private RectTransform canvasRectTransform;
+        private Coroutine moveCoroutine;
 
-        private Vector2 GetOutOfViewPosition() =>
-            Settings.MenuSidePreference == Settings.MenuSide.Right
-                ? new Vector2(45, 0)
-                : new Vector2(-45, 0);
+        private Vector2 GetInViewPosition() => Vector2.zero;
+
+        private Vector2 GetOutOfViewPosition()
+        {
+            bool isRight = Settings.MenuSidePreference == Settings.MenuSide.Right;
+            return isRight ? new Vector2(MenuOffscreenShift, 0) : new Vector2(-MenuOffscreenShift, 0);
+        }
 
         public void ApplyMenuSide()
         {
             var rt = this.mainMenuContainer.GetComponent<RectTransform>();
             bool isRight = Settings.MenuSidePreference == Settings.MenuSide.Right;
-            float anchorX = isRight ? 1f : 0f;
-            rt.anchorMin = new Vector2(anchorX, 0.5f);
-            rt.anchorMax = new Vector2(anchorX, 0.5f);
+            rt.anchorMin = isRight
+                ? new Vector2(MenuRightAnchorMinX, MenuAnchorMinY)
+                : new Vector2(1f - MenuRightAnchorMaxX, MenuAnchorMinY);
+            rt.anchorMax = isRight
+                ? new Vector2(MenuRightAnchorMaxX, MenuAnchorMaxY)
+                : new Vector2(1f - MenuRightAnchorMinX, MenuAnchorMaxY);
             rt.pivot = new Vector2(0.5f, 0.5f);
+            rt.sizeDelta = Vector2.zero;
             rt.anchoredPosition = GetOutOfViewPosition();
         }
 
@@ -61,10 +72,14 @@ namespace Barbu
         {
             var rt = this.mainMenuContainer.GetComponent<RectTransform>();
             bool isRight = Settings.MenuSidePreference == Settings.MenuSide.Right;
-            float anchorX = isRight ? 1f : 0f;
-            rt.anchorMin = new Vector2(anchorX, 0.5f);
-            rt.anchorMax = new Vector2(anchorX, 0.5f);
+            rt.anchorMin = isRight
+                ? new Vector2(MenuRightAnchorMinX, MenuAnchorMinY)
+                : new Vector2(1f - MenuRightAnchorMaxX, MenuAnchorMinY);
+            rt.anchorMax = isRight
+                ? new Vector2(MenuRightAnchorMaxX, MenuAnchorMaxY)
+                : new Vector2(1f - MenuRightAnchorMinX, MenuAnchorMaxY);
             rt.pivot = new Vector2(0.5f, 0.5f);
+            rt.sizeDelta = Vector2.zero;
             rt.anchoredPosition = GetInViewPosition();
         }
 
@@ -89,6 +104,7 @@ namespace Barbu
             this.mainCamera = cameraObject.GetComponent<Camera>();
 
             this.mainMenuContainer = GameObjectExtensions.FindGameObjectByName("MainMenuContainer");
+            this.canvasRectTransform = this.mainMenuContainer.GetComponentInParent<Canvas>().GetComponent<RectTransform>();
             this.InitializeMenuSide();
 
             this.settingsButton = GetButtonObject("SettingsButton");
@@ -133,13 +149,13 @@ namespace Barbu
             {
                 this.telemetryService.LogInfo("Moving menu out of view");
                 this.singleRoundMenuController.FollowMenuOut();
-                StartCoroutine(this.MoveMenu(this.GetOutOfViewPosition(), menuSlideSpeed));
+                this.StartMoveMenu(this.GetOutOfViewPosition(), MenuSlideSpeed);
             }
             else
             {
                 this.telemetryService.LogInfo("Moving menu into view");
                 this.singleRoundMenuController.FollowMenuIn();
-                StartCoroutine(this.MoveMenu(this.GetInViewPosition(), menuSlideSpeed));
+                this.StartMoveMenu(this.GetInViewPosition(), MenuSlideSpeed);
             }
         }
 
@@ -149,7 +165,7 @@ namespace Barbu
             {
                 this.telemetryService.LogInfo("Moving menu into view");
                 this.singleRoundMenuController.FollowMenuIn();
-                StartCoroutine(this.MoveMenu(this.GetInViewPosition(), menuSlideSpeed));
+                this.StartMoveMenu(this.GetInViewPosition(), MenuSlideSpeed);
             }
         }
 
@@ -159,31 +175,21 @@ namespace Barbu
             {
                 this.telemetryService.LogInfo("Moving menu out of view");
                 this.singleRoundMenuController.FollowMenuOut();
-                StartCoroutine(this.MoveMenu(this.GetOutOfViewPosition(), menuSlideSpeed));
+                this.StartMoveMenu(this.GetOutOfViewPosition(), MenuSlideSpeed);
             }
+        }
+
+        private void StartMoveMenu(Vector2 target, float speed)
+        {
+            if (this.moveCoroutine != null)
+                StopCoroutine(this.moveCoroutine);
+            this.moveCoroutine = StartCoroutine(this.MoveMenu(target, speed));
         }
 
         bool IsUIVisible(RectTransform rectTransform)
         {
             if (rectTransform == null) return false;
-
-            Vector3[] corners = new Vector3[4];
-            rectTransform.GetWorldCorners(corners);
-
-            // Screen bounds
-            float screenWidth = Screen.width;
-            float screenHeight = Screen.height;
-
-            // Check if any corner is inside the screen
-            foreach (Vector3 corner in corners)
-            {
-                if (corner.x >= 0 && corner.x <= screenWidth &&
-                    corner.y >= 0 && corner.y <= screenHeight)
-                {
-                    return true;
-                }
-            }
-            return false;
+            return Mathf.Abs(rectTransform.anchoredPosition.x) < MenuOffscreenShift / 2f;
         }
 
         private void HandleSettingsButtonClick()
