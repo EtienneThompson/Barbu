@@ -7,59 +7,63 @@
 >
     <Style src="SettingsMenu.uss" />
     <ui:VisualElement name="container">
-        <ui:VisualElement name="generic-column">
-            <ui:VisualElement name="header-row">
-                <ui:Label class="header" text="Settings" />
-            </ui:VisualElement>
-            <ui:VisualElement name="settings-row">
-                <ui:VisualElement name="left-column">
-                    <ui:Label text="Hand Sorting" />
-                </ui:VisualElement>
-                <ui:VisualElement name="right-column">
-                    <ui:VisualElement name="row">
-                        <ui:Button class="arrow-button" name="sortingPrevious" text="&lt;" />
-                        <ui:Label class="selection-box" name="currentlySelectedSortingOption" text="None" />
-                        <ui:Button class="arrow-button" name="sortingNext" text="&gt;" />
-                    </ui:VisualElement>
-                </ui:VisualElement>
-            </ui:VisualElement>
-            <ui:VisualElement name="settings-row">
-                <ui:VisualElement name="left-column">
-                    <ui:Label text="Computer Difficulty" />
-                </ui:VisualElement>
-                <ui:VisualElement name="right-column">
-                    <ui:VisualElement name="row">
-                        <ui:Button class="arrow-button" name="difficultyPrevious" text="&lt;" />
-                        <ui:Label class="selection-box" name="currentlySelectedDifficulty" text="Easy" />
-                        <ui:Button class="arrow-button" name="difficultyNext" text="&gt;" />
-                    </ui:VisualElement>
-                </ui:VisualElement>
-            </ui:VisualElement>
-            <ui:VisualElement name="settings-row">
-                <ui:VisualElement name="left-column">
-                    <ui:Label text="Card Back Color" />
-                </ui:VisualElement>
-                <ui:VisualElement name="right-column">
-                    <ui:VisualElement name="row">
-                        <ui:Button class="arrow-button" name="backColorPrevious" text="&lt;" />
-                        <ui:Label class="selection-box" name="currentlySelectedBackColor" text="Black" />
-                        <ui:Button class="arrow-button" name="backColorNext" text="&gt;" />
-                    </ui:VisualElement>
-                </ui:VisualElement>
-            </ui:VisualElement>
-            <ui:VisualElement name="settings-row">
-                <ui:VisualElement name="left-column">
-                    <ui:Label text="Menu Side" />
-                </ui:VisualElement>
-                <ui:VisualElement name="right-column">
-                    <ui:VisualElement name="row">
-                        <ui:Button class="arrow-button" name="menuSidePrevious" text="&lt;" />
-                        <ui:Label class="selection-box" name="currentlySelectedMenuSide" text="Right" />
-                        <ui:Button class="arrow-button" name="menuSideNext" text="&gt;" />
-                    </ui:VisualElement>
-                </ui:VisualElement>
-            </ui:VisualElement>
-            <ui:Button class="settings-button" name="close" text="Close" />
+        <ui:VisualElement name="header-row">
+            <ui:Label class="header" text="Settings" />
         </ui:VisualElement>
+        <ui:VisualElement name="content-row">
+            <ui:VisualElement name="left-notch-spacer" />
+            <ui:VisualElement name="settings-column">
+                <ui:VisualElement name="settings-row">
+                    <ui:VisualElement name="left-column">
+                        <ui:Label text="Hand Sorting" />
+                    </ui:VisualElement>
+                    <ui:VisualElement name="right-column">
+                        <ui:VisualElement name="row">
+                            <ui:Button class="arrow-button" name="sortingPrevious" text="&lt;" />
+                            <ui:Label class="selection-box" name="currentlySelectedSortingOption" text="None" />
+                            <ui:Button class="arrow-button" name="sortingNext" text="&gt;" />
+                        </ui:VisualElement>
+                    </ui:VisualElement>
+                </ui:VisualElement>
+                <ui:VisualElement name="settings-row">
+                    <ui:VisualElement name="left-column">
+                        <ui:Label text="Computer Difficulty" />
+                    </ui:VisualElement>
+                    <ui:VisualElement name="right-column">
+                        <ui:VisualElement name="row">
+                            <ui:Button class="arrow-button" name="difficultyPrevious" text="&lt;" />
+                            <ui:Label class="selection-box" name="currentlySelectedDifficulty" text="Easy" />
+                            <ui:Button class="arrow-button" name="difficultyNext" text="&gt;" />
+                        </ui:VisualElement>
+                    </ui:VisualElement>
+                </ui:VisualElement>
+                <ui:VisualElement name="settings-row">
+                    <ui:VisualElement name="left-column">
+                        <ui:Label text="Card Back Color" />
+                    </ui:VisualElement>
+                    <ui:VisualElement name="right-column">
+                        <ui:VisualElement name="row">
+                            <ui:Button class="arrow-button" name="backColorPrevious" text="&lt;" />
+                            <ui:Label class="selection-box" name="currentlySelectedBackColor" text="Black" />
+                            <ui:Button class="arrow-button" name="backColorNext" text="&gt;" />
+                        </ui:VisualElement>
+                    </ui:VisualElement>
+                </ui:VisualElement>
+                <ui:VisualElement name="settings-row">
+                    <ui:VisualElement name="left-column">
+                        <ui:Label text="Menu Side" />
+                    </ui:VisualElement>
+                    <ui:VisualElement name="right-column">
+                        <ui:VisualElement name="row">
+                            <ui:Button class="arrow-button" name="menuSidePrevious" text="&lt;" />
+                            <ui:Label class="selection-box" name="currentlySelectedMenuSide" text="Right" />
+                            <ui:Button class="arrow-button" name="menuSideNext" text="&gt;" />
+                        </ui:VisualElement>
+                    </ui:VisualElement>
+                </ui:VisualElement>
+            </ui:VisualElement>
+            <ui:VisualElement name="right-notch-spacer" />
+        </ui:VisualElement>
+        <ui:Button class="settings-button" name="close" text="Close" />
     </ui:VisualElement>
 </ui:UXML>
