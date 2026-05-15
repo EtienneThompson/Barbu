@@ -56,6 +56,22 @@ namespace Barbu.UI.Controllers
             var document = this.settingsMenu.GetComponent<UIDocument>();
             var root = document.rootVisualElement;
 
+            var safeArea = Screen.safeArea;
+            float notchPct = safeArea.xMin / Screen.width * 100f;
+            var leftSpacer = root.Q<VisualElement>("left-notch-spacer");
+            var rightSpacer = root.Q<VisualElement>("right-notch-spacer");
+            if (notchPct > 0f)
+            {
+                bool notchOnLeft = Screen.orientation == ScreenOrientation.LandscapeLeft;
+                leftSpacer.style.width = notchOnLeft ? Length.Percent(notchPct) : new Length(0);
+                rightSpacer.style.width = notchOnLeft ? new Length(0) : Length.Percent(notchPct);
+            }
+            else
+            {
+                leftSpacer.style.width = new Length(0);
+                rightSpacer.style.width = new Length(0);
+            }
+
             this.sortingPreviousBtn = root.Q<Button>("sortingPrevious");
             this.sortingNextBtn = root.Q<Button>("sortingNext");
             this.difficultyPreviousBtn = root.Q<Button>("difficultyPrevious");
