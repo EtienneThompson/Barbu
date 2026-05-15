@@ -126,6 +126,11 @@ namespace Barbu.Gameplay
 
         public void PlayCard()
         {
+            if (this.state == CardState.Played)
+            {
+                throw new InvalidOperationException($"Cannot play card {this.GetName()} that is in Played state.");
+            }
+
             transform.rotation = Quaternion.Euler(new Vector3(0, 0, 0));
             stateMachine.IncrementNumCardsPlayed();
             StartCoroutine(MoveToCenterRoutine());
