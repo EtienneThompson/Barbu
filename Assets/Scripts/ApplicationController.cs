@@ -34,8 +34,8 @@ namespace Barbu
 
             if (!Settings.HasSeenHowToPlayByDefault())
             {
-                GameObject howToPlayScreen = GameObject.Find(Constants.GameObjects.HowToPlayScreen);
-                howToPlayScreen.SetActive(true);
+                GameObject howToPlayScreen = GameObjectExtensions.FindGameObjectByName(Constants.GameObjects.HowToPlayScreen, findInactive: true);
+                howToPlayScreen?.SetActive(true);
                 Settings.SetSeenHowToPlayByDefault();
             }
         }
