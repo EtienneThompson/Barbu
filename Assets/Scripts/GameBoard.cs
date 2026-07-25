@@ -17,6 +17,7 @@ namespace Barbu
         private IWorkflowFactory workflowFactory;
         private IDeck deck;
         private IStatisticsService statisticsService;
+        private IRandomService randomService;
         private Hand[] hands = new Hand[4];
 
         [Inject]
@@ -25,7 +26,8 @@ namespace Barbu
             IStateMachine stateMachine,
             IWorkflowFactory workflowFactory,
             IDeck deck,
-            IStatisticsService statisticsService)
+            IStatisticsService statisticsService,
+            IRandomService randomService)
         {
             telemetryService.LogInfo("GameBoard injected");
             this.telemetryService = telemetryService;
@@ -33,6 +35,7 @@ namespace Barbu
             this.workflowFactory = workflowFactory;
             this.deck = deck;
             this.statisticsService = statisticsService;
+            this.randomService = randomService;
         }
 
         // Start is called before the first frame update
@@ -45,6 +48,7 @@ namespace Barbu
         public void CreateNewGame(string gameName, string subType)
         {
             this.telemetryService.LogInfo("Creating new game...");
+            this.randomService.SeedForNewGame();
             this.stateMachine.SetIsSettingUp(true);
             this.stateMachine.SetCardPlayable(false);
             this.stateMachine.ResetNumCardsPlayed();

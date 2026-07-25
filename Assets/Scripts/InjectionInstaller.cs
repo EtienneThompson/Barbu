@@ -34,6 +34,11 @@ public class InjectionInstaller : MonoInstaller
             .AsSingle();
 
         Container
+            .Bind<IRandomService>()
+            .To<RandomService>()
+            .AsSingle();
+
+        Container
             .Bind<IEventsController>()
             .To<EventsController>()
             .AsSingle();

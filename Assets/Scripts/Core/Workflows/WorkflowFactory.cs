@@ -13,15 +13,18 @@ namespace Barbu.Core.Workflows
         private readonly ITelemetryService telemetryService;
         private readonly PlayTrickWorkflow.PlayTrickWorkflow.Factory playTrickWorkflowFactory;
         private readonly RoundWorkflow.RoundWorkflow.Factory roundWorkflowFactory;
+        private readonly IRandomService randomService;
 
         public WorkflowFactory(
             ITelemetryService telemetryService,
             PlayTrickWorkflow.PlayTrickWorkflow.Factory playTrickWorkflowFactory,
-            RoundWorkflow.RoundWorkflow.Factory roundWorkflowFactory)
+            RoundWorkflow.RoundWorkflow.Factory roundWorkflowFactory,
+            IRandomService randomService)
         {
             this.telemetryService = telemetryService;
             this.playTrickWorkflowFactory = playTrickWorkflowFactory;
             this.roundWorkflowFactory = roundWorkflowFactory;
+            this.randomService = randomService;
         }
 
         public IWorkflow CreatePlayTrickWorkflow(IRound round, Dictionary<string, int[]> playerPoints, Hand[] playerHands, int startingPlayer, int roundNumber)
@@ -88,10 +91,10 @@ namespace Barbu.Core.Workflows
         {
             var chaosRound = new ChaosRound(this.telemetryService);
 
-            var roundsToMerge = (int)Mathf.Floor(UnityEngine.Random.Range(2.0f, 4.0f));
+            var roundsToMerge = (int)Mathf.Floor(this.randomService.Range(2.0f, 4.0f));
             for (int i = 0; i < roundsToMerge; i++)
             {
-                var round = RoundRegistration.GetRandomRound();
+                var round = RoundRegistration.GetRandomRound(this.randomService);
                 chaosRound.MergeRound(round);
             }
 

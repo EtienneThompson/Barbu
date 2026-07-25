@@ -28,7 +28,7 @@ namespace Barbu.Tests.EditMode.Workflows
             this.stateMachine = new FakeStateMachine();
             this.workflow = new FakeWorkflow();
             this.step = new StartRoundStep(
-                this.inGamePointsController, new PlayTrickWorkflow.Factory(), this.roundOverlayController, this.stateMachine, new FakeTelemetryService());
+                this.inGamePointsController, new PlayTrickWorkflow.Factory(), new FakeRandomService(), this.roundOverlayController, this.stateMachine, new FakeTelemetryService());
         }
 
         private StepArguments<RoundArguments> BuildArgs() =>
