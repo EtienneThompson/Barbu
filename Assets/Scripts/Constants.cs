@@ -73,6 +73,12 @@ namespace Barbu
             public const string SeenHowToPlayInstructions = "SeenHowToPlayInstructions";
             public const string MenuSideOption = "MenuSideOption";
 
+            /// <summary>
+            /// Prefixed onto a feature flag's name to form its override key. Flags are not
+            /// listed individually here because they come and go; see FeatureRegistry.
+            /// </summary>
+            public const string FeatureOverridePrefix = "FeatureOverride_";
+
             public const string TraditionalGamesPlayed = "TraditionalGamesPlayed";
             public const string TraditionalGamesFinished = "TraditionalGamesFinished";
             public const string TraditionalGamesWon = "TraditionalGamesWon";

@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using Barbu;
 using Barbu.Core;
 using Barbu.Core.Events;
+using Barbu.Core.Features;
 using Barbu.Core.Telemetry;
 using Barbu.Core.Workflows;
 using Barbu.Core.Workflows.PlayTrickWorkflow;
@@ -36,6 +37,21 @@ public class InjectionInstaller : MonoInstaller
         Container
             .Bind<IRandomService>()
             .To<RandomService>()
+            .AsSingle();
+
+        Container
+            .Bind<IFeatureOverrideStore>()
+            .To<PlayerPrefsFeatureOverrideStore>()
+            .AsSingle();
+
+        // Constructed by hand so the build type is decided in one place. Application.isEditor
+        // covers play mode; Debug.isDebugBuild covers a player built with "Development Build".
+        Container
+            .Bind<IFeatureService>()
+            .FromMethod(context => new FeatureService(
+                FeatureRegistry.All,
+                context.Container.Resolve<IFeatureOverrideStore>(),
+                Application.isEditor || Debug.isDebugBuild))
             .AsSingle();
 
         Container

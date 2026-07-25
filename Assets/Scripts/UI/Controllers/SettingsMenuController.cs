@@ -3,6 +3,7 @@ namespace Barbu.UI.Controllers
     using System;
     using System.Collections.Generic;
     using Barbu.Core;
+    using Barbu.Core.Features;
     using Barbu.Core.Telemetry;
     using UnityEngine;
     using UnityEngine.UIElements;
@@ -23,6 +24,9 @@ namespace Barbu.UI.Controllers
 
         private IStateMachine stateMachine;
         private ITelemetryService telemetryService;
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+        private IFeatureService featureService;
+#endif
         private GameObject settingsMenu;
         private Button sortingPreviousBtn;
         private Button sortingNextBtn;
@@ -42,11 +46,16 @@ namespace Barbu.UI.Controllers
         private int currentBackColorOption;
         private int currentMenuSideOption;
 
+        // featureService is only stored in builds that can show the flag panel, but the
+        // signature stays the same in every build so Zenject has one thing to satisfy.
         [Inject]
-        public void Init(IStateMachine stateMachine, ITelemetryService telemetryService)
+        public void Init(IStateMachine stateMachine, ITelemetryService telemetryService, IFeatureService featureService)
         {
             this.stateMachine = stateMachine;
             this.telemetryService = telemetryService;
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+            this.featureService = featureService;
+#endif
         }
 
         public void OnEnable()
@@ -106,6 +115,10 @@ namespace Barbu.UI.Controllers
             this.menuSidePreviousBtn.RegisterCallback<ClickEvent>(HandleMenuSidePreviousButtonClick);
             this.menuSideNextBtn.RegisterCallback<ClickEvent>(HandleMenuSideNextButtonClick);
             this.closeBtn.RegisterCallback<ClickEvent>(HandleCloseButtonClick);
+
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+            this.BuildFeatureFlagSection(root.Q<VisualElement>("settings-column"));
+#endif
         }
 
         public void OnDisable()
@@ -209,5 +222,104 @@ namespace Barbu.UI.Controllers
             int result = numerator % modulus;
             return result < 0 ? result + modulus : result;
         }
+
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+        private const string FeatureFlagSectionName = "feature-flag-section";
+
+        /// <summary>
+        /// Appends a live feature flag list to the bottom of the settings menu, so flags can
+        /// be toggled on a device without a rebuild.
+        /// </summary>
+        /// <remarks>
+        /// Compiled only into the editor and development builds, which is why it is built in
+        /// C# rather than authored in SettingsMenu.uxml: UXML has no preprocessor, and the
+        /// rows have to be generated from the registry anyway since the flag list changes.
+        /// Element names match the ones in SettingsMenu.uss so the generated rows pick up the
+        /// same styling as the hand authored ones.
+        /// </remarks>
+        private void BuildFeatureFlagSection(VisualElement column)
+        {
+            // The UIDocument keeps its visual tree while the menu GameObject is disabled, so
+            // OnEnable would otherwise stack up another copy of this section each reopen.
+            column.Q<VisualElement>(FeatureFlagSectionName)?.RemoveFromHierarchy();
+
+            var section = new VisualElement { name = FeatureFlagSectionName };
+            section.style.width = Length.Percent(100);
+            section.style.flexGrow = 1;
+            column.Add(section);
+
+            var header = new Label("Feature Flags");
+            header.AddToClassList("header");
+            section.Add(header);
+
+            if (this.featureService.Definitions.Count == 0)
+            {
+                section.Add(new Label("No feature flags defined."));
+                return;
+            }
+
+            // The flag list has no fixed length and the menu is a phone sized screen, so let
+            // the rows scroll instead of pushing the Close button off the bottom.
+            var scrollView = new ScrollView();
+            scrollView.style.width = Length.Percent(100);
+            scrollView.style.flexGrow = 1;
+            section.Add(scrollView);
+
+            foreach (var definition in this.featureService.Definitions)
+            {
+                scrollView.Add(this.BuildFeatureFlagRow(definition.Name));
+            }
+
+            var resetButton = new Button(() =>
+            {
+                this.telemetryService.LogInfo("Feature flag overrides reset");
+                this.featureService.ClearAllOverrides();
+                this.BuildFeatureFlagSection(column);
+            })
+            {
+                text = "Reset Overrides",
+            };
+            resetButton.AddToClassList("settings-button");
+            section.Add(resetButton);
+        }
+
+        private VisualElement BuildFeatureFlagRow(string feature)
+        {
+            var row = new VisualElement { name = "settings-row" };
+
+            var leftColumn = new VisualElement { name = "left-column" };
+            leftColumn.Add(new Label(feature));
+            row.Add(leftColumn);
+
+            var rightColumn = new VisualElement { name = "right-column" };
+            var buttonRow = new VisualElement { name = "row" };
+
+            Button toggleButton = null;
+            toggleButton = new Button(() =>
+            {
+                var enabled = !this.featureService.IsEnabled(feature);
+                this.featureService.SetOverride(feature, enabled);
+                this.telemetryService.LogInfo($"Feature flag {feature} overridden to {enabled}");
+                this.UpdateFeatureFlagButton(toggleButton, feature);
+            });
+            toggleButton.AddToClassList("settings-button");
+            toggleButton.AddToClassList("selection-box");
+            this.UpdateFeatureFlagButton(toggleButton, feature);
+
+            buttonRow.Add(toggleButton);
+            rightColumn.Add(buttonRow);
+            row.Add(rightColumn);
+            return row;
+        }
+
+        private void UpdateFeatureFlagButton(Button button, string feature)
+        {
+            // The asterisk marks a flag that has been forced either way, to distinguish it
+            // from one still sitting at whatever this build type defaults to.
+            var state = this.featureService.IsEnabled(feature) ? "On" : "Off";
+            var marker = this.featureService.HasOverride(feature) ? " *" : string.Empty;
+            button.text = state + marker;
+        }
+#endif
     }
 }
