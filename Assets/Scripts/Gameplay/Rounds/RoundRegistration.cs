@@ -2,6 +2,7 @@ namespace Barbu.Gameplay.Rounds
 {
     using System;
     using System.Runtime.Serialization;
+    using Barbu.Core;
     using Barbu.Gameplay.Rounds.Rounds;
     using UnityEngine;
 
@@ -34,9 +35,9 @@ namespace Barbu.Gameplay.Rounds
         typeof(OddsRound),
         };
 
-        public static Round GetRandomRound()
+        public static Round GetRandomRound(IRandomService randomService)
         {
-            var index = (int)Mathf.Floor(UnityEngine.Random.value * registeredRounds.Length);
+            var index = (int)Mathf.Floor(randomService.Value() * registeredRounds.Length);
             return (Round)FormatterServices.GetUninitializedObject(registeredRounds[index]);
         }
     }

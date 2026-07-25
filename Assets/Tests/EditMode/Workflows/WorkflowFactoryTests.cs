@@ -21,7 +21,8 @@ namespace Barbu.Tests.EditMode.Workflows
             var factory = new WorkflowFactory(
                 new FakeTelemetryService(),
                 new PlayTrickWorkflow.Factory(),
-                new RoundWorkflow.Factory());
+                new RoundWorkflow.Factory(),
+                new FakeRandomService());
 
             Assert.Throws<ArgumentException>(() => factory.CreateSingleRoundWorkflow("NotARealRound"));
         }

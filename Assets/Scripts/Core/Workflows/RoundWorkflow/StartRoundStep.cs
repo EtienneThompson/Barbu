@@ -16,6 +16,7 @@ namespace Barbu.Core.Workflows.RoundWorkflow
 
         private readonly IInGamePointsController inGamePointsController;
         private readonly PlayTrickWorkflow.Factory playTrickWorkflowFactory;
+        private readonly IRandomService randomService;
         private readonly IRoundOverlayController roundOverlayController;
         private readonly IStateMachine stateMachine;
         private readonly ITelemetryService telemetryService;
@@ -23,12 +24,14 @@ namespace Barbu.Core.Workflows.RoundWorkflow
         public StartRoundStep(
             IInGamePointsController inGamePointsController,
             PlayTrickWorkflow.Factory playTrickWorkflowFactory,
+            IRandomService randomService,
             IRoundOverlayController roundOverlayController,
             IStateMachine stateMachine,
             ITelemetryService telemetryService)
         {
             this.inGamePointsController = inGamePointsController;
             this.playTrickWorkflowFactory = playTrickWorkflowFactory;
+            this.randomService = randomService;
             this.roundOverlayController = roundOverlayController;
             this.stateMachine = stateMachine;
             this.telemetryService = telemetryService;
@@ -47,7 +50,7 @@ namespace Barbu.Core.Workflows.RoundWorkflow
                 return Task.CompletedTask;
             }
 
-            var startingPlayerId = UnityEngine.Random.Range(0, 4);
+            var startingPlayerId = this.randomService.Range(0, 4);
             if (args.Data.PlayTrickWorkflow != null)
             {
                 startingPlayerId = Int32.Parse(args.Data.PlayTrickWorkflow.GetWinningPlayerId()) - 1;
