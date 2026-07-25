@@ -1,325 +1,349 @@
 namespace Barbu.UI.Controllers
 {
-    using System;
     using System.Collections.Generic;
     using Barbu.Core;
     using Barbu.Core.Features;
     using Barbu.Core.Telemetry;
+    using Barbu.UI.Components;
+    using Barbu.UI.SettingsMenu;
     using UnityEngine;
-    using UnityEngine.UIElements;
+    using UnityEngine.UI;
     using Zenject;
 
+    /// <summary>
+    /// Builds the settings menu from <see cref="SettingsRegistry"/> when it opens, one row
+    /// prefab per setting.
+    /// </summary>
+    /// <remarks>
+    /// The menu's own furniture (panel, header, scroll view, close button) is authored in the
+    /// scene; only the rows inside the scroll view are generated. Adding a setting is a change
+    /// to the registry alone.
+    ///
+    /// The scene wiring below is built by Barbu &gt; Settings Menu &gt; Rebuild Menu Hierarchy.
+    /// </remarks>
     public class SettingsMenuController : MonoBehaviour
     {
-        private Dictionary<string, string> HandSortingStrings = new Dictionary<string, string>
-        {
-            [Settings.SortingOptions.None.ToString()] = "No Sorting",
-            [Settings.SortingOptions.LowToHigh.ToString()] = "2 → A",
-            [Settings.SortingOptions.HighToLow.ToString()] = "A → 2",
-            [Settings.SortingOptions.SuitLowToHigh.ToString()] = "♥ ♦ ♠ ♣ 2 → A",
-            [Settings.SortingOptions.SuitHighToLow.ToString()] = "♥ ♦ ♠ ♣ A → 2",
-            [Settings.SortingOptions.SuitLowToHighAlternating.ToString()] = "♥ ♠ ♦ ♣ 2 → A",
-            [Settings.SortingOptions.SuitHighToLowAlternating.ToString()] = "♥ ♠ ♦ ♣ A → 2",
-        };
+        [Header("Scene")]
+        [Tooltip("The row area's layout group. Its left and right padding is set from the safe area.")]
+        [SerializeField]
+        private LayoutGroup safeAreaPadding;
+
+        [SerializeField]
+        private ScrollRect scrollRect;
+
+        [SerializeField]
+        private RectTransform contentRoot;
+
+        [SerializeField]
+        private Button closeButton;
+
+        [Tooltip("Disabled sample rows kept in the scene so the menu can be seen without entering play mode.")]
+        [SerializeField]
+        private GameObject[] previewRows;
+
+        [Header("Row prefabs")]
+        [SerializeField]
+        private SelectorSettingRowView selectorRowPrefab;
+
+        [SerializeField]
+        private ToggleSettingRowView toggleRowPrefab;
+
+        [Header("Feature flags (development builds only)")]
+        [SerializeField]
+        private GameObject featureFlagHeader;
+
+        [Tooltip("Shown in place of the flag rows while no flag is registered in FeatureRegistry.")]
+        [SerializeField]
+        private GameObject noFeatureFlagsLabel;
+
+        [SerializeField]
+        private Button resetOverridesButton;
+
+        private readonly List<SettingRowView> rows = new List<SettingRowView>();
 
         private IStateMachine stateMachine;
         private ITelemetryService telemetryService;
-#if UNITY_EDITOR || DEVELOPMENT_BUILD
         private IFeatureService featureService;
-#endif
-        private GameObject settingsMenu;
-        private Button sortingPreviousBtn;
-        private Button sortingNextBtn;
-        private Button difficultyPreviousBtn;
-        private Button difficultyNextBtn;
-        private Button backColorPreviousBtn;
-        private Button backColorNextBtn;
-        private Button menuSidePreviousBtn;
-        private Button menuSideNextBtn;
-        private Button closeBtn;
-        private Label currentlySelectedSortingOption;
-        private Label currentlySelectedDifficulty;
-        private Label currentlySelectedBackColor;
-        private Label currentlySelectedMenuSide;
-        private int currentSortingOption;
-        private int currentDifficultyOption;
-        private int currentBackColorOption;
-        private int currentMenuSideOption;
+        private bool rebuildRequested;
 
-        // featureService is only stored in builds that can show the flag panel, but the
-        // signature stays the same in every build so Zenject has one thing to satisfy.
         [Inject]
         public void Init(IStateMachine stateMachine, ITelemetryService telemetryService, IFeatureService featureService)
         {
             this.stateMachine = stateMachine;
             this.telemetryService = telemetryService;
-#if UNITY_EDITOR || DEVELOPMENT_BUILD
             this.featureService = featureService;
-#endif
         }
 
         public void OnEnable()
         {
+            this.telemetryService.LogInfo("Enabling SettingsMenuController");
             this.stateMachine.SetMenuOpen(true);
-            this.settingsMenu = GameObjectExtensions.FindGameObjectByName(Constants.GameObjects.SettingsMenu, findInactive: true);
-            var document = this.settingsMenu.GetComponent<UIDocument>();
-            var root = document.rootVisualElement;
+            this.ApplySafeArea();
 
-            var safeArea = Screen.safeArea;
-            float notchPct = safeArea.xMin / Screen.width * 100f;
-            var leftSpacer = root.Q<VisualElement>("left-notch-spacer");
-            var rightSpacer = root.Q<VisualElement>("right-notch-spacer");
-            if (notchPct > 0f)
+            if (this.closeButton != null)
             {
-                bool notchOnLeft = Screen.orientation == ScreenOrientation.LandscapeLeft;
-                leftSpacer.style.width = notchOnLeft ? Length.Percent(notchPct) : new Length(0);
-                rightSpacer.style.width = notchOnLeft ? new Length(0) : Length.Percent(notchPct);
-            }
-            else
-            {
-                leftSpacer.style.width = new Length(0);
-                rightSpacer.style.width = new Length(0);
+                this.closeButton.onClick.AddListener(this.HandleCloseButtonClick);
             }
 
-            this.sortingPreviousBtn = root.Q<Button>("sortingPrevious");
-            this.sortingNextBtn = root.Q<Button>("sortingNext");
-            this.difficultyPreviousBtn = root.Q<Button>("difficultyPrevious");
-            this.difficultyNextBtn = root.Q<Button>("difficultyNext");
-            this.backColorPreviousBtn = root.Q<Button>("backColorPrevious");
-            this.backColorNextBtn = root.Q<Button>("backColorNext");
-            this.menuSidePreviousBtn = root.Q<Button>("menuSidePrevious");
-            this.menuSideNextBtn = root.Q<Button>("menuSideNext");
-            this.closeBtn = root.Q<Button>("close");
+            if (this.resetOverridesButton != null)
+            {
+                this.resetOverridesButton.onClick.AddListener(this.HandleResetOverridesButtonClick);
+            }
 
-            this.currentlySelectedSortingOption = root.Q<Label>("currentlySelectedSortingOption");
-            this.currentlySelectedDifficulty = root.Q<Label>("currentlySelectedDifficulty");
-            this.currentlySelectedBackColor = root.Q<Label>("currentlySelectedBackColor");
-            this.currentlySelectedMenuSide = root.Q<Label>("currentlySelectedMenuSide");
-            _ = HandSortingStrings.TryGetValue(Settings.SortingPreference.ToString(), out var initialSortingOptionString);
-            this.currentlySelectedSortingOption.text = initialSortingOptionString;
-            this.currentlySelectedSortingOption.style.unityFontDefinition = FontDefinition.FromFont(Resources.Load<Font>("Fonts/LucidaSansUnicodeRegular"));
-            this.currentSortingOption = Array.IndexOf(Settings.HandSortingOptions, Settings.SortingPreference);
-            this.currentlySelectedDifficulty.text = Settings.ComputerDifficultyPreference.ToString();
-            this.currentDifficultyOption = Array.IndexOf(Settings.ComputerDifficulties, Settings.ComputerDifficultyPreference);
-            this.currentBackColorOption = Array.IndexOf(Settings.BackColors, Settings.BackColorPreference);
-            this.currentlySelectedBackColor.text = Settings.BackColors[this.currentBackColorOption].ToString();
-            this.currentMenuSideOption = Array.IndexOf(Settings.MenuSides, Settings.MenuSidePreference);
-            this.currentlySelectedMenuSide.text = Settings.MenuSides[this.currentMenuSideOption].ToString();
-
-            this.sortingPreviousBtn.RegisterCallback<ClickEvent>(HandleSortingPreviousButtonClick);
-            this.sortingNextBtn.RegisterCallback<ClickEvent>(HandleSortingNextButtonClick);
-            this.difficultyPreviousBtn.RegisterCallback<ClickEvent>(HandleDifficultyPreviousButtonClick);
-            this.difficultyNextBtn.RegisterCallback<ClickEvent>(HandleDifficultyNextButtonClick);
-            this.backColorPreviousBtn.RegisterCallback<ClickEvent>(HandleBackColorPreviousButtonClick);
-            this.backColorNextBtn.RegisterCallback<ClickEvent>(HandleBackColorNextButtonClick);
-            this.menuSidePreviousBtn.RegisterCallback<ClickEvent>(HandleMenuSidePreviousButtonClick);
-            this.menuSideNextBtn.RegisterCallback<ClickEvent>(HandleMenuSideNextButtonClick);
-            this.closeBtn.RegisterCallback<ClickEvent>(HandleCloseButtonClick);
-
-#if UNITY_EDITOR || DEVELOPMENT_BUILD
-            this.BuildFeatureFlagSection(root.Q<VisualElement>("settings-column"));
-#endif
+            this.Rebuild();
         }
 
         public void OnDisable()
         {
+            this.telemetryService.LogInfo("Disabling SettingsMenuController");
             this.stateMachine.SetMenuOpen(false);
-            this.sortingPreviousBtn.UnregisterCallback<ClickEvent>(HandleSortingPreviousButtonClick);
-            this.sortingNextBtn.UnregisterCallback<ClickEvent>(HandleSortingNextButtonClick);
-            this.difficultyPreviousBtn.UnregisterCallback<ClickEvent>(HandleSortingPreviousButtonClick);
-            this.difficultyNextBtn.UnregisterCallback<ClickEvent>(HandleDifficultyNextButtonClick);
-            this.backColorPreviousBtn.UnregisterCallback<ClickEvent>(HandleBackColorPreviousButtonClick);
-            this.backColorNextBtn.UnregisterCallback<ClickEvent>(HandleBackColorNextButtonClick);
-            this.menuSidePreviousBtn.UnregisterCallback<ClickEvent>(HandleMenuSidePreviousButtonClick);
-            this.menuSideNextBtn.UnregisterCallback<ClickEvent>(HandleMenuSideNextButtonClick);
-            this.closeBtn.UnregisterCallback<ClickEvent>(HandleCloseButtonClick);
+
+            if (this.closeButton != null)
+            {
+                this.closeButton.onClick.RemoveListener(this.HandleCloseButtonClick);
+            }
+
+            if (this.resetOverridesButton != null)
+            {
+                this.resetOverridesButton.onClick.RemoveListener(this.HandleResetOverridesButtonClick);
+            }
+
+            this.ClearRows();
+            this.rebuildRequested = false;
         }
-
-        private void HandleSortingPreviousButtonClick(ClickEvent evt)
-        {
-            this.telemetryService.LogInfo("Sorting Previous button clicked");
-            this.currentSortingOption = this.SafeMod(this.currentSortingOption - 1, Settings.HandSortingOptions.Length);
-            _ = HandSortingStrings.TryGetValue(Settings.HandSortingOptions[this.currentSortingOption].ToString(), out var sortingOptionText);
-            this.currentlySelectedSortingOption.text = sortingOptionText;
-            Settings.SortingPreference = Settings.HandSortingOptions[this.currentSortingOption];
-        }
-
-        private void HandleSortingNextButtonClick(ClickEvent evt)
-        {
-            this.telemetryService.LogInfo("Sorting Next button clicked");
-            this.currentSortingOption = this.SafeMod(this.currentSortingOption + 1, Settings.HandSortingOptions.Length);
-            _ = HandSortingStrings.TryGetValue(Settings.HandSortingOptions[this.currentSortingOption].ToString(), out var sortingOptionText);
-            this.currentlySelectedSortingOption.text = sortingOptionText;
-            Settings.SortingPreference = Settings.HandSortingOptions[this.currentSortingOption];
-        }
-
-        private void HandleDifficultyPreviousButtonClick(ClickEvent evt)
-        {
-            this.telemetryService.LogInfo("Difficulty Previous button clicked");
-            this.currentDifficultyOption = this.SafeMod(this.currentDifficultyOption - 1, Settings.ComputerDifficulties.Length);
-            this.currentlySelectedDifficulty.text = Settings.ComputerDifficulties[this.currentDifficultyOption].ToString();
-            Settings.ComputerDifficultyPreference = Settings.ComputerDifficulties[this.currentDifficultyOption];
-        }
-
-        private void HandleDifficultyNextButtonClick(ClickEvent evt)
-        {
-            this.telemetryService.LogInfo("Difficulty Next Button clicked");
-            this.currentDifficultyOption = this.SafeMod(this.currentDifficultyOption + 1, Settings.ComputerDifficulties.Length);
-            this.currentlySelectedDifficulty.text = Settings.ComputerDifficulties[this.currentDifficultyOption].ToString();
-            Settings.ComputerDifficultyPreference = Settings.ComputerDifficulties[this.currentDifficultyOption];
-        }
-
-        private void HandleBackColorPreviousButtonClick(ClickEvent evt)
-        {
-            this.telemetryService.LogInfo("Back Color Previous Button clicked");
-            this.currentBackColorOption = this.SafeMod(this.currentBackColorOption - 1, Settings.BackColors.Length);
-            this.currentlySelectedBackColor.text = Settings.BackColors[this.currentBackColorOption].ToString();
-            Settings.BackColorPreference = Settings.BackColors[this.currentBackColorOption];
-        }
-
-        private void HandleBackColorNextButtonClick(ClickEvent evt)
-        {
-            this.telemetryService.LogInfo("Back Color Next Button clicked");
-            this.currentBackColorOption = this.SafeMod(this.currentBackColorOption + 1, Settings.BackColors.Length);
-            this.currentlySelectedBackColor.text = Settings.BackColors[this.currentBackColorOption].ToString();
-            Settings.BackColorPreference = Settings.BackColors[this.currentBackColorOption];
-        }
-
-        private void HandleMenuSidePreviousButtonClick(ClickEvent evt)
-        {
-            this.telemetryService.LogInfo("Menu Side Previous button clicked");
-            this.currentMenuSideOption = this.SafeMod(this.currentMenuSideOption - 1, Settings.MenuSides.Length);
-            this.currentlySelectedMenuSide.text = Settings.MenuSides[this.currentMenuSideOption].ToString();
-            Settings.MenuSidePreference = Settings.MenuSides[this.currentMenuSideOption];
-            this.NotifyMenuControllersOfSideChange();
-        }
-
-        private void HandleMenuSideNextButtonClick(ClickEvent evt)
-        {
-            this.telemetryService.LogInfo("Menu Side Next button clicked");
-            this.currentMenuSideOption = this.SafeMod(this.currentMenuSideOption + 1, Settings.MenuSides.Length);
-            this.currentlySelectedMenuSide.text = Settings.MenuSides[this.currentMenuSideOption].ToString();
-            Settings.MenuSidePreference = Settings.MenuSides[this.currentMenuSideOption];
-            this.NotifyMenuControllersOfSideChange();
-        }
-
-        private void NotifyMenuControllersOfSideChange()
-        {
-            var mainMenuGO = GameObjectExtensions.FindGameObjectByName("MainMenu");
-            mainMenuGO.GetComponent<MainMenuController>().ApplyMenuSide();
-
-            var singleRoundMenuGO = GameObjectExtensions.FindGameObjectByName(Constants.GameObjects.SingleRoundMenu, findInactive: true);
-            singleRoundMenuGO.GetComponent<SingleRoundMenuController>().ApplyMenuSide();
-        }
-
-        private void HandleCloseButtonClick(ClickEvent evt)
-        {
-            this.settingsMenu.SetActive(false);
-        }
-
-        private int SafeMod(int numerator, int modulus)
-        {
-            int result = numerator % modulus;
-            return result < 0 ? result + modulus : result;
-        }
-
-#if UNITY_EDITOR || DEVELOPMENT_BUILD
-        private const string FeatureFlagSectionName = "feature-flag-section";
 
         /// <summary>
-        /// Appends a live feature flag list to the bottom of the settings menu, so flags can
-        /// be toggled on a device without a rebuild.
+        /// Rebuilds outside any button callback. A row that asks for a rebuild is asking to be
+        /// destroyed, which is not something to do while its own click handler is running.
         /// </summary>
-        /// <remarks>
-        /// Compiled only into the editor and development builds, which is why it is built in
-        /// C# rather than authored in SettingsMenu.uxml: UXML has no preprocessor, and the
-        /// rows have to be generated from the registry anyway since the flag list changes.
-        /// Element names match the ones in SettingsMenu.uss so the generated rows pick up the
-        /// same styling as the hand authored ones.
-        /// </remarks>
-        private void BuildFeatureFlagSection(VisualElement column)
+        public void LateUpdate()
         {
-            // The UIDocument keeps its visual tree while the menu GameObject is disabled, so
-            // OnEnable would otherwise stack up another copy of this section each reopen.
-            column.Q<VisualElement>(FeatureFlagSectionName)?.RemoveFromHierarchy();
-
-            var section = new VisualElement { name = FeatureFlagSectionName };
-            section.style.width = Length.Percent(100);
-            section.style.flexGrow = 1;
-            column.Add(section);
-
-            var header = new Label("Feature Flags");
-            header.AddToClassList("header");
-            section.Add(header);
-
-            if (this.featureService.Definitions.Count == 0)
+            if (!this.rebuildRequested)
             {
-                section.Add(new Label("No feature flags defined."));
                 return;
             }
 
-            // The flag list has no fixed length and the menu is a phone sized screen, so let
-            // the rows scroll instead of pushing the Close button off the bottom.
-            var scrollView = new ScrollView();
-            scrollView.style.width = Length.Percent(100);
-            scrollView.style.flexGrow = 1;
-            section.Add(scrollView);
+            this.rebuildRequested = false;
+            this.Rebuild();
+        }
 
-            foreach (var definition in this.featureService.Definitions)
+        private void Rebuild()
+        {
+            var scrollPosition = this.scrollRect != null ? this.scrollRect.verticalNormalizedPosition : 1f;
+
+            this.ClearRows();
+
+            // The samples exist for the scene view; the real rows replace them at runtime.
+            if (this.previewRows != null)
             {
-                scrollView.Add(this.BuildFeatureFlagRow(definition.Name));
+                foreach (var previewRow in this.previewRows)
+                {
+                    if (previewRow != null)
+                    {
+                        previewRow.SetActive(false);
+                    }
+                }
             }
 
-            var resetButton = new Button(() =>
+            foreach (var definition in SettingsRegistry.All)
             {
-                this.telemetryService.LogInfo("Feature flag overrides reset");
-                this.featureService.ClearAllOverrides();
-                this.BuildFeatureFlagSection(column);
-            })
+                if (this.IsVisible(definition))
+                {
+                    this.CreateRow(definition);
+                }
+            }
+
+            this.BuildFeatureFlagSection();
+
+            // The offset reads back as NaN while the content is shorter than the viewport,
+            // which is the normal case for a short settings list.
+            if (this.scrollRect != null && !float.IsNaN(scrollPosition))
             {
-                text = "Reset Overrides",
-            };
-            resetButton.AddToClassList("settings-button");
-            section.Add(resetButton);
+                // Restoring the scroll offset only means anything once the new rows have been
+                // laid out and the content has its final height.
+                Canvas.ForceUpdateCanvases();
+                this.scrollRect.verticalNormalizedPosition = Mathf.Clamp01(scrollPosition);
+            }
         }
 
-        private VisualElement BuildFeatureFlagRow(string feature)
+        private bool IsVisible(SettingDefinition definition)
         {
-            var row = new VisualElement { name = "settings-row" };
-
-            var leftColumn = new VisualElement { name = "left-column" };
-            leftColumn.Add(new Label(feature));
-            row.Add(leftColumn);
-
-            var rightColumn = new VisualElement { name = "right-column" };
-            var buttonRow = new VisualElement { name = "row" };
-
-            Button toggleButton = null;
-            toggleButton = new Button(() =>
+            if (definition.DevelopmentOnly && !IsDevelopmentBuild)
             {
-                var enabled = !this.featureService.IsEnabled(feature);
-                this.featureService.SetOverride(feature, enabled);
-                this.telemetryService.LogInfo($"Feature flag {feature} overridden to {enabled}");
-                this.UpdateFeatureFlagButton(toggleButton, feature);
-            });
-            toggleButton.AddToClassList("settings-button");
-            toggleButton.AddToClassList("selection-box");
-            this.UpdateFeatureFlagButton(toggleButton, feature);
+                return false;
+            }
 
-            buttonRow.Add(toggleButton);
-            rightColumn.Add(buttonRow);
-            row.Add(rightColumn);
-            return row;
+            if (string.IsNullOrEmpty(definition.RequiredFeature))
+            {
+                return true;
+            }
+
+            return this.featureService.IsEnabled(definition.RequiredFeature);
         }
 
-        private void UpdateFeatureFlagButton(Button button, string feature)
+        private void CreateRow(SettingDefinition definition)
         {
-            // The asterisk marks a flag that has been forced either way, to distinguish it
-            // from one still sitting at whatever this build type defaults to.
-            var state = this.featureService.IsEnabled(feature) ? "On" : "Off";
-            var marker = this.featureService.HasOverride(feature) ? " *" : string.Empty;
-            button.text = state + marker;
+            var prefab = definition.ControlKind == SettingControlKind.Toggle
+                ? (SettingRowView)this.toggleRowPrefab
+                : this.selectorRowPrefab;
+
+            if (prefab == null)
+            {
+                this.telemetryService.LogError(
+                    $"No row prefab is assigned for {definition.ControlKind}, so the '{definition.Label}' setting cannot be shown.");
+                return;
+            }
+
+            var row = Instantiate(prefab, this.contentRoot);
+            row.gameObject.name = $"{definition.Label} Row";
+            row.gameObject.SetActive(true);
+            row.Changed += this.HandleRowChanged;
+            row.Bind(definition);
+            this.rows.Add(row);
+        }
+
+        private void ClearRows()
+        {
+            foreach (var row in this.rows)
+            {
+                if (row == null)
+                {
+                    continue;
+                }
+
+                row.Changed -= this.HandleRowChanged;
+
+                // Destroy only takes effect at the end of the frame, so unparent first;
+                // otherwise the outgoing rows would still be laying out alongside the new ones.
+                row.transform.SetParent(null, worldPositionStays: false);
+                Destroy(row.gameObject);
+            }
+
+            this.rows.Clear();
+        }
+
+        private void HandleRowChanged(SettingRowView row)
+        {
+            this.telemetryService.LogInfo($"Setting '{row.Definition.Label}' changed to '{row.Definition.DisplayValue}'");
+
+            if (row.Definition.AffectsMenuLayout)
+            {
+                this.rebuildRequested = true;
+            }
+        }
+
+        /// <summary>
+        /// Insets the rows so a notch cannot cover them, as the left and right spacers in the
+        /// old layout did.
+        /// </summary>
+        /// <remarks>
+        /// Only the rows are inset, not the whole menu: the white background and the green
+        /// header still run to the edges of the screen. Padding is used rather than anchors
+        /// because this object's rect is driven by the layout group above it.
+        /// </remarks>
+        private void ApplySafeArea()
+        {
+            if (this.safeAreaPadding == null || Screen.width == 0)
+            {
+                return;
+            }
+
+            var canvas = this.GetComponent<Canvas>();
+            var scale = canvas != null && canvas.scaleFactor > 0f ? canvas.scaleFactor : 1f;
+
+            var safeArea = Screen.safeArea;
+            var left = Mathf.Max(0, Mathf.RoundToInt(safeArea.xMin / scale));
+            var right = Mathf.Max(0, Mathf.RoundToInt((Screen.width - safeArea.xMax) / scale));
+
+            var current = this.safeAreaPadding.padding;
+            if (current.left == left && current.right == right)
+            {
+                return;
+            }
+
+            // A fresh RectOffset rather than mutating the current one, which the layout group
+            // holds by reference and so would not notice changing.
+            this.safeAreaPadding.padding = new RectOffset(left, right, current.top, current.bottom);
+        }
+
+        private void HandleCloseButtonClick()
+        {
+            this.telemetryService.LogInfo("Settings close button clicked");
+            this.gameObject.SetActive(false);
+        }
+
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+        private const bool IsDevelopmentBuild = true;
+
+        private void BuildFeatureFlagSection()
+        {
+            var definitions = FeatureFlagSettings.CreateDefinitions(this.featureService);
+
+            this.SetFeatureFlagSectionActive(true);
+
+            // The header is authored in the scene rather than generated, so it has to be moved
+            // below the settings rows that were just added before the flag rows follow it.
+            this.featureFlagHeader.transform.SetAsLastSibling();
+
+            // An empty list is still an answer to "which flags are there?". Hiding the section
+            // instead makes a working panel look like a broken one.
+            if (definitions.Count == 0)
+            {
+                if (this.noFeatureFlagsLabel != null)
+                {
+                    this.noFeatureFlagsLabel.SetActive(true);
+                    this.noFeatureFlagsLabel.transform.SetAsLastSibling();
+                }
+
+                return;
+            }
+
+            if (this.noFeatureFlagsLabel != null)
+            {
+                this.noFeatureFlagsLabel.SetActive(false);
+            }
+
+            foreach (var definition in definitions)
+            {
+                this.CreateRow(definition);
+            }
+        }
+
+        private void HandleResetOverridesButtonClick()
+        {
+            this.telemetryService.LogInfo("Feature flag overrides reset");
+            this.featureService.ClearAllOverrides();
+            this.rebuildRequested = true;
+        }
+#else
+        private const bool IsDevelopmentBuild = false;
+
+        private void BuildFeatureFlagSection()
+        {
+            this.SetFeatureFlagSectionActive(false);
+        }
+
+        private void HandleResetOverridesButtonClick()
+        {
         }
 #endif
+
+        private void SetFeatureFlagSectionActive(bool active)
+        {
+            if (this.featureFlagHeader != null)
+            {
+                this.featureFlagHeader.SetActive(active);
+            }
+
+            if (this.resetOverridesButton != null)
+            {
+                this.resetOverridesButton.gameObject.SetActive(active);
+            }
+
+            if (!active && this.noFeatureFlagsLabel != null)
+            {
+                this.noFeatureFlagsLabel.SetActive(false);
+            }
+        }
     }
 }
