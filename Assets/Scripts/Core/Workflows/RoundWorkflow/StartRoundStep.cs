@@ -47,7 +47,7 @@ namespace Barbu.Core.Workflows.RoundWorkflow
                 return Task.CompletedTask;
             }
 
-            var startingPlayerId = args.Data.CurrentRoundIndex % 4;
+            var startingPlayerId = UnityEngine.Random.Range(0, 4);
             if (args.Data.PlayTrickWorkflow != null)
             {
                 startingPlayerId = Int32.Parse(args.Data.PlayTrickWorkflow.GetWinningPlayerId()) - 1;
