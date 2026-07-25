@@ -8,7 +8,7 @@ namespace Barbu.UI.Controllers
     using UnityEngine;
     using Zenject;
 
-    public class ScoreMenuController : MonoBehaviour
+    public class ScoreMenuController : MonoBehaviour, IScoreMenuController
     {
         private const float BaseAnimationTime = 1.0f;
 

@@ -2,28 +2,34 @@ namespace Barbu.Core.Workflows.RoundWorkflow
 {
     using System;
     using System.Threading.Tasks;
-    using Barbu.Core;
     using Barbu.Core.Events;
     using Barbu.Core.Telemetry;
     using Barbu.Core.Workflows.PlayTrickWorkflow;
     using Barbu.UI.Controllers;
-    using UnityEngine;
+    using Zenject;
 
     public class StartRoundStep : IStep<RoundArguments>
     {
-        private IWorkflow workflow;
-        private IEventsController eventsController;
-        private IStateMachine stateMachine;
-        private ITelemetryService telemetryService;
+        public class Factory : PlaceholderFactory<StartRoundStep>
+        {
+        }
 
-        public void Initialize(
-            IWorkflow workflow,
-            IEventsController eventsController,
+        private readonly IInGamePointsController inGamePointsController;
+        private readonly PlayTrickWorkflow.Factory playTrickWorkflowFactory;
+        private readonly IRoundOverlayController roundOverlayController;
+        private readonly IStateMachine stateMachine;
+        private readonly ITelemetryService telemetryService;
+
+        public StartRoundStep(
+            IInGamePointsController inGamePointsController,
+            PlayTrickWorkflow.Factory playTrickWorkflowFactory,
+            IRoundOverlayController roundOverlayController,
             IStateMachine stateMachine,
             ITelemetryService telemetryService)
         {
-            this.workflow = workflow;
-            this.eventsController = eventsController;
+            this.inGamePointsController = inGamePointsController;
+            this.playTrickWorkflowFactory = playTrickWorkflowFactory;
+            this.roundOverlayController = roundOverlayController;
             this.stateMachine = stateMachine;
             this.telemetryService = telemetryService;
         }
@@ -31,14 +37,13 @@ namespace Barbu.Core.Workflows.RoundWorkflow
         public Task InvokeAsync(StepArguments<RoundArguments> args)
         {
             this.telemetryService.LogInfo("[RoundWorkflow] [StartRoundStep] Executing StartRound step...");
-            var roundOverlay = GameObjectExtensions.FindGameObjectByName(Constants.GameObjects.RoundOverlay, findInactive: true);
-            roundOverlay.SetActive(false);
+            this.roundOverlayController.SetActive(false);
             this.stateMachine.ResetNumCardsPlayed();
 
             if (args.Data.TricksPlayed == Constants.NumPilesPerRound)
             {
                 this.telemetryService.LogInfo("[RoundWorkflow] [StartRound] All piles played, moving to cleanup step...");
-                this.workflow.SetNextStep(nameof(CleanupRoundStep));
+                args.Workflow.SetNextStep(nameof(CleanupRoundStep));
                 return Task.CompletedTask;
             }
 
@@ -54,17 +59,12 @@ namespace Barbu.Core.Workflows.RoundWorkflow
             {
                 this.telemetryService.LogInfo("[RoundWorkflow] [StartRound] Round is over, auto playing remaining cards.");
                 this.stateMachine.SetAutoPlayMode(true);
-                roundOverlay.SetActive(true);
-                var roundOverlayController = roundOverlay.GetComponent<RoundOverlayController>();
-                roundOverlayController.ShowRoundOverMessage();
+                this.roundOverlayController.SetActive(true);
+                this.roundOverlayController.ShowRoundOverMessage();
             }
 
             this.telemetryService.LogInfo($"[RoundWorkflow] [StartRound] Setting starting player: {startingPlayerId}");
-            args.Data.PlayTrickWorkflow = new PlayTrickWorkflow(
-                this.eventsController,
-                this.stateMachine,
-                this.telemetryService,
-                args.Data.ComputerStateFactory,
+            args.Data.PlayTrickWorkflow = this.playTrickWorkflowFactory.Create(
                 args.Data.GetCurrentRound(),
                 args.Data.PlayerPoints,
                 args.Data.Hands,
@@ -73,12 +73,10 @@ namespace Barbu.Core.Workflows.RoundWorkflow
             Task _ = args.Data.PlayTrickWorkflow.StartAsync();
             args.Data.TricksPlayed++;
 
-            var inGamePointsOverlay = GameObject.Find(Constants.GameObjects.InGamePoints);
-            var inGamePointsController = inGamePointsOverlay.GetComponent<InGamePointsController>();
-            inGamePointsController.SetRoundName(args.Data.GetCurrentRound().Name);
+            this.inGamePointsController.SetRoundName(args.Data.GetCurrentRound().Name);
 
-            this.workflow.SetNextStep(nameof(StartRoundStep));
-            this.workflow.WaitForEvent(EventNames.PileResolved);
+            args.Workflow.SetNextStep(nameof(StartRoundStep));
+            args.Workflow.WaitForEvent(EventNames.PileResolved);
 
             return Task.CompletedTask;
         }

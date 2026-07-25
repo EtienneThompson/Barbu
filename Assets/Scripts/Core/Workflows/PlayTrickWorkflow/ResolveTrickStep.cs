@@ -1,24 +1,23 @@
 namespace Barbu.Core.Workflows.PlayTrickWorkflow
 {
     using System.Threading.Tasks;
-    using Barbu.Core.Events;
     using Barbu.Core.Telemetry;
     using Barbu.UI.Controllers;
-    using UnityEngine;
+    using Zenject;
 
     public class ResolveTrickStep : IStep<PlayTrickArguments>
     {
-        private IWorkflow parentWorkflow;
-        private IStateMachine stateMachine;
-        private ITelemetryService telemetryService;
-
-        public void Initialize(
-            IWorkflow workflow,
-            IEventsController eventsController,
-            IStateMachine stateMachine,
-            ITelemetryService telemetryService)
+        public class Factory : PlaceholderFactory<ResolveTrickStep>
         {
-            this.parentWorkflow = workflow;
+        }
+
+        private readonly IInGamePointsController inGamePointsController;
+        private readonly IStateMachine stateMachine;
+        private readonly ITelemetryService telemetryService;
+
+        public ResolveTrickStep(IInGamePointsController inGamePointsController, IStateMachine stateMachine, ITelemetryService telemetryService)
+        {
+            this.inGamePointsController = inGamePointsController;
             this.stateMachine = stateMachine;
             this.telemetryService = telemetryService;
         }
@@ -33,15 +32,13 @@ namespace Barbu.Core.Workflows.PlayTrickWorkflow
             var playerId = highestCard.playerId;
 
             this.telemetryService.LogInfo($"[PlayTrickWorkflow] Winning player: {playerId}");
-            var inGamePointsOverlay = GameObject.Find(Constants.GameObjects.InGamePoints);
-            var inGamePointsController = inGamePointsOverlay.GetComponent<InGamePointsController>();
-            inGamePointsController.UpdatePlayerPoints(playerId, pointsInPile);
+            this.inGamePointsController.UpdatePlayerPoints(playerId, pointsInPile);
 
             args.Data.PlayerPoints[playerId][args.Data.RoundNumber] += pointsInPile;
 
             args.Data.currentPile.StartPileResolution(highestCard.playerId);
             this.stateMachine.SetHighestRank(0);
-            this.parentWorkflow.SetNextStep(null);
+            args.Workflow.SetNextStep(null);
             return Task.CompletedTask;
         }
     }

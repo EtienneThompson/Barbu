@@ -2,6 +2,8 @@ namespace Barbu.Tests.EditMode.Workflows
 {
     using System;
     using Barbu.Core.Workflows;
+    using Barbu.Core.Workflows.PlayTrickWorkflow;
+    using Barbu.Core.Workflows.RoundWorkflow;
     using Barbu.Tests.EditMode.TestUtils;
     using NUnit.Framework;
 
@@ -17,10 +19,9 @@ namespace Barbu.Tests.EditMode.Workflows
         public void CreateSingleRoundWorkflow_UnknownRoundType_ThrowsArgumentException()
         {
             var factory = new WorkflowFactory(
-                new FakeEventsController(),
-                new FakeStateMachine(),
                 new FakeTelemetryService(),
-                new FakeComputerStateFactory());
+                new PlayTrickWorkflow.Factory(),
+                new RoundWorkflow.Factory());
 
             Assert.Throws<ArgumentException>(() => factory.CreateSingleRoundWorkflow("NotARealRound"));
         }

@@ -1,16 +1,15 @@
 namespace Barbu.Tests.EditMode.Workflows
 {
     using System.Collections.Generic;
+    using Barbu.Core.Workflows.PlayTrickWorkflow;
     using Barbu.Gameplay;
     using Barbu.Gameplay.Rounds.Rounds;
     using Barbu.Tests.EditMode.TestUtils;
     using NUnit.Framework;
     using PlayTrickWorkflow = Barbu.Core.Workflows.PlayTrickWorkflow.PlayTrickWorkflow;
 
-    // Only the constructor is covered here - see PlayCardStepTests and
-    // HandleCardPlayedStepTests for the steps themselves. ResolveTrickStep is
-    // not covered: it calls GameObject.Find(Constants.GameObjects.InGamePoints)
-    // for a real InGamePointsController, which needs a live scene.
+    // Only the constructor is covered here - see PlayCardStepTests,
+    // HandleCardPlayedStepTests, and ResolveTrickStepTests for the steps themselves.
     public class PlayTrickWorkflowTests
     {
         private FakeEventsController eventsController;
@@ -41,6 +40,7 @@ namespace Barbu.Tests.EditMode.Workflows
 
             _ = new PlayTrickWorkflow(
                 this.eventsController, this.stateMachine, new FakeTelemetryService(), factory,
+                new PlayCardStep.Factory(), new HandleCardPlayedStep.Factory(), new ResolveTrickStep.Factory(),
                 new HeartsRound(), this.playerPoints, this.playerHands, startingPlayer: 0, roundNumber: 0);
 
             CollectionAssert.AreEquivalent(
@@ -56,6 +56,7 @@ namespace Barbu.Tests.EditMode.Workflows
 
             _ = new PlayTrickWorkflow(
                 this.eventsController, this.stateMachine, new FakeTelemetryService(), factory,
+                new PlayCardStep.Factory(), new HandleCardPlayedStep.Factory(), new ResolveTrickStep.Factory(),
                 new HeartsRound(), this.playerPoints, this.playerHands, startingPlayer: 0, roundNumber: 0);
 
             CollectionAssert.DoesNotContain(factory.RequestedPlayerIds, Constants.PlayerIds.Player1);
@@ -72,6 +73,7 @@ namespace Barbu.Tests.EditMode.Workflows
 
             _ = new PlayTrickWorkflow(
                 this.eventsController, this.stateMachine, new FakeTelemetryService(), factory,
+                new PlayCardStep.Factory(), new HandleCardPlayedStep.Factory(), new ResolveTrickStep.Factory(),
                 new HeartsRound(), this.playerPoints, this.playerHands, startingPlayer: 0, roundNumber: 0);
 
             Assert.AreEqual(string.Empty, this.stateMachine.GetStartingSuit());

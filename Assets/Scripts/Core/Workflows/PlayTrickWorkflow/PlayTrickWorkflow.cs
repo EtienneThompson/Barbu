@@ -6,16 +6,28 @@ namespace Barbu.Core.Workflows.PlayTrickWorkflow
     using Barbu.Gameplay;
     using Barbu.Gameplay.BoardState;
     using Barbu.Gameplay.Rounds;
+    using Zenject;
 
     public class PlayTrickWorkflow : BaseWorkflow<PlayTrickArguments>
     {
+        // startingPlayer and roundNumber are both int, so Zenject matches them to
+        // the constructor's (..., int startingPlayer, int roundNumber) params by
+        // position among same-typed args, in the order passed to Create() - keep
+        // this call's argument order in sync with that constructor's parameter order.
+        public class Factory : PlaceholderFactory<IRound, Dictionary<string, int[]>, Hand[], int, int, PlayTrickWorkflow>
+        {
+        }
+
         private readonly IComputerStateFactory computerStateFactory;
+        private readonly PlayCardStep.Factory playCardStepFactory;
+        private readonly HandleCardPlayedStep.Factory handleCardPlayedStepFactory;
+        private readonly ResolveTrickStep.Factory resolveTrickStepFactory;
 
         protected override Dictionary<string, IStep<PlayTrickArguments>> Steps => new Dictionary<string, IStep<PlayTrickArguments>>
         {
-            [nameof(PlayCardStep)] = new PlayCardStep(),
-            [nameof(HandleCardPlayedStep)] = new HandleCardPlayedStep(),
-            [nameof(ResolveTrickStep)] = new ResolveTrickStep(),
+            [nameof(PlayCardStep)] = this.playCardStepFactory.Create(),
+            [nameof(HandleCardPlayedStep)] = this.handleCardPlayedStepFactory.Create(),
+            [nameof(ResolveTrickStep)] = this.resolveTrickStepFactory.Create(),
         };
 
         public PlayTrickWorkflow(
@@ -23,6 +35,9 @@ namespace Barbu.Core.Workflows.PlayTrickWorkflow
             IStateMachine stateMachine,
             ITelemetryService telemetryService,
             IComputerStateFactory computerStateFactory,
+            PlayCardStep.Factory playCardStepFactory,
+            HandleCardPlayedStep.Factory handleCardPlayedStepFactory,
+            ResolveTrickStep.Factory resolveTrickStepFactory,
             IRound round,
             Dictionary<string, int[]> playerPoints,
             Hand[] playerHands,
@@ -31,6 +46,9 @@ namespace Barbu.Core.Workflows.PlayTrickWorkflow
             : base(eventsController, stateMachine, telemetryService)
         {
             this.computerStateFactory = computerStateFactory;
+            this.playCardStepFactory = playCardStepFactory;
+            this.handleCardPlayedStepFactory = handleCardPlayedStepFactory;
+            this.resolveTrickStepFactory = resolveTrickStepFactory;
             var gameStates = new GameState[4]; 
             if (!this.stateMachine.IsAutoPlayMode())
             {
@@ -47,7 +65,7 @@ namespace Barbu.Core.Workflows.PlayTrickWorkflow
 
             this.currentStepName = nameof(PlayCardStep);
 
-            this.Arguments = new StepArguments<PlayTrickArguments>
+            this.Arguments = new StepArguments<PlayTrickArguments>(this)
             {
                 Data = new PlayTrickArguments
                 {

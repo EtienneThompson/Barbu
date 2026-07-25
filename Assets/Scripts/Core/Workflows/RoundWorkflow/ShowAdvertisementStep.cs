@@ -1,24 +1,27 @@
 namespace Barbu.Core.Workflows.RoundWorkflow
 {
-    using Barbu.Core;
-    using Barbu.Core.Events;
+    using System.Threading.Tasks;
     using Barbu.Core.Telemetry;
     using Barbu.UI.Controllers;
-    using System.Threading.Tasks;
-    using UnityEngine;
+    using Zenject;
 
     public class ShowAdvertisementStep : IStep<RoundArguments>
     {
-        private IWorkflow workflow;
-        private ITelemetryService telemetryService;
+        public class Factory : PlaceholderFactory<ShowAdvertisementStep>
+        {
+        }
 
-        public void Initialize(
-            IWorkflow workflow,
-            IEventsController eventsController,
-            IStateMachine stateMachine,
+        private readonly IRoundOverlayController roundOverlayController;
+        private readonly IAdvertisementController advertisementController;
+        private readonly ITelemetryService telemetryService;
+
+        public ShowAdvertisementStep(
+            IRoundOverlayController roundOverlayController,
+            IAdvertisementController advertisementController,
             ITelemetryService telemetryService)
         {
-            this.workflow = workflow;
+            this.roundOverlayController = roundOverlayController;
+            this.advertisementController = advertisementController;
             this.telemetryService = telemetryService;
         }
 
@@ -26,16 +29,12 @@ namespace Barbu.Core.Workflows.RoundWorkflow
         {
             this.telemetryService.LogInfo("[RoundWorkflow] [ShowAdvertisement] Executing show advertisement step...");
 
-            var roundOverlay = GameObjectExtensions.FindGameObjectByName(Constants.GameObjects.RoundOverlay);
-            roundOverlay.SetActive(false);
-            var roundOverlayController = roundOverlay.GetComponent<RoundOverlayController>();
-            roundOverlayController.HideText();
+            this.roundOverlayController.SetActive(false);
+            this.roundOverlayController.HideText();
 
-            var gameBoard = GameObject.Find(Constants.GameObjects.GameBoard);
-            var advertisementController = gameBoard.GetComponent<AdvertisementController>();
-            advertisementController.ShowInterstitialAd();
+            this.advertisementController.ShowInterstitialAd();
 
-            this.workflow.SetNextStep(null);
+            args.Workflow.SetNextStep(null);
             return Task.CompletedTask;
         }
     }

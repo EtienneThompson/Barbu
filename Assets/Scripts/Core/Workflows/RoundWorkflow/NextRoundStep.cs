@@ -1,35 +1,34 @@
 namespace Barbu.Core.Workflows.RoundWorkflow
 {
     using System.Threading.Tasks;
-    using Barbu.Core;
-    using Barbu.Core.Events;
     using Barbu.Core.Telemetry;
+    using Barbu.UI.Controllers;
+    using Zenject;
 
     public class NextRoundStep : IStep<RoundArguments>
     {
-        private IWorkflow workflow;
-        private ITelemetryService telemetryService;
-
-        public void Initialize(
-            IWorkflow workflow,
-            IEventsController eventsController,
-            IStateMachine stateMachine,
-            ITelemetryService telemetryService)
+        public class Factory : PlaceholderFactory<NextRoundStep>
         {
-            this.workflow = workflow;
+        }
+
+        private readonly IInGamePointsController inGamePointsController;
+        private readonly ITelemetryService telemetryService;
+
+        public NextRoundStep(IInGamePointsController inGamePointsController, ITelemetryService telemetryService)
+        {
+            this.inGamePointsController = inGamePointsController;
             this.telemetryService = telemetryService;
         }
 
         public Task InvokeAsync(StepArguments<RoundArguments> args)
         {
             this.telemetryService.LogInfo("[RoundWorkflow] [NextRound] Executing next round step...");
-            var inGamePointsOverlay = GameObjectExtensions.FindGameObjectByName(Constants.GameObjects.InGamePoints, findInactive: true);
-            inGamePointsOverlay.SetActive(true);
+            this.inGamePointsController.SetActive(true);
 
             if (args.Data.CurrentRoundIndex + 1 == args.Data.Rounds.Count)
             {
                 this.telemetryService.LogInfo("[RoundWorkflow] [NextRound] Rounds are complete, moving to complete game step...");
-                this.workflow.SetNextStep(nameof(CompleteGameStep));
+                args.Workflow.SetNextStep(nameof(CompleteGameStep));
             }
             else
             {
@@ -37,7 +36,7 @@ namespace Barbu.Core.Workflows.RoundWorkflow
                 args.Data.PlayTrickWorkflow.Dispose();
                 args.Data.PlayTrickWorkflow = null;
                 args.Data.CurrentRoundIndex++;
-                this.workflow.SetNextStep(nameof(SetupRoundStep));
+                args.Workflow.SetNextStep(nameof(SetupRoundStep));
             }
 
             return Task.CompletedTask;

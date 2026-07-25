@@ -1,23 +1,21 @@
 namespace Barbu.Core.Workflows.RoundWorkflow
 {
-    using Barbu.Core;
-    using Barbu.Core.Events;
     using Barbu.Core.Telemetry;
     using System.Threading.Tasks;
-    using UnityEngine;
+    using Zenject;
 
     public class SetupRoundStep : IStep<RoundArguments>
     {
-        private IWorkflow workflow;
-        private ITelemetryService telemetryService;
-
-        public void Initialize(
-            IWorkflow workflow,
-            IEventsController eventsController,
-            IStateMachine stateMachine,
-            ITelemetryService telemetryService)
+        public class Factory : PlaceholderFactory<SetupRoundStep>
         {
-            this.workflow = workflow;
+        }
+
+        private readonly IGameBoard gameBoard;
+        private readonly ITelemetryService telemetryService;
+
+        public SetupRoundStep(IGameBoard gameBoard, ITelemetryService telemetryService)
+        {
+            this.gameBoard = gameBoard;
             this.telemetryService = telemetryService;
         }
 
@@ -25,12 +23,10 @@ namespace Barbu.Core.Workflows.RoundWorkflow
         {
             this.telemetryService.LogInfo("[RoundWorkflow] [SetupRound] Executing setup round step...");
 
-            var gameBoard = GameObject.Find(Constants.GameObjects.GameBoard);
-            var gameBoardController = gameBoard.GetComponent<GameBoard>();
-            var hands = gameBoardController.SetupRound();
+            var hands = this.gameBoard.SetupRound();
             args.Data.Hands = hands;
 
-            this.workflow.SetNextStep(nameof(PreRoundStep));
+            args.Workflow.SetNextStep(nameof(PreRoundStep));
             return Task.CompletedTask;
         }
     }

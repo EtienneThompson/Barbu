@@ -9,13 +9,14 @@ namespace Barbu
     using UnityEngine;
     using Zenject;
 
-    public class GameBoard : MonoBehaviour
+    public class GameBoard : MonoBehaviour, IGameBoard
     {
         private IStateMachine stateMachine;
         private GlobalContext globalContext;
         private ITelemetryService telemetryService;
         private IWorkflowFactory workflowFactory;
         private IDeck deck;
+        private IStatisticsService statisticsService;
         private Hand[] hands = new Hand[4];
 
         [Inject]
@@ -23,13 +24,15 @@ namespace Barbu
             ITelemetryService telemetryService,
             IStateMachine stateMachine,
             IWorkflowFactory workflowFactory,
-            IDeck deck)
+            IDeck deck,
+            IStatisticsService statisticsService)
         {
             telemetryService.LogInfo("GameBoard injected");
             this.telemetryService = telemetryService;
             this.stateMachine = stateMachine;
             this.workflowFactory = workflowFactory;
             this.deck = deck;
+            this.statisticsService = statisticsService;
         }
 
         // Start is called before the first frame update
@@ -51,15 +54,15 @@ namespace Barbu
             {
                 case Constants.TraditionalRoundManager.GameName:
                     this.globalContext.RoundWorkflow = this.workflowFactory.CreateTraditionalRoundWorkflow();
-                    Statistics.IncrementGamesPlayed(GameTypes.Traditional);
+                    this.statisticsService.IncrementGamesPlayed(GameTypes.Traditional);
                     break;
                 case Constants.SingleRoundManager.GameName:
                     this.globalContext.RoundWorkflow = this.workflowFactory.CreateSingleRoundWorkflow(subType);
-                    Statistics.IncrementGamesPlayed(GameTypes.Single);
+                    this.statisticsService.IncrementGamesPlayed(GameTypes.Single);
                     break;
                 case Constants.ChaosRoundManager.GameName:
                     this.globalContext.RoundWorkflow = this.workflowFactory.CreateChaosRoundWorkflow();
-                    Statistics.IncrementGamesPlayed(GameTypes.Chaos);
+                    this.statisticsService.IncrementGamesPlayed(GameTypes.Chaos);
                     break;
                 default:
                     throw new Exception("Incorrect game name provided");

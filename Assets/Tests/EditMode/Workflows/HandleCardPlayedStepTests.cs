@@ -1,17 +1,25 @@
 namespace Barbu.Tests.EditMode.Workflows
 {
     using System.Collections.Generic;
-    using System.Threading.Tasks;
     using Barbu.Core.Workflows;
     using Barbu.Core.Workflows.PlayTrickWorkflow;
     using Barbu.Gameplay;
     using Barbu.Gameplay.Rounds.Rounds;
     using Barbu.Tests.EditMode.TestUtils;
     using NUnit.Framework;
+    using UnityEngine.TestTools;
 
     // Drives real Card.Highlight/RemoveHighlight, so cards here are built via
     // CardTestUtils.CreateCardWithRenderer (attaches a MeshRenderer with a
     // built-in-shader material) rather than the plain CreateCard used elsewhere.
+    // Renderer.material's getter always logs an Error-level "will leak materials
+    // in edit mode" warning when touched outside Play Mode - Unity's test runner
+    // fails a test on any unhandled error-level log, so that noise (not a real
+    // failure) is suppressed via LogAssert.ignoreFailingMessages (see InvokeStep
+    // for why that has to be set from inside the test body). Tests call
+    // InvokeAsync().GetAwaiter().GetResult() rather than using async Task test
+    // methods, since HandleCardPlayedStep.InvokeAsync always completes
+    // synchronously and this keeps the whole test on one straightforward path.
     public class HandleCardPlayedStepTests
     {
         private readonly List<Card> createdCards = new();
@@ -28,8 +36,7 @@ namespace Barbu.Tests.EditMode.Workflows
             this.stateMachine = new FakeStateMachine();
             this.eventsController = new FakeEventsController();
             this.workflow = new FakeWorkflow();
-            this.step = new HandleCardPlayedStep();
-            this.step.Initialize(this.workflow, this.eventsController, this.stateMachine, new FakeTelemetryService());
+            this.step = new HandleCardPlayedStep(this.stateMachine, new FakeTelemetryService());
             this.pile = new Pile(this.stateMachine, this.eventsController);
             this.gameStates = new[]
             {
@@ -59,7 +66,7 @@ namespace Barbu.Tests.EditMode.Workflows
         }
 
         private StepArguments<PlayTrickArguments> BuildArgs(Card playedCard, int currentGameStateIndex = 0) =>
-            new StepArguments<PlayTrickArguments>
+            new StepArguments<PlayTrickArguments>(this.workflow)
             {
                 Data = new PlayTrickArguments
                 {
@@ -70,72 +77,81 @@ namespace Barbu.Tests.EditMode.Workflows
                 EventData = playedCard,
             };
 
+        private void InvokeStep(StepArguments<PlayTrickArguments> args)
+        {
+            // Must be set from within the test body, not [SetUp]: Unity's test
+            // runner wraps [SetUp] in its own short-lived LogScope that's disposed
+            // before the test method runs, so a flag set there doesn't apply here.
+            LogAssert.ignoreFailingMessages = true;
+            this.step.InvokeAsync(args).GetAwaiter().GetResult();
+        }
+
         [Test]
-        public async Task InvokeAsync_SetsCardNotPlayable()
+        public void InvokeAsync_SetsCardNotPlayable()
         {
             this.stateMachine.SetCardPlayable(true);
             var card = this.CreateCard("Heart", "05");
 
-            await this.step.InvokeAsync(this.BuildArgs(card));
+            this.InvokeStep(this.BuildArgs(card));
 
             Assert.IsFalse(this.stateMachine.IsCardPlayable());
         }
 
         [Test]
-        public async Task InvokeAsync_CleansUpCurrentPlayersGameState()
+        public void InvokeAsync_CleansUpCurrentPlayersGameState()
         {
             var card = this.CreateCard("Heart", "05");
 
-            await this.step.InvokeAsync(this.BuildArgs(card, currentGameStateIndex: 2));
+            this.InvokeStep(this.BuildArgs(card, currentGameStateIndex: 2));
 
             Assert.AreEqual(1, this.gameStates[2].CleanUpCallCount);
             Assert.AreEqual(0, this.gameStates[0].CleanUpCallCount);
         }
 
         [Test]
-        public async Task InvokeAsync_AddsPlayedCardToPile()
+        public void InvokeAsync_AddsPlayedCardToPile()
         {
             var card = this.CreateCard("Heart", "05");
 
-            await this.step.InvokeAsync(this.BuildArgs(card));
+            this.InvokeStep(this.BuildArgs(card));
 
             Assert.AreEqual(1, this.pile.GetPileSize());
             CollectionAssert.Contains(this.pile.GetCards(), card);
         }
 
         [Test]
-        public async Task InvokeAsync_IncrementsCurrentGameStateIndex()
+        public void InvokeAsync_IncrementsCurrentGameStateIndex()
         {
             var card = this.CreateCard("Heart", "05");
             var args = this.BuildArgs(card, currentGameStateIndex: 1);
 
-            await this.step.InvokeAsync(args);
+            this.InvokeStep(args);
 
             Assert.AreEqual(2, args.Data.currentGameStateIndex);
         }
 
         [Test]
-        public async Task InvokeAsync_SetsHighestRankToNewlyPlayedCard()
+        public void InvokeAsync_SetsHighestRankToNewlyPlayedCard()
         {
             var card = this.CreateCard("Heart", "09");
 
-            await this.step.InvokeAsync(this.BuildArgs(card));
+            this.InvokeStep(this.BuildArgs(card));
 
             Assert.AreEqual(9, this.stateMachine.GetHighestRankedCard());
         }
 
         [Test]
-        public async Task InvokeAsync_PileNotYetFull_AdvancesToPlayCardStep()
+        public void InvokeAsync_PileNotYetFull_AdvancesToPlayCardStep()
         {
             var card = this.CreateCard("Heart", "05");
 
-            await this.step.InvokeAsync(this.BuildArgs(card));
+            this.InvokeStep(this.BuildArgs(card));
 
             Assert.AreEqual(nameof(PlayCardStep), this.workflow.NextStepName);
         }
 
         [Test]
-        public async Task InvokeAsync_FourthCardCompletesPile_AdvancesToResolveTrickStep()
+        public void InvokeAsync_FourthCardCompletesPile_AdvancesToResolveTrickStep()
         {
             for (int i = 0; i < 3; i++)
             {
@@ -143,7 +159,7 @@ namespace Barbu.Tests.EditMode.Workflows
             }
             var fourthCard = this.CreateCard("Heart", "05");
 
-            await this.step.InvokeAsync(this.BuildArgs(fourthCard, currentGameStateIndex: 3));
+            this.InvokeStep(this.BuildArgs(fourthCard, currentGameStateIndex: 3));
 
             Assert.AreEqual(nameof(ResolveTrickStep), this.workflow.NextStepName);
         }

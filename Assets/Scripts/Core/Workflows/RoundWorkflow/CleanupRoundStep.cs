@@ -1,25 +1,36 @@
 namespace Barbu.Core.Workflows.RoundWorkflow
 {
     using System.Threading.Tasks;
-    using Barbu.Core;
     using Barbu.Core.Events;
     using Barbu.Core.Telemetry;
     using Barbu.UI.Controllers;
-    using UnityEngine;
+    using Zenject;
 
     public class CleanupRoundStep : IStep<RoundArguments>
     {
-        private IWorkflow workflow;
-        private IStateMachine stateMachine;
-        private ITelemetryService telemetryService;
+        public class Factory : PlaceholderFactory<CleanupRoundStep>
+        {
+        }
 
-        public void Initialize(
-            IWorkflow workflow,
-            IEventsController eventsController,
+        private readonly IInGamePointsController inGamePointsController;
+        private readonly IGameBoard gameBoard;
+        private readonly IRoundOverlayController roundOverlayController;
+        private readonly IScoreMenuController scoreMenuController;
+        private readonly IStateMachine stateMachine;
+        private readonly ITelemetryService telemetryService;
+
+        public CleanupRoundStep(
+            IInGamePointsController inGamePointsController,
+            IGameBoard gameBoard,
+            IRoundOverlayController roundOverlayController,
+            IScoreMenuController scoreMenuController,
             IStateMachine stateMachine,
             ITelemetryService telemetryService)
         {
-            this.workflow = workflow;
+            this.inGamePointsController = inGamePointsController;
+            this.gameBoard = gameBoard;
+            this.roundOverlayController = roundOverlayController;
+            this.scoreMenuController = scoreMenuController;
             this.stateMachine = stateMachine;
             this.telemetryService = telemetryService;
         }
@@ -28,24 +39,15 @@ namespace Barbu.Core.Workflows.RoundWorkflow
         {
             this.telemetryService.LogInfo("[RoundWorkflow] [CleanupRound] Executing CleanupRound step...");
 
-            var gameBoard = GameObject.Find(Constants.GameObjects.GameBoard);
-            var gameBoardController = gameBoard.GetComponent<GameBoard>();
-            gameBoardController.CleanupRound();
+            this.gameBoard.CleanupRound();
 
-            var inGamePointsOverlay = GameObject.Find(Constants.GameObjects.InGamePoints);
-            var inGamePointsController = inGamePointsOverlay.GetComponent<InGamePointsController>();
-            inGamePointsController.ResetRoundName();
-            inGamePointsController.ResetPoints();
-            inGamePointsOverlay.SetActive(false);
+            this.inGamePointsController.ResetRoundName();
+            this.inGamePointsController.ResetPoints();
+            this.inGamePointsController.SetActive(false);
 
-            var roundOverlay = GameObjectExtensions.FindGameObjectByName(Constants.GameObjects.RoundOverlay, findInactive: true);
-            var roundOverlayController = roundOverlay.GetComponent<RoundOverlayController>();
-            roundOverlayController.HideText();
+            this.roundOverlayController.HideText();
 
-            var scoreMenu = GameObjectExtensions.FindGameObjectByName(Constants.GameObjects.ScoreMenuCanvas, findInactive: true);
-            var scoreMenuController = scoreMenu.GetComponent<ScoreMenuController>();
-            this.telemetryService.LogInfo(scoreMenuController?.ToString());
-            scoreMenuController.DisplayScores(
+            this.scoreMenuController.DisplayScores(
                 args.Data.PlayerPoints,
                 args.Data.CurrentRoundIndex,
                 args.Data.GetCurrentRound().IsRoundPositive());
@@ -53,8 +55,8 @@ namespace Barbu.Core.Workflows.RoundWorkflow
             this.stateMachine.SetAutoPlayMode(false);
             args.Data.TricksPlayed = 0;
 
-            this.workflow.SetNextStep(nameof(NextRoundStep));
-            this.workflow.WaitForEvent(EventNames.ScoreMenuDismissed);
+            args.Workflow.SetNextStep(nameof(NextRoundStep));
+            args.Workflow.WaitForEvent(EventNames.ScoreMenuDismissed);
 
             return Task.CompletedTask;
         }

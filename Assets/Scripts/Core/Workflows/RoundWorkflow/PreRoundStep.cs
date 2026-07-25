@@ -1,41 +1,41 @@
 namespace Barbu.Core.Workflows.RoundWorkflow
 {
     using System.Threading.Tasks;
-    using Barbu.Core;
     using Barbu.Core.Events;
     using Barbu.Core.Telemetry;
     using Barbu.UI.Controllers;
-    using UnityEngine;
+    using Zenject;
 
     public class PreRoundStep : IStep<RoundArguments>
     {
-        private IWorkflow workflow;
-        private ITelemetryService telemetryService;
+        public class Factory : PlaceholderFactory<PreRoundStep>
+        {
+        }
 
-        public void Initialize(
-            IWorkflow workflow,
-            IEventsController eventsController,
-            IStateMachine stateMachine,
+        private readonly IInGamePointsController inGamePointsController;
+        private readonly IRoundOverlayController roundOverlayController;
+        private readonly ITelemetryService telemetryService;
+
+        public PreRoundStep(
+            IInGamePointsController inGamePointsController,
+            IRoundOverlayController roundOverlayController,
             ITelemetryService telemetryService)
         {
-            this.workflow = workflow;
+            this.inGamePointsController = inGamePointsController;
+            this.roundOverlayController = roundOverlayController;
             this.telemetryService = telemetryService;
         }
 
         public Task InvokeAsync(StepArguments<RoundArguments> args)
         {
             this.telemetryService.LogInfo("[RoundWorkflow] Executing PreRound step...");
-            GameObject roundOverlay = GameObjectExtensions.FindGameObjectByName(Constants.GameObjects.RoundOverlay, findInactive: true);
-            roundOverlay.SetActive(true);
-            var controller = roundOverlay.GetComponent<RoundOverlayController>();
-            controller.DisplayRound(args.Data.GetCurrentRound().Name, args.Data.GameType);
+            this.roundOverlayController.SetActive(true);
+            this.roundOverlayController.DisplayRound(args.Data.GetCurrentRound().Name, args.Data.GameType);
 
-            GameObject inGamePointsOverlay = GameObject.Find(Constants.GameObjects.InGamePoints);
-            var inGamePointsController = inGamePointsOverlay.GetComponent<InGamePointsController>();
-            inGamePointsController.ResetRoundName();
+            this.inGamePointsController.ResetRoundName();
 
-            this.workflow.SetNextStep(nameof(StartRoundStep));
-            this.workflow.WaitForEvent(EventNames.RoundAnimationFinished);
+            args.Workflow.SetNextStep(nameof(StartRoundStep));
+            args.Workflow.WaitForEvent(EventNames.RoundAnimationFinished);
 
             return Task.CompletedTask;
         }
