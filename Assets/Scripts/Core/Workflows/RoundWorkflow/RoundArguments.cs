@@ -22,8 +22,6 @@ namespace Barbu.Core.Workflows.RoundWorkflow
 
         public PlayTrickWorkflow PlayTrickWorkflow { get; set; }
 
-        public IComputerStateFactory ComputerStateFactory { get; set; }
-
         public IRound GetCurrentRound()
         {
             return this.Rounds[this.CurrentRoundIndex];

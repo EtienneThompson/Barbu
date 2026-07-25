@@ -2,7 +2,6 @@ namespace Barbu.Core.Workflows
 {
     using System;
     using System.Collections.Generic;
-    using Barbu.Core.Events;
     using Barbu.Core.Telemetry;
     using Barbu.Gameplay;
     using Barbu.Gameplay.Rounds;
@@ -11,32 +10,23 @@ namespace Barbu.Core.Workflows
 
     public class WorkflowFactory : IWorkflowFactory
     {
-        private readonly IEventsController eventsController;
-        private readonly IStateMachine stateMachine;
         private readonly ITelemetryService telemetryService;
-        private readonly IComputerStateFactory computerStateFactory;
+        private readonly PlayTrickWorkflow.PlayTrickWorkflow.Factory playTrickWorkflowFactory;
+        private readonly RoundWorkflow.RoundWorkflow.Factory roundWorkflowFactory;
 
         public WorkflowFactory(
-            IEventsController eventsController, IStateMachine stateMachine, ITelemetryService telemetryService, IComputerStateFactory computerStateFactory)
+            ITelemetryService telemetryService,
+            PlayTrickWorkflow.PlayTrickWorkflow.Factory playTrickWorkflowFactory,
+            RoundWorkflow.RoundWorkflow.Factory roundWorkflowFactory)
         {
-            this.eventsController = eventsController;
-            this.stateMachine = stateMachine;
             this.telemetryService = telemetryService;
-            this.computerStateFactory = computerStateFactory;
+            this.playTrickWorkflowFactory = playTrickWorkflowFactory;
+            this.roundWorkflowFactory = roundWorkflowFactory;
         }
 
         public IWorkflow CreatePlayTrickWorkflow(IRound round, Dictionary<string, int[]> playerPoints, Hand[] playerHands, int startingPlayer, int roundNumber)
         {
-            return new PlayTrickWorkflow.PlayTrickWorkflow(
-                this.eventsController,
-                this.stateMachine,
-                this.telemetryService,
-                this.computerStateFactory,
-                round,
-                playerPoints,
-                playerHands,
-                startingPlayer,
-                roundNumber);
+            return this.playTrickWorkflowFactory.Create(round, playerPoints, playerHands, startingPlayer, roundNumber);
         }
 
         public RoundWorkflow.RoundWorkflow CreateTraditionalRoundWorkflow()
@@ -114,13 +104,7 @@ namespace Barbu.Core.Workflows
 
         private RoundWorkflow.RoundWorkflow CreateRoundWorkflow(GameTypes gameType, List<IRound> rounds)
         {
-            return new RoundWorkflow.RoundWorkflow(
-                this.eventsController,
-                this.stateMachine,
-                this.telemetryService,
-                this.computerStateFactory,
-                gameType,
-                rounds);
+            return this.roundWorkflowFactory.Create(gameType, rounds);
         }
     }
 }

@@ -3,9 +3,7 @@ namespace Barbu.Tests.EditMode.Workflows
     using System;
     using System.Collections.Generic;
     using System.Threading.Tasks;
-    using Barbu.Core;
     using Barbu.Core.Events;
-    using Barbu.Core.Telemetry;
     using Barbu.Core.Workflows;
     using Barbu.Tests.EditMode.TestUtils;
     using NUnit.Framework;
@@ -17,19 +15,12 @@ namespace Barbu.Tests.EditMode.Workflows
         // (stateMachine.IsGamePaused()) - BaseWorkflow treats these differently.
         private class PausingStep : IStep<string>
         {
-            private IWorkflow workflow;
-
             public string NextStepName { get; set; }
-
-            public void Initialize(IWorkflow workflow, IEventsController eventsController, IStateMachine stateMachine, ITelemetryService telemetryService)
-            {
-                this.workflow = workflow;
-            }
 
             public Task InvokeAsync(StepArguments<string> args)
             {
-                this.workflow.Pause();
-                this.workflow.SetNextStep(this.NextStepName);
+                args.Workflow.Pause();
+                args.Workflow.SetNextStep(this.NextStepName);
                 return Task.CompletedTask;
             }
         }

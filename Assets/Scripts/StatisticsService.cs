@@ -3,19 +3,19 @@ namespace Barbu
     using System;
     using UnityEngine;
 
-    public class Statistics
+    public class StatisticsService : IStatisticsService
     {
-        public static int GetGamesFinished()
+        public int GetGamesFinished()
         {
             return PlayerPrefs.GetInt(Constants.PlayerPrefsKeys.SingleGamesFinished);
         }
 
-        public static int GetGamesWon()
+        public int GetGamesWon()
         {
             return PlayerPrefs.GetInt(Constants.PlayerPrefsKeys.SingleGamesWon);
         }
 
-        public static void IncrementGamesPlayed(GameTypes type)
+        public void IncrementGamesPlayed(GameTypes type)
         {
             switch (type)
             {
@@ -36,7 +36,7 @@ namespace Barbu
             }
         }
 
-        public static void IncrementGamesFinished(GameTypes type)
+        public void IncrementGamesFinished(GameTypes type)
         {
             switch (type)
             {
@@ -57,7 +57,7 @@ namespace Barbu
             }
         }
 
-        public static void IncrementGamesWon(GameTypes type)
+        public void IncrementGamesWon(GameTypes type)
         {
             switch (type)
             {

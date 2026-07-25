@@ -9,7 +9,7 @@ namespace Barbu.UI.Controllers
     using UnityEngine;
     using Zenject;
 
-    public class RoundOverlayController : MonoBehaviour
+    public class RoundOverlayController : MonoBehaviour, IRoundOverlayController
     {
         private IEventsController eventsController;
         private ITelemetryService telemetryService;
@@ -84,6 +84,11 @@ namespace Barbu.UI.Controllers
             this.subtitleText.fontSize = 18;
             this.roundText.text = string.Empty;
             this.subtitleText.text = string.Empty;
+        }
+
+        public void SetActive(bool active)
+        {
+            this.gameObject.SetActive(active);
         }
 
         private IEnumerator DisplayRoutine(string mainText, string subText = null, float delay = 1.5f, Action callback = null)

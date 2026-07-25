@@ -40,7 +40,7 @@ namespace Barbu.Tests.EditMode.TestUtils
 
         public void SetData(string data)
         {
-            this.Arguments = new StepArguments<string> { Data = data };
+            this.Arguments = new StepArguments<string>(this) { Data = data };
         }
 
         protected override System.Threading.Tasks.Task OnWorkflowEnd()

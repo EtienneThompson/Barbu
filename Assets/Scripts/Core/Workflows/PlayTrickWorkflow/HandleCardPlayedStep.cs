@@ -1,25 +1,22 @@
 namespace Barbu.Core.Workflows.PlayTrickWorkflow
 {
     using System.Threading.Tasks;
-    using Barbu.Core;
-    using Barbu.Core.Events;
     using Barbu.Core.Telemetry;
     using Barbu.Gameplay;
     using UnityEngine;
+    using Zenject;
 
     public class HandleCardPlayedStep : IStep<PlayTrickArguments>
     {
-        private IWorkflow workflow;
-        private IStateMachine stateMachine;
-        private ITelemetryService telemetryService;
-
-        public void Initialize(
-            IWorkflow workflow,
-            IEventsController eventsController,
-            IStateMachine stateMachine,
-            ITelemetryService telemetryService)
+        public class Factory : PlaceholderFactory<HandleCardPlayedStep>
         {
-            this.workflow = workflow;
+        }
+
+        private readonly IStateMachine stateMachine;
+        private readonly ITelemetryService telemetryService;
+
+        public HandleCardPlayedStep(IStateMachine stateMachine, ITelemetryService telemetryService)
+        {
             this.stateMachine = stateMachine;
             this.telemetryService = telemetryService;
         }
@@ -46,11 +43,11 @@ namespace Barbu.Core.Workflows.PlayTrickWorkflow
             if (args.Data.currentPile.GetPileSize() == 4)
             {
                 this.telemetryService.LogInfo("[PlayTrickWorkflow] Moving to resolve pile...");
-                this.workflow.SetNextStep(nameof(ResolveTrickStep));
+                args.Workflow.SetNextStep(nameof(ResolveTrickStep));
             } else
             {
                 this.telemetryService.LogInfo("[PlayTrickWorkflow] Moving to play next card...");
-                this.workflow.SetNextStep(nameof(PlayCardStep));
+                args.Workflow.SetNextStep(nameof(PlayCardStep));
             }
 
             return Task.CompletedTask;

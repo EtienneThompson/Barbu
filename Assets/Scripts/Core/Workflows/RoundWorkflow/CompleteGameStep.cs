@@ -2,24 +2,28 @@ namespace Barbu.Core.Workflows.RoundWorkflow
 {
     using System.Linq;
     using System.Threading.Tasks;
-    using Barbu.Core;
     using Barbu.Core.Events;
     using Barbu.Core.Telemetry;
     using Barbu.UI.Controllers;
-    using UnityEngine;
+    using Zenject;
 
     public class CompleteGameStep : IStep<RoundArguments>
     {
-        private IWorkflow workflow;
-        private ITelemetryService telemetryService;
+        public class Factory : PlaceholderFactory<CompleteGameStep>
+        {
+        }
 
-        public void Initialize(
-            IWorkflow workflow,
-            IEventsController eventsController,
-            IStateMachine stateMachine,
+        private readonly IRoundOverlayController roundOverlayController;
+        private readonly IStatisticsService statisticsService;
+        private readonly ITelemetryService telemetryService;
+
+        public CompleteGameStep(
+            IRoundOverlayController roundOverlayController,
+            IStatisticsService statisticsService,
             ITelemetryService telemetryService)
         {
-            this.workflow = workflow;
+            this.roundOverlayController = roundOverlayController;
+            this.statisticsService = statisticsService;
             this.telemetryService = telemetryService;
         }
 
@@ -29,19 +33,17 @@ namespace Barbu.Core.Workflows.RoundWorkflow
 
             var winningPlayers = args.Data.GetWinningPlayerIds();
 
-            var roundOverlay = GameObjectExtensions.FindGameObjectByName(Constants.GameObjects.RoundOverlay, findInactive: true);
-            roundOverlay.SetActive(true);
-            var controller = roundOverlay.GetComponent<RoundOverlayController>();
-            controller.DisplayWinner(winningPlayers);
+            this.roundOverlayController.SetActive(true);
+            this.roundOverlayController.DisplayWinner(winningPlayers);
 
-            Statistics.IncrementGamesFinished(args.Data.GameType);
+            this.statisticsService.IncrementGamesFinished(args.Data.GameType);
             if (winningPlayers.Where(id => id == Constants.PlayerIds.Player1).Any())
             {
-                Statistics.IncrementGamesWon(args.Data.GameType);
+                this.statisticsService.IncrementGamesWon(args.Data.GameType);
             }
 
-            this.workflow.SetNextStep(nameof(ShowAdvertisementStep));
-            this.workflow.WaitForEvent(EventNames.WinnerAnimationFinished);
+            args.Workflow.SetNextStep(nameof(ShowAdvertisementStep));
+            args.Workflow.WaitForEvent(EventNames.WinnerAnimationFinished);
             return Task.CompletedTask;
         }
     }

@@ -21,8 +21,7 @@ namespace Barbu.Tests.EditMode.Workflows
         {
             this.stateMachine = new FakeStateMachine();
             this.workflow = new FakeWorkflow();
-            this.step = new PlayCardStep();
-            this.step.Initialize(this.workflow, new FakeEventsController(), this.stateMachine, new FakeTelemetryService());
+            this.step = new PlayCardStep(this.stateMachine, new FakeTelemetryService());
             this.gameStates = new[]
             {
                 new RecordingGameState(this.stateMachine, new FakeTelemetryService(), new HeartsRound(), Constants.PlayerIds.Player1, new Hand()),
@@ -33,7 +32,7 @@ namespace Barbu.Tests.EditMode.Workflows
         }
 
         private StepArguments<PlayTrickArguments> BuildArgs(int currentGameStateIndex) =>
-            new StepArguments<PlayTrickArguments>
+            new StepArguments<PlayTrickArguments>(this.workflow)
             {
                 Data = new PlayTrickArguments
                 {

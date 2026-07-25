@@ -3,20 +3,19 @@ namespace Barbu.Core.Workflows.PlayTrickWorkflow
     using System.Threading.Tasks;
     using Barbu.Core.Events;
     using Barbu.Core.Telemetry;
+    using Zenject;
 
     public class PlayCardStep : IStep<PlayTrickArguments>
     {
-        private IWorkflow parentWorkflow;
-        private IStateMachine stateMachine;
-        private ITelemetryService telemetryService;
-
-        public void Initialize(
-            IWorkflow workflow,
-            IEventsController eventsController,
-            IStateMachine stateMachine,
-            ITelemetryService telemetryService)
+        public class Factory : PlaceholderFactory<PlayCardStep>
         {
-            this.parentWorkflow = workflow;
+        }
+
+        private readonly IStateMachine stateMachine;
+        private readonly ITelemetryService telemetryService;
+
+        public PlayCardStep(IStateMachine stateMachine, ITelemetryService telemetryService)
+        {
             this.stateMachine = stateMachine;
             this.telemetryService = telemetryService;
         }
@@ -28,8 +27,8 @@ namespace Barbu.Core.Workflows.PlayTrickWorkflow
             this.telemetryService.LogInfo($"[PlayTrickWorkflow] Player {gameState.PlayerId} playing...");
             this.stateMachine.SetCardPlayable(true);
             gameState.Start();
-            this.parentWorkflow.SetNextStep(nameof(HandleCardPlayedStep));
-            this.parentWorkflow.WaitForEventWithData(EventNames.PlayCard);
+            args.Workflow.SetNextStep(nameof(HandleCardPlayedStep));
+            args.Workflow.WaitForEventWithData(EventNames.PlayCard);
 
             return Task.CompletedTask;
         }

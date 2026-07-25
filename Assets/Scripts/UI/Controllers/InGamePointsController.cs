@@ -5,7 +5,7 @@ namespace Barbu.UI.Controllers
     using UnityEngine;
     using UnityEngine.UIElements;
 
-    public class InGamePointsController : MonoBehaviour
+    public class InGamePointsController : MonoBehaviour, IInGamePointsController
     {
         private TextMeshProUGUI player1points;
         private TextMeshProUGUI player2points;
@@ -57,6 +57,11 @@ namespace Barbu.UI.Controllers
             this.player2points.text = "0 Pts";
             this.player3points.text = "0 Pts";
             this.player4points.text = "0 Pts";
+        }
+
+        public void SetActive(bool active)
+        {
+            this.gameObject.SetActive(active);
         }
 
         private TextMeshProUGUI GetTextComponent(string gameObjectName)

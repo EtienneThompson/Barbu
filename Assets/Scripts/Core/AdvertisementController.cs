@@ -5,7 +5,7 @@ namespace Barbu.Core
     using UnityEngine.Advertisements;
     using Zenject;
 
-    public class AdvertisementController : MonoBehaviour, IUnityAdsInitializationListener, IUnityAdsLoadListener, IUnityAdsShowListener
+    public class AdvertisementController : MonoBehaviour, IAdvertisementController, IUnityAdsInitializationListener, IUnityAdsLoadListener, IUnityAdsShowListener
     {
         [SerializeField] private string adId;
         [SerializeField] private bool initialized;

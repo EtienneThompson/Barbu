@@ -55,8 +55,6 @@ namespace Barbu.Core.Workflows
                 }
 
                 var step = this.Steps[this.currentStepName];
-                this.telemetryService.LogInfo("[BaseWorkflow] Initializing step");
-                step.Initialize(this, this.eventsController, this.stateMachine, this.telemetryService);
                 this.telemetryService.LogInfo("[BaseWorkflow] Starting step");
                 await step.InvokeAsync(this.Arguments);
 
