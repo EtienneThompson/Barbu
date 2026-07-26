@@ -48,24 +48,19 @@ namespace Barbu.UI.Controllers
         public void DisplayWinner(string[] winningPlayers)
         {
             this.telemetryService.LogInfo("Displaying winner");
-            var playerLabels = winningPlayers.Select(playerId => playerId.Equals(Constants.PlayerIds.Player1) ? "You" : $"Player {playerId}");
-            string winningLabel = string.Empty;
-            foreach (var playerLabel in playerLabels)
-            {
-                if (playerLabels.Count() > 1 &&
-                    playerLabel.Equals(playerLabels.ElementAt(playerLabels.Count() - 1)))
-                {
-                    winningLabel = winningLabel.Substring(0, winningLabel.Length - 2) + " and ";
-                }
-                winningLabel += playerLabel + ", ";
-            }
-            winningLabel = winningLabel.Substring(0, winningLabel.Length - 2) + " win";
-            winningLabel += (
-                playerLabels.Count() > 1 || (
-                    playerLabels.Count() == 1 && 
-                    playerLabels.ElementAt(0).Equals(Constants.PlayerIds.Player1)))
-                ? "!"
-                : "s!";
+            var playerLabels = winningPlayers
+                .Select(playerId => playerId.Equals(Constants.PlayerIds.Player1) ? "You" : $"Player {playerId}")
+                .ToArray();
+
+            // "You", "Player 2", "You and Player 2", "You, Player 2 and Player 3"
+            string winningLabel = playerLabels.Length > 1
+                ? string.Join(", ", playerLabels.Take(playerLabels.Length - 1)) + " and " + playerLabels.Last()
+                : playerLabels.FirstOrDefault();
+
+            // A single computer player "wins"; "you win" and multiple players "win".
+            bool isPlural = playerLabels.Length > 1 ||
+                winningPlayers.FirstOrDefault()?.Equals(Constants.PlayerIds.Player1) == true;
+            winningLabel += isPlural ? " win!" : " wins!";
             this.telemetryService.LogInfo(winningLabel);
             StartCoroutine(DisplayRoutine(
                 winningLabel,
