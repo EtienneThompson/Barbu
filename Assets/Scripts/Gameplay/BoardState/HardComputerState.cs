@@ -1,6 +1,7 @@
 namespace Barbu.Gameplay.BoardState
 {
     using System;
+    using System.Collections.Generic;
     using Barbu.Core;
     using Barbu.Core.Telemetry;
     using Barbu.Gameplay;
@@ -35,29 +36,40 @@ namespace Barbu.Gameplay.BoardState
             if (cardsInSuit.Count == 0)
             {
                 this.telemetryService.LogInfo("Computer has no cards in suit");
-                // Play the highest point-earning card.
                 var pointEarningCards = this.hand.GetCardsWithPoints(this.round);
 
+                if (isPositiveRound)
+                {
+                    // Being out of the suit means this pile goes to somebody else,
+                    // and they score whatever gets thrown into it. Points are worth
+                    // having in a positive round, so hold onto the point earning
+                    // cards and throw away the lowest card that scores nothing -
+                    // keeping the high cards to win piles with later.
+                    var discardableCards = this.hand.GetAvailableCards();
+                    discardableCards.RemoveAll(card => this.round.IsPointEarningCard(card.GetName()));
+
+                    if (discardableCards.Count > 0)
+                    {
+                        this.telemetryService.LogInfo("Computer is holding its point earning cards, playing lowest card without points.");
+                        var lowestCard = this.hand.GetLowestCard(discardableCards);
+                        this.telemetryService.LogInfo("Computer playing " + lowestCard.GetName());
+                        lowestCard.PlayCard();
+                        return;
+                    }
+
+                    // Nothing but point cards left, so one has to be given up.
+                    this.telemetryService.LogInfo("Computer only has point earning cards left, giving up the cheapest one.");
+                    var cheapestCard = this.GetMostValuablePointCard(pointEarningCards, preferLowestRank: true);
+                    this.telemetryService.LogInfo("Computer playing " + cheapestCard.GetName());
+                    cheapestCard.PlayCard();
+                    return;
+                }
+
+                // Play the highest point-earning card.
                 if (pointEarningCards.Count > 0)
                 {
                     this.telemetryService.LogInfo("Computer has point earning cards, picking max value.");
-                    var maxPoints = isPositiveRound ? int.MaxValue : int.MinValue;
-                    Card maxCard = null;
-                    foreach (var card in pointEarningCards)
-                    {
-                        var cardPointValue = this.round.GetCardPointValue(card.GetName());
-                        if (!isPositiveRound && cardPointValue >= maxPoints && (maxCard == null || card.rank > maxCard.rank))
-                        {
-                            maxPoints = cardPointValue;
-                            maxCard = card;
-                        }
-                        else if (isPositiveRound && cardPointValue <= maxPoints && (maxCard == null || card.rank < maxCard.rank))
-                        {
-                            maxPoints = cardPointValue;
-                            maxCard = card;
-                        }
-                    }
-
+                    var maxCard = this.GetMostValuablePointCard(pointEarningCards, preferLowestRank: false);
                     this.telemetryService.LogInfo("Computer playing " + maxCard.GetName());
                     maxCard.PlayCard();
                     return;
@@ -66,7 +78,7 @@ namespace Barbu.Gameplay.BoardState
                 {
                     this.telemetryService.LogInfo("Computer has no point earning cards, playing highest card.");
                     // If no cards earn points in the hand, then just play any card.
-                    var highestCard = isPositiveRound ? this.hand.GetLowestCard() : this.hand.GetHighestCard();
+                    var highestCard = this.hand.GetHighestCard();
                     this.telemetryService.LogInfo("Computer playing " + highestCard.GetName());
                     highestCard.PlayCard();
                     return;
@@ -118,6 +130,32 @@ namespace Barbu.Gameplay.BoardState
                     }
                 }
             }
+        }
+
+        /// <summary>
+        /// Picks the point earning card with the highest value: the biggest penalty
+        /// to hand off in a round that scores against the computer, or the cheapest
+        /// card to give up in a positive round where nothing else is left to play.
+        /// Ties are broken by rank - highest when dumping penalties, lowest in a
+        /// positive round where the high cards are what win piles later.
+        /// </summary>
+        private Card GetMostValuablePointCard(List<Card> pointEarningCards, bool preferLowestRank)
+        {
+            var maxPoints = int.MinValue;
+            Card maxCard = null;
+            foreach (var card in pointEarningCards)
+            {
+                var cardPointValue = this.round.GetCardPointValue(card.GetName());
+                var isBetterRank = maxCard == null ||
+                    (preferLowestRank ? card.rank < maxCard.rank : card.rank > maxCard.rank);
+                if (cardPointValue >= maxPoints && isBetterRank)
+                {
+                    maxPoints = cardPointValue;
+                    maxCard = card;
+                }
+            }
+
+            return maxCard;
         }
     }
 }
